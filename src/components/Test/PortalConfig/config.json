@@ -1,0 +1,89 @@
+//<PortalColumn  param="param" ></PortalColumn>
+param:{
+"uesrid":'cbc',
+"sex":'女',
+"...":"..."
+},
+//栏目配置项option
+{
+    //基础配置
+    "attr": {
+        "x": 120,
+        "y": 100,
+        "w": 400,
+        "h": 300,
+        "zIndex": 100,
+        "opacity": 1,
+        "unit": "px",
+        "show": true
+    },
+    //一个栏目有多种接口
+    "dataSet": {
+        //查找接口
+        "findMyApp": {
+            "dec": "接口描述，需要传入用户信息，参数字段名：userid,sex等",
+            "type": "restful",
+            "restful":{
+                //header请求头相关配置
+                headerConfig:{
+                    "...":"..."
+                },
+                "dataServerUrl": "http://10.11.0.87:8087/Portal/findMyApp",
+                //比如给我们公司的栏目接口参数格式为:yyyy-mm-dd。而部署到现场变成第三方接口参数格式为：yyyymmdd
+                //对于不符合接口格式要求，需做一些转换时，需要用到inFilter
+                "inFilter": function(){
+
+                },
+                "in": [{
+                    key: "userid",
+                    type: "string",
+                    value: param.userid
+                },{
+                    key: "sex",
+                    type: "string",
+                    value: param.sex
+                }],
+                //对接口返回结果进行一些处理，让其符合栏目的展示
+                //对于不符合栏目格式要求，需做一些转换时，需要用到outFilter
+                "outFilter": function(){
+                    //转换方法（含字段映射），必须返回out.data.fields的参数名
+                },
+                "out": [
+                    "fields": ["id", "imgurl", "title", "url"],//栏目要求的必要字段
+                    "data": [{
+                        "id": 1,
+                        "imgurl": "http://10.11.0.87:8081/images/carousel/4.jpeg",
+                        "title": "人口查询系统",
+                        "url": "https://www.baidu.com/"
+                    }, {
+                        "id": 2,
+                        "imgurl": "http://10.11.0.87:8081/images/carousel/4.jpeg",
+                        "title": "情报信息平台",
+                        "url": "https://www.baidu.com/"
+                    }]
+                ]
+            },
+        },
+        //插入接口
+        "insertMyApp": {
+            "dec": "接口描述，需要传入用户信息，参数字段名：userid,sex等",
+            "type": "restful",
+            "restful":{
+                "dataServerUrl": "http://10.11.0.87:8087/Portal/findMyApp",
+            },
+            //对于不符合接口格式要求，需做一些转换时，需要用到inFilter
+            "inFilter": function(){
+                //转换方法
+            },
+            "in": [{
+                key: "userid",
+                type: "string",
+                value: param.userid
+            },{
+                key: "sex",
+                type: "string",
+                value: param.sex
+            }]
+        }
+    }
+}

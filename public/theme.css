@@ -1,0 +1,10 @@
+:root {
+    /*蓝色主题*/
+    --portal-blue-title-color: rgba(0,0,0,0.8);
+    --portal-blue-background-color: #1e90ff;
+
+    /*灰色主题*/
+    --portal-gray-title-color: rgba(0,0,0,0.8);
+    --portal-gray-background-color: #cccccc;
+
+}

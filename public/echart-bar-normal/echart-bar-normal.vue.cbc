@@ -1,0 +1,77 @@
+<template>
+  <div ref="chart" style="width:100%;height:100%" ></div>
+</template>
+
+<script>
+// 引入echarts
+import * as echarts from 'echarts';
+
+export default {
+  name: "echart-bar-normal",
+  props: {
+    component_config: {
+      type: Object,
+      default() {
+        return {};
+      }
+    },
+  },
+  mounted() {
+    console.log("this.component_config",this.component_config);
+    if(this.component_config.dataset.dimension.length==0
+        ||this.component_config.dataset.metrics.length==0
+        ||this.component_config.dataset.data.length==0){
+      return
+    }else{
+      this.setData();
+    }
+  },
+  methods: {
+    setData(){
+      console.log("setData");
+      const dimension=this.component_config.dataset.dimension;
+      const metrics=this.component_config.dataset.metrics;
+      const data=this.component_config.dataset.data;
+      const option=this.component_config.option;
+      //动态赋值维度
+      option.xAxis.data=[];
+      data.forEach(item => {
+        option.xAxis.data.push(item[dimension[0]]);
+      });
+      //动态赋值指标
+      for(var i=0;i<metrics.length;i++){
+        if(typeof(option.series[i])=="undefined"){
+          option.series[i]=JSON.parse(JSON.stringify(option.series[i-1]));
+          option.series[i].name=metrics[i]
+          option.series[i].data=[];
+          data.forEach(item => {
+            option.series[i].data.push(item[metrics[i]]);
+          });
+        }else{
+          option.series[i].name=metrics[i]
+          option.series[i].data=[];
+          data.forEach(item => {
+            option.series[i].data.push(item[metrics[i]]);
+          });
+        }
+      }
+      console.log("option",option);
+      const chart = this.$refs.chart
+      const myChart = echarts.init(chart)
+      myChart.setOption(option);
+      this.setHandleEvent(myChart);
+
+    },
+    setHandleEvent(myChart){
+      myChart.on('click',this.handleEvent);
+    },
+    handleEvent(params) {
+      var row=this.component_config.dataset.data[params.dataIndex]
+      console.log("row",row);
+    }
+  },
+}
+</script>
+
+
+

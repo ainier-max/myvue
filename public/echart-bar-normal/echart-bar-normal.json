@@ -1,0 +1,81 @@
+{
+  //组件属性
+  attr: {
+    x: 20,
+    y: 20,
+    w: 800,
+    h: 400,
+    zIndex: 100,
+    opacity: 1,
+    unit: 'px'
+  },
+  //开发者属性配置
+  option: {
+    color:["#597ef7", "#8ba5f9", "#cdd8fd", "#acbffb", "#6a8bf8"],
+    legend: {
+      show: true,
+      orient: "horizontal",
+      textStyle: {
+        color: "rgba(255, 255, 255, 1)",
+        fontSize: 14,
+        fontFamily: "Microsoft YaHei"
+      },
+      top: "auto",
+      left: "center",
+      right: "auto",
+      bottom: 20
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { // 坐标轴指示器，坐标轴触发有效
+        type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+      },
+      formatter: function(params) {
+  return params[0].name + '<br/>' +
+params[0].seriesName + ' : ' + params[0].value + ' 万单' + '<br/>' +
+params[1].seriesName + ' : ' + params[1].value + ' 万单' + '<br/>'
+}
+},
+xAxis: {
+type: 'category'
+},
+yAxis: {},
+series: [
+{
+type: 'bar',
+barWidth:20
+}
+]
+},
+//数据配置
+dataset: {
+dataSourceType: "staticData",
+dimension:['订单'],
+metrics: [
+'七月销量',
+'同比增加'
+],
+data: [
+{
+订单: '汽车',
+七月销量: 100,
+同比增加:56
+},
+{
+订单: '空调',
+七月销量: 86,
+同比增加:56
+},
+{
+订单: '洗衣机',
+七月销量: 120,
+同比增加:56
+},
+{
+订单: '电脑',
+七月销量: 70,
+同比增加:56
+}
+]
+}
+}
