@@ -428,6 +428,10 @@ export default {
       obj.margin.left=0;
       obj.margin.right=0;
 
+      obj.background={};
+      obj.background.type="img";
+      obj.background.value="";
+
       this.currentPageBlockLayout.layout_config.blocks_components.push(obj);
       this.refreshLayout();
     },
