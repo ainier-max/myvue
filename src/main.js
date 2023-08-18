@@ -3,7 +3,7 @@ import App from './App.vue'
 
 window.cbcApp = createApp(App);
 
-//ElementPlus（全注册）
+//ElementPlus（全注册1）
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
