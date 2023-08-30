@@ -27,7 +27,7 @@
 
 <script>
 
-import LayoutRender from "../../../../common/component/PageRender/LayoutRender/index.vue";
+import LayoutRender from "@/common/component/PageRender/LayoutRender/index.vue";
 //vue2引入组件
 //import VueDraggableResizable from 'vue-draggable-resizable'
 //vue3引入组件 注意和vue2中的路径不同

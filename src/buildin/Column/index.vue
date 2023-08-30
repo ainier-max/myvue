@@ -143,7 +143,8 @@ export default {
     this.ref_string=this.layoutComponentInfo.ref;
     //console.log("this.layoutComponentInfo.ref212",this.layoutComponentInfo);
     window.cbcColumnInstance={};
-    window.cbcColumnInstance[this.ref_string]=getCurrentInstance();
+    window.cbcColumnInstance[this.ref_string] = getCurrentInstance();
+    console.log("内置组件this.component",this.component);
     if(this.component==null){
       this.devOption=option.devOption;
     }else{

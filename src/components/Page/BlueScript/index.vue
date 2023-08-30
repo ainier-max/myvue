@@ -24,14 +24,15 @@ import {
   commonSelectRequest,
   commonSelectRequestAndOtherParam,
   commonExcuteRequestAndOtherParam
-} from "../../../common/js/request.js";
+} from "@/common/js/request.js";
 import axios from "axios";
 import {getCurrentInstance} from "vue";
 
-import {objectToString} from "../../../common/js/objStr.js";
+import {objectToString} from "@/common/js/objStr.js";
 
 import insertCss from 'insert-css'
-import pathConfigArr from '../../../buildin/pathConfigArr.js'
+import pathConfigArr from '@/buildin/pathConfigArr.js'
+import {js_beautify} from "js-beautify";
 
 export default {
   props: {},
@@ -105,9 +106,12 @@ export default {
       item.component_ref = item.component_ref;
       item.label = item.component_name;
       item.startPointFlag = false;
-
+      console.log("pathConfigArr", pathConfigArr);
+     
       if(item.type=="buildInComponent"){
-        for(let i=0;i<pathConfigArr.length;i++){
+        for (let i = 0; i < pathConfigArr.length; i++){
+          console.log("pathConfigArr[i].type", pathConfigArr[i].type);
+          console.log("item.type",item.component_type);
           if(pathConfigArr[i].type==item.component_type){
             let optionPath="../../../buildin/"+pathConfigArr[i].optionPath;
             import(/* @vite-ignore */optionPath)
@@ -115,8 +119,9 @@ export default {
                   console.log("addBlueScriptByComponent--settings",option);
                   item.blue_script_visualize_config_str=objectToString(option.default.blue_script_visualize_config);
                   item.blue_script_in_out_config_str=objectToString(option.default.blue_script_in_out_config);
-                  item.blue_script_node_config_str=objectToString(option.default.blue_script_node_config);
-                  item.blue_script_logic_config_str =objectToString(option.default.logic_config);
+                  item.blue_script_node_config_str = objectToString(option.default.blue_script_node_config);
+                  console.log("objectToString(option.default.logic_config)",objectToString(option.default.logic_config));
+                  item.blue_script_logic_config_str =js_beautify(objectToString(option.default.logic_config));
                   console.log("addBlueScriptByComponent--item",item);
                   this.addBlueScriptByAdd(item);
                 });

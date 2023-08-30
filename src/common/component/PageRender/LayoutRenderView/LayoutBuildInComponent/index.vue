@@ -51,7 +51,7 @@ export default {
     let instanceTemp=getCurrentInstance();
     let pathUrl="";
     for(let i=0;i<pathConfigArr.length;i++){
-      if(pathConfigArr[i].type=this.layoutComponentInfo.name){
+      if(pathConfigArr[i].type==this.layoutComponentInfo.name){
         pathUrl="../../../../../buildin/"+pathConfigArr[i].path;
       }
     }

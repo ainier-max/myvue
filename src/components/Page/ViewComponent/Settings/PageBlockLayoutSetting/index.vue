@@ -482,6 +482,7 @@ export default {
       obj.layout_ref = window.cbcPageInstance.data.currentPageBlockLayout.layout_ref;
       obj.page_id = this.$route.query.page_id;
       obj.component_ref = component_ref;
+      obj.component_config = param.option.default.devOption;
       console.log("setBuildInComponent--obj",obj);
       window.cbcPageInstance.data.pageComponents.push(obj);
       this.showBuiltInComponentDialogFlag=false;
