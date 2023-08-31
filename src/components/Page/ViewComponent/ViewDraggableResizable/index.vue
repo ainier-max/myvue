@@ -17,7 +17,7 @@
       <!--:active="component.isActived"  引发二次激活,暂时去掉，后续如果有问题再考虑-->
       <LayoutRender v-if="LayoutRenderFlag==true" :pageLayoutRef="pageLayout.layout_ref"
                    :allPageComponents="allPageComponents"
-                   :allPageLayouts="allPageLayouts" :pageDebugFlag="pageDebugFlag">
+                   :allPageLayouts="allPageLayouts" :pageDebugFlag="pageDebugFlag" renderType="Edit">
       </LayoutRender>
 
     </vue-draggable-resizable>

@@ -14,6 +14,14 @@ import {getCurrentInstance} from "vue";
 
 export default {
   props: {
+    renderType: {
+      type: String,
+      default: ''
+    },
+    page_id: {
+      type: String,
+      default: ''
+    },
     layoutComponentInfo: {
       type: Object,
       default: null
@@ -43,7 +51,11 @@ export default {
 
   },
   mounted() {
-    console.log("LayoutBuildInComponent--mounted--componentInfo",this.componentInfo);
+    console.log("LayoutBuildInComponent--mounted--componentInfo", this.componentInfo);
+    console.log("LayoutBuildInComponent--mounted--renderType", this.renderType);
+
+    
+    let instanceTemp=getCurrentInstance();
     let pathUrl="";
     for(let i=0;i<pathConfigArr.length;i++){
       if(pathConfigArr[i].type==this.layoutComponentInfo.name){
@@ -51,17 +63,40 @@ export default {
       }
     }
 
-    console.log("LayoutBuildInComponent--mounted--pathUrl",pathUrl);
+    //"../../../buildin/Column/index.vue"
 
-    //"../../../../buildin/Column/index.vue"
     this.$options.components[this.layoutComponentInfo.name] = Vue.defineAsyncComponent({
       loader: () => import(/* @vite-ignore */pathUrl)
     })
+
     let the = this;
     this.$nextTick(() => {
       the.showFlag = true;
       //console.log("LayoutBuildInComponent--mounted--layoutComponentInfo",the.layoutComponentInfo);
-
+      if (the.renderType=="View") {
+        the.$nextTick(()=>{
+          instanceTemp.component_ref=the.layoutComponentInfo.ref;
+          console.log("LayoutBuildInComponent--mounted--instanceTemp1",instanceTemp);
+          /**
+           * 如果存在则替换，不存在则添加
+           * @type {number}
+           */
+          let flag=0;
+          console.log("LayoutBuildInComponent--mounted--window",window);
+          console.log("LayoutBuildInComponent--mounted--window",this.page_id);
+          for(let i=0;i<window["page"+this.page_id].cbcDebugPageComponentsInstance.length;i++){
+            if(window["page"+this.page_id].cbcDebugPageComponentsInstance[i].component_ref==the.layoutComponentInfo.ref){
+              window["page"+this.page_id].cbcDebugPageComponentsInstance[i]=instanceTemp;
+              flag=1
+            }
+          }
+          if(flag==0){
+            window["page"+this.page_id].cbcDebugPageComponentsInstance.push(instanceTemp);
+          }
+          console.log("LayoutBuildInComponent--mounted--window[\"page\"+this.page_id].cbcDebugPageComponentsInstance",window["page"+this.page_id].cbcDebugPageComponentsInstance);
+        });
+      }
+  
     });
 
   }

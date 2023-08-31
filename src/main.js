@@ -50,8 +50,8 @@ window.cbcApp.component("Search", Search)
 window.cbcApp.component("ArrowDown", ArrowDown)
 
 
-import LayoutPageBlockView from './common/component/PageRender/LayoutRenderView/LayoutPageBlockView/index.vue'
-window.cbcApp.component("LayoutPageBlockView", LayoutPageBlockView)
+// import LayoutPageBlock from '@/common/component/PageRender/LayoutRenderView/LayoutPageBlock/index.vue'
+// window.cbcApp.component("LayoutPageBlock", LayoutPageBlock)
 
 import draggable from "vuedraggable";
 window.cbcApp.component("draggable", draggable)

@@ -20,7 +20,6 @@
             <template v-for="(componentInfo, index) in allPageComponents">
               <LayoutBuildInComponent
                   v-if="layout_component.type=='buildInComponent' && layout_component.ref==componentInfo.component_ref"
-                  :renderType="renderType"
                   :componentInfo="componentInfo" :ref="layout_component.ref"
                   :layoutComponentInfo="layout_component"></LayoutBuildInComponent>
             </template>
@@ -29,31 +28,19 @@
       <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='layout'">
               <LayoutRender :pageLayoutRef="layout_component.ref"
                            :allPageComponents="allPageComponents"
-                           :topPageBlockRef="topPageBlockRef"
-                           :allPageLayouts="allPageLayouts" :pageDebugFlag="pageDebugFlag" :renderType="renderType">
+                           :allPageLayouts="allPageLayouts" :pageDebugFlag="pageDebugFlag" :renderType="Edit">
               </LayoutRender>
         </span>
-
       <!--展示页面块 ,'border':'1px dashed yellowgreen'-->
       <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='block'">
               <LayoutPageBlock
-                  v-if="renderType=='Edit' && pageDebugFlag=='true'"
-                  :renderType="renderType"
+                  v-if="pageDebugFlag=='true'"
                   :pageBlockRef="layout_component.ref"
                                :allPageComponents="allPageComponents"
                                :allPageLayouts="allPageLayouts"
                                :style="{'background':currentPageLayout.layout_config.attr.backgroundColor,'backgroundImage':'url('+currentPageLayout.layout_config.attr.backgroundImageURL+')','backgroundSize':'100% 100%'}">
               </LayoutPageBlock>
-
-              <LayoutPageBlock v-if="renderType=='View' && topPageBlockRef!=''" :topPageBlockRef="topPageBlockRef" :page_id="page_id" :pageBlockRef="layout_component.ref"
-                               :style="{'backgroundImage':'url('+currentPageLayout.layout_config.attr.backgroundImageURL+')','backgroundSize':'100% 100%'}">
-              </LayoutPageBlock>
-
       </span>
-
-
-
-
     </div>
   </div>
 </template>
@@ -63,7 +50,7 @@
 import LayoutComponent from "./LayoutComponent/index.vue";
 import LayoutPageBlock from "./LayoutPageBlock/index.vue";
 import LayoutBuildInComponent from "./LayoutBuildInComponent/index.vue";
-import * as Vue from "vue";
+
 export default {
   name: "LayoutRender",
   props: {
@@ -86,16 +73,12 @@ export default {
     pageDebugFlag:{
       type: String,
       default: ''
-    },
-    topPageBlockRef:{
-      type: String,
-      default: ''
     }
+
   },
   data() {
     return {
-      currentPageLayout: null,
-      page_id:null
+      currentPageLayout: null
     }
   },
   components: {
@@ -136,29 +119,16 @@ export default {
   created() {
     console.log("pageDebugFlag111,",this.pageDebugFlag);
     console.log("LayoutRender--created--this.allPageLayouts11", this.allPageLayouts);
-    console.log("LayoutRender--created--this.pageLayoutRef", this.pageLayoutRef);
-    if (this.renderType=="View") {
-      this.page_id=this.$route.query.page_id;
-    }
-    
+    console.log("LayoutRender--created--this.pageLayoutRef",this.pageLayoutRef);
     for (let i = 0; i < this.allPageLayouts.length; i++) {
       if (this.allPageLayouts[i].layout_ref == this.pageLayoutRef) {
         this.currentPageLayout = this.allPageLayouts[i];
       }
     }
     console.log("LayoutRender--this.currentPageLayout", this.currentPageLayout);
-
-  
   },
   methods: {},
   mounted() {
-    console.log("LayoutRender--mounted--this.renderType", this.renderType);
-
-    //局部动态注册组件
-    // let pathUrl="./LayoutPageBlock/index.vue";
-    // this.$options.components["LayoutPageBlock"] = Vue.defineAsyncComponent({
-    //   loader: () => import(/* @vite-ignore */pathUrl)
-    // })
 
   }
 }

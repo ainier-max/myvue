@@ -252,7 +252,7 @@ export default {
           return;
       }
     },
-    //蓝图获取 备份
+    //蓝图获取备份
     findAllBlueScriptCallBack(result) {
       console.log("findAllBlueScript--result",result);
       this.pageBlueScripts = [];
@@ -280,10 +280,11 @@ export default {
          nodeConfig.label = result.objects[i].name;
          item.config.node_config = nodeConfig;
          */
-
+        //console.log("11111",item.config.logic_config_str);
         item.config.logic_config = eval("(" + item.config.logic_config_str + ")");
+        //console.log("2222",item.config.logic_config);
         //如果返回的logicunFun还是字符串，则继续转换
-        if(typeof (item.config.logic_config.logicFun)=="string"){
+        if(item.config.logic_config && typeof (item.config.logic_config.logicFun)=="string"){
           item.config.logic_config.logicFun=eval("(" + item.config.logic_config.logicFun + ")");
         }
 

@@ -1,9 +1,12 @@
 <template>
   <div style="overflow: auto">
 
-    <LayoutPageBlockView  v-if="showFlag==true"
+    <LayoutPageBlock  v-if="showFlag==true"
+                          renderType="View"
+                          :allPageComponents="allPageComponents"
+                          :allPageLayouts="allPageLayouts"
                            :ref="layoutPageBlockRef" :pageBlockRef="topPageBlockRef" :page_id="page_id" :topPageBlockRef="topPageBlockRef"
-                          :style="TopPageBlockStyle"></LayoutPageBlockView>
+                          :style="TopPageBlockStyle"></LayoutPageBlock>
 
     <div v-for="(item,index) in dialogArr">
       <el-dialog
@@ -13,15 +16,15 @@
           v-model="item.visible"
           :close-on-click-modal="false"
           :width="item.width">
-        <LayoutPageBlockView  :ref="'dialog_'+item.page_block_ref" :style="{'height':item.height}"
-                               :pageBlockRef="item.page_block_ref" :page_id="page_id" :topPageBlockRef="topPageBlockRef"></LayoutPageBlockView>
+        <LayoutPageBlock  :ref="'dialog_'+item.page_block_ref" :style="{'height':item.height}"
+            :pageBlockRef="item.page_block_ref" renderType="View" :page_id="page_id" :topPageBlockRef="topPageBlockRef"></LayoutPageBlock>
       </el-dialog>
     </div>
 
 
     <div v-for="(item,index) in mapPopupArr">
       <div v-show="item.visible" :ref="'mapPopup_'+item.page_block_ref">
-        <LayoutPageBlockView :pageBlockRef="item.page_block_ref" :page_id="page_id" :topPageBlockRef="topPageBlockRef"></LayoutPageBlockView>
+        <LayoutPageBlock :pageBlockRef="item.page_block_ref" :page_id="page_id" renderType="View" :topPageBlockRef="topPageBlockRef"></LayoutPageBlock>
         <div :style="divPopupStyle"></div>
       </div>
 
@@ -35,7 +38,7 @@
 
 <script>
 import {getCurrentInstance} from "vue";
-import LayoutPageBlockView from "../../common/component/PageRender/LayoutRenderView/LayoutPageBlockView/index.vue";
+import LayoutPageBlock from "@/common/component/PageRender/LayoutRender/LayoutPageBlock/index.vue";
 import {pageMixin} from "./PreviewJS/pageMixin.js"
 import {commonSelectRequest} from "../../common/js/request";
 import axios from "axios";
@@ -110,8 +113,11 @@ export default {
 
       page_id:'',
       pageDebugFlag:'false',
+      showFlag: false,
 
-      showFlag:false,
+      allPageLayouts:[],
+      allPageComponents:[],
+      
 
     }
   },
@@ -169,7 +175,7 @@ export default {
   },
   watch: {},
   components: {
-    "LayoutPageBlockView": LayoutPageBlockView
+    "LayoutPageBlock": LayoutPageBlock
   },
   methods: {
     //查询顶层的pageBlockRef
@@ -200,9 +206,12 @@ export default {
       if(typeof (window.cbcDebugPageInstance)=="undefined"){
         window.cbcDebugPageInstance={}
       }
-      window.cbcDebugPageInstance[this.topPageBlockRef]= this.currentInstance;
+      window.cbcDebugPageInstance[this.topPageBlockRef] = this.currentInstance;
 
-      console.log("cbcwindow.cbcDebugPageInstance[this.topPageBlockRef]rrt",window.cbcDebugPageInstance[this.topPageBlockRef]);
+
+      this.allPageLayouts = window.cbcDebugPageInstance[this.topPageBlockRef].data.pageLayouts;
+      this.allPageComponents=window.cbcDebugPageInstance[this.topPageBlockRef].data.allPageComponents;
+      console.log("findTopPageBlockRefCallBack--window.cbcDebugPageInstance[this.topPageBlockRef]",window.cbcDebugPageInstance[this.topPageBlockRef]);
     },
     //查询所有的组件
     findAllPageBlockComponent() {

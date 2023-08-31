@@ -19,21 +19,13 @@
 //但是codeMirror可能会报错：Unable to preventDefault inside passive event listener invocation.
 //import 'default-passive-events'
 import * as Vue from 'vue'
-import {getCurrentInstance} from "vue";
+
 
 export default {
   props: {
-    renderType: {
-      type: String,
-      default: ''
-    },
     componentInfo: {
       type: Object,
       default: null
-    },
-    topPageBlockRef: {
-      type: String,
-      default: ''
     },
   },
   data() {
@@ -44,17 +36,12 @@ export default {
       //component_type为空时，警告：Invalid vnode type when creating vnode: .
       component_type: 'component_type',
       component: null,
-      topPageBlockInstance:null,
     }
   },
   //供动态注册组件使用,不可删除
   components: {},
 
   created() {
-    if (this.renderType=="View") {
-      this.topPageBlockInstance=window.cbcDebugPageInstance[this.topPageBlockRef];
-    }
-
     //console.log(this.componentInfo.component_ref+",组件信息");
     //console.log("组件信息：",this.componentInfo);
 
@@ -77,34 +64,16 @@ export default {
     },
 
     eventFun(eventType, obj, component) {
-      //界面设计页面无需执行事件逻辑
-      if (this.renderType=="Edit") {
-        return;
-      }
+      //界面设计页面无需执行逻辑
+      return;
+      /**
       console.log("LayoutComponent--事件类型：", eventType);
       console.log("LayoutComponent--事件传递值：", obj);
-      console.log("LayoutComponent--当前组件信息：", component);
-      console.log("LayoutComponent--当前组件对象：", this.$refs[component.component_ref]);
-
-      let pageBlueScriptsTemp=this.topPageBlockInstance.data.pageBlueScripts;
+      //console.log("LayoutComponent--当前事件所属组件信息：", component);
+      let pageBlueScriptsTemp=window.cbcPageInstance.data.pageBlueScripts;
       //console.log("pageBlueScriptsTemp",pageBlueScriptsTemp);
       for(let i=0;i<pageBlueScriptsTemp.length;i++){
         if(pageBlueScriptsTemp[i].component_ref==component.component_ref){
-          //console.log("当前组件对象对应的蓝图对象：",pageBlueScriptsTemp[i]);
-          //设置全局组件对象
-          if(pageBlueScriptsTemp[i].config.GlobalComponentConfigFlag==true){
-            let flagTemp=0;
-            for(let m=0;m<window.cbcGlobalSettings.components.length;m++){
-              if(window.cbcGlobalSettings.components[m].component.component_ref==component.component_ref){
-                flagTemp=1;
-              }
-            }
-            if(flagTemp==0){
-              window.cbcGlobalSettings.components.push(this.$refs[component.component_ref]);
-            }
-            console.log("全局组件配置window.cbcGlobalSettings：",window.cbcGlobalSettings);
-          }
-
           if(typeof(pageBlueScriptsTemp[i].config.in_out_config.out)=="undefined" || pageBlueScriptsTemp[i].config.in_out_config.out.length==0){
 
           }else{
@@ -129,65 +98,29 @@ export default {
                 //如果有连接线，则执行下一个蓝图节点
                 let connectedTargetArrTemp=outTemp[m].connectedTargetArr;
                 for(let j=0;j<connectedTargetArrTemp.length;j++){
-                  this.runProcessByRefForEvent(outTemp[m].connectedSource,connectedTargetArrTemp[j],obj);
+                  if(typeof (window.cbcDebugPageInstance)!="undefined"){
+                    window.cbcDebugPageInstance.ctx.runProcessByRefForEvent(outTemp[m].connectedSource,connectedTargetArrTemp[j],obj);
+                  }
                 }
               }
             }
           }
         }
       }
-      
-     
+       */
     },
-    setProcessFlag(relevancedRef, pordedID) {
-      if (this.renderType=="Edit") {
-        console.log("setProcessFlag为false--relevancedRef,pordedID",relevancedRef,pordedID);
-        for(let i=0;i<window.cbcPageInstance.data.pageBlueScripts.length;i++){
-          if(window.cbcPageInstance.data.pageBlueScripts[i].blue_script_ref==relevancedRef){
-            //console.log("要设置关联的蓝图节点1235：",window.cbcPageInstance.data.pageBlueScripts[i]);
-            let inTemp=window.cbcPageInstance.data.pageBlueScripts[i].config.in_out_config.in;
-            //console.log("要设置关联的蓝图节点1235inTemp：",inTemp);
-            for(let j=0;j<inTemp.length;j++){
-              if(inTemp[j].portID==pordedID){
-                inTemp[j].ifProcessFlag=false;
-              }
-            }
-          }
-        }
-      }
-      if (this.renderType=="View") {
-        console.log("setProcessFlag为false--relevancedRef,pordedID",relevancedRef,pordedID);
-        for(let i=0;i<this.topPageBlockInstance.data.pageBlueScripts.length;i++){
-          if(this.topPageBlockInstance.data.pageBlueScripts[i].blue_script_ref==relevancedRef){
-            let inTemp=this.topPageBlockInstance.data.pageBlueScripts[i].config.in_out_config.in;
-            //console.log("要设置关联的蓝图节点1235inTemp：",inTemp);
-            for(let j=0;j<inTemp.length;j++){
-              if(inTemp[j].portID==pordedID){
-                inTemp[j].ifProcessFlag=false;
-              }
-            }
-          }
-        }
-      }
-    },
-
-    //根据蓝图ref执行蓝图节点
-    runProcessByRefForEvent(connectedSource,connectedTarget,obj){
-      console.log("runProcessByRefForEvent--connectedSource,connectedTarget,obj");
-      console.log(connectedSource,connectedTarget,obj);
-      let pageBlueScriptsTemp=this.topPageBlockInstance.data.pageBlueScripts;
-      for(let i=0;i<pageBlueScriptsTemp.length;i++){
-        if(pageBlueScriptsTemp[i].blue_script_ref==connectedTarget.cell){
-          let inTemp=pageBlueScriptsTemp[i].config.in_out_config.in;
+    setProcessFlag(relevancedRef,pordedID){
+      console.log("setProcessFlag为false--relevancedRef,pordedID",relevancedRef,pordedID);
+      for(let i=0;i<window.cbcPageInstance.data.pageBlueScripts.length;i++){
+        if(window.cbcPageInstance.data.pageBlueScripts[i].blue_script_ref==relevancedRef){
+          //console.log("要设置关联的蓝图节点1235：",window.cbcPageInstance.data.pageBlueScripts[i]);
+          let inTemp=window.cbcPageInstance.data.pageBlueScripts[i].config.in_out_config.in;
+          //console.log("要设置关联的蓝图节点1235inTemp：",inTemp);
           for(let j=0;j<inTemp.length;j++){
-            if(inTemp[j].portID==connectedTarget.port){
-              //蓝图端口赋值并修改其运行状态
-              inTemp[j].value=obj;
-              inTemp[j].ifProcessFlag=true;
+            if(inTemp[j].portID==pordedID){
+              inTemp[j].ifProcessFlag=false;
             }
           }
-          console.log("下一个蓝图节点执行：",pageBlueScriptsTemp[i]);
-          this.topPageBlockInstance.ctx.runBlueScriptProcess(connectedSource.port,connectedTarget.port,pageBlueScriptsTemp[i]);
         }
       }
     },
@@ -200,6 +133,7 @@ export default {
     },
     refreshFun(component) {
       //console.log("更新的组件信息：", component);
+
       let the = this;
       the.showFlag = false;
       //如果组件的属性show为false,则不进行展示
@@ -214,19 +148,9 @@ export default {
     },
     //重新设置PageComponents的数据
     resetPageComponents(component) {
-      if (this.renderType == "Edit") {
-        for (let i = 0; i < window.cbcPageInstance.data.pageComponents.length; i++) {
-          if (window.cbcPageInstance.data.pageComponents[i].component_ref == component.component_ref) {
-            window.cbcPageInstance.data.pageComponents[i] = component;
-          }
-        }
-      }
-
-      if (this.renderType == "View") {
-        for (let i = 0; i < this.topPageBlockInstance.data.pageComponents.length; i++) {
-          if (this.topPageBlockInstance.data.pageComponents[i].component_ref == component.component_ref) {
-            this.topPageBlockInstance.data.pageComponents[i] = component;
-          }
+      for (let i = 0; i < window.cbcPageInstance.data.pageComponents.length; i++) {
+        if (window.cbcPageInstance.data.pageComponents[i].component_ref == component.component_ref) {
+          window.cbcPageInstance.data.pageComponents[i] = component;
         }
       }
       let the = this;
@@ -283,20 +207,9 @@ export default {
         the.showFlag = true;
       });
 
-
     }
   },
   mounted() {
-
-    if (this.renderType=="View") {
-      // console.log("LayoutComponent--mounted--this.componentInfo",this.componentInfo);
-      // if(this.componentInfo.component_type=="cbc-menu-horizontal"){
-      //   console.log("qqqqqqq",this.componentInfo);
-      // }
-      let instanceTemp=getCurrentInstance();
-      instanceTemp.component_ref=this.componentInfo.component_ref;
-      window["page"+this.componentInfo.page_id].cbcDebugPageComponentsInstance.push(instanceTemp);
-    }
 
   }
 }
