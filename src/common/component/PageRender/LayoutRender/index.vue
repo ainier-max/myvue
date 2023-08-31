@@ -7,11 +7,11 @@
       <!--展示前端类组件  ,'border':'1px dashed yellowgreen'-->
       <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='frontEndComponent'">
               <template v-for="(componentInfo, index) in allPageComponents">
-                <LayoutComponent :ref="componentInfo.component_ref"
+                <LayoutFrontEndComponent :ref="componentInfo.component_ref"
                                  v-if="layout_component.type=='frontEndComponent' && layout_component.ref==componentInfo.component_ref"
                                  :componentInfo="componentInfo"
                                  :style="{'backgroundSize':'100% 100%'}">
-              </LayoutComponent>
+              </LayoutFrontEndComponent>
               </template>
           </span>
 
@@ -60,7 +60,7 @@
 
 <script>
 
-import LayoutComponent from "./LayoutComponent/index.vue";
+import LayoutFrontEndComponent from "./LayoutFrontEndComponent/index.vue";
 import LayoutPageBlock from "./LayoutPageBlock/index.vue";
 import LayoutBuildInComponent from "./LayoutBuildInComponent/index.vue";
 import * as Vue from "vue";
@@ -99,7 +99,7 @@ export default {
     }
   },
   components: {
-    "LayoutComponent": LayoutComponent,
+    "LayoutFrontEndComponent": LayoutFrontEndComponent,
     "LayoutPageBlock": LayoutPageBlock,
     "LayoutBuildInComponent": LayoutBuildInComponent
   },

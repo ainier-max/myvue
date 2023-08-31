@@ -87,7 +87,7 @@
 
 <script>
 
-import LayoutComponent from "../LayoutComponent/index.vue";
+import LayoutComponent from "../LayoutFrontEndComponent/index.vue";
 import elementResizeDetectorMaker from "element-resize-detector";
 import LayoutBuildInComponent from "../LayoutBuildInComponent/index.vue";
 import { getCurrentInstance,defineAsyncComponent } from "vue";

@@ -81,10 +81,10 @@ export default {
       if (this.renderType=="Edit") {
         return;
       }
-      console.log("LayoutComponent--事件类型：", eventType);
-      console.log("LayoutComponent--事件传递值：", obj);
-      console.log("LayoutComponent--当前组件信息：", component);
-      console.log("LayoutComponent--当前组件对象：", this.$refs[component.component_ref]);
+      console.log("eventFun--事件类型：", eventType);
+      console.log("eventFun--事件传递值：", obj);
+      console.log("eventFun--当前组件信息：", component);
+      console.log("eventFun--当前组件对象：", this.$refs[component.component_ref]);
 
       let pageBlueScriptsTemp=this.topPageBlockInstance.data.pageBlueScripts;
       //console.log("pageBlueScriptsTemp",pageBlueScriptsTemp);
@@ -289,7 +289,6 @@ export default {
   mounted() {
 
     if (this.renderType=="View") {
-      // console.log("LayoutComponent--mounted--this.componentInfo",this.componentInfo);
       // if(this.componentInfo.component_type=="cbc-menu-horizontal"){
       //   console.log("qqqqqqq",this.componentInfo);
       // }
