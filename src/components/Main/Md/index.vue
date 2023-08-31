@@ -14,9 +14,21 @@
 
             </div>
           </el-collapse-item>
-          <el-collapse-item title="蓝图工具" name="2">
+          <el-collapse-item title="页面组件" name="2">
+            <div>
+              <div @click="toPath('页面组件/组件交互.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件交互</div>
+            </div>
+          </el-collapse-item>
+          <el-collapse-item title="蓝图工具" name="3">
             <div>
               <span style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">低代码开发平台</span>
+            </div>
+          </el-collapse-item>
+
+          <el-collapse-item title="异常集锦" name="4">
+            <div>
+              <div @click="toPath('异常集锦/蓝图配置.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">蓝图配置</div>
+
             </div>
           </el-collapse-item>
 

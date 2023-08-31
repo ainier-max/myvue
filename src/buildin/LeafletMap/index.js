@@ -71,10 +71,10 @@ let option = {
   },
   blue_script_in_out_config: {
     out: [{
-      key: 'map',
-      label: 'map',
+      key: 'loadMapEnd',
+      label: 'loadMapEnd',
       value: "",
-      type: 'object',
+      type: 'event',
       show: true,
       connected: false,
       connectedTargetArr: []

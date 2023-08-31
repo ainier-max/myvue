@@ -8,19 +8,20 @@
                 :style="pageBlocksComponentsStyle(layout_component)">
             <!--展示前端组件-->
             <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='frontEndComponent'" v-for="(componentInfo, index) in pageComponents">
-              <LayoutComponent :ref="componentInfo.component_ref"
+              <LayoutFrontEndComponent :ref="componentInfo.component_ref"
                                :topPageBlockRef="topPageBlockRef"
                                :renderType="renderType"
                                v-if="layout_component.type=='frontEndComponent' && layout_component.ref==componentInfo.component_ref"
                                :componentInfo="componentInfo"
                                :style="{'backgroundImage':'url('+pageLayout.layout_config.attr.backgroundImageURL+')','backgroundSize':'100% 100%'}">
-              </LayoutComponent>
+              </LayoutFrontEndComponent>
             </span>
             <!--展示内置组件-->
             <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='buildInComponent'">
               <!--渲染类型为View-->
               <template v-for="(componentInfo, index) in pageComponents" v-if="renderType=='View'">
                 <LayoutBuildInComponent v-if="layout_component.type=='buildInComponent' && layout_component.ref==componentInfo.component_ref"
+                                        :topPageBlockRef="topPageBlockRef"
                                         :componentInfo="componentInfo" :ref="layout_component.ref" 
                                         :layoutComponentInfo="layout_component" :renderType="renderType" :page_id="page_id">
                 </LayoutBuildInComponent>
@@ -87,7 +88,7 @@
 
 <script>
 
-import LayoutComponent from "../LayoutFrontEndComponent/index.vue";
+import LayoutFrontEndComponent from "../LayoutFrontEndComponent/index.vue";
 import elementResizeDetectorMaker from "element-resize-detector";
 import LayoutBuildInComponent from "../LayoutBuildInComponent/index.vue";
 import { getCurrentInstance,defineAsyncComponent } from "vue";
@@ -146,7 +147,7 @@ export default {
     }
   },
   components: {
-    "LayoutComponent": LayoutComponent,
+    "LayoutFrontEndComponent": LayoutFrontEndComponent,
     "LayoutBuildInComponent": LayoutBuildInComponent,
   },
   computed: {

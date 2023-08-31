@@ -93,7 +93,10 @@ export default {
       //地图加载完成
       console.log("地图加载完成");
       this.map.setView(mapConfig.centerPoint, mapConfig.level);
-      this.component.map = this.map;
+      //this.component.map = this.map;
+      this.map.noSaveFlag = true;
+      this.map.noSaveDescribe = "地图对象";
+      this.$emit('event', "loadMapEnd", this.map , this.component);
     },
     addWMS() {
       
