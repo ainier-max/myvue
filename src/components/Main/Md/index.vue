@@ -16,6 +16,7 @@
           </el-collapse-item>
           <el-collapse-item title="页面组件" name="2">
             <div>
+              <div @click="toPath('页面组件/组件依赖较多.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件依赖较多</div>
               <div @click="toPath('页面组件/组件交互.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件交互</div>
             </div>
           </el-collapse-item>
@@ -37,7 +38,7 @@
 
 
       </div>
-      <div style="height: 100%;flex-basis:80%;padding-left: 8%">
+      <div style="height: 100%;flex-basis:80%;padding-left: 8%;overflow-y: scroll;">
         <v-md-preview :text="text"></v-md-preview>
       </div>
     </div>
