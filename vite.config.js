@@ -10,7 +10,7 @@ export default defineConfig({
         }
     },
     server:{
-        host:"10.11.0.87",
+        host:"192.168.0.10",
         port:"4000",
         hmr:true,
         usePolling:true,

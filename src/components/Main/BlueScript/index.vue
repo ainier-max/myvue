@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%;margin: 20px">
+  <div style="height: 80%;margin: 20px">
     <div class="titleClass">蓝图工具</div>
 
     <el-row style="margin:40px 50px;">
@@ -12,7 +12,7 @@
         </div>
         <el-table
             :data="blueScriptData"
-            style="width: 100%;height:400px">
+            style="width: 100%;height:50%">
           <el-table-column
               prop="blue_script_name"
               label="蓝图名称"
@@ -26,7 +26,7 @@
           <el-table-column
               fixed="right"
               label="操作"
-              width="120">
+              width="200">
             <template #default="scope">
 
               <el-icon size="20" color="cornflowerblue" style="cursor:pointer;">

@@ -68,7 +68,7 @@ window.qs = qs;
 import lodash from 'lodash'
 window.lodash = lodash;
 
-import {loadModule} from '@ui/vue3-sfc-loader'
+import {loadModule} from 'vue3-sfc-loader'
 window.loadModule = loadModule;
 
 

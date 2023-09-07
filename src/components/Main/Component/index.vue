@@ -20,7 +20,7 @@
         </div>
         <el-table
             :data="componentData"
-            style="width: 100%;height: 400px">
+            style="width: 100%;height: 50%">
           <el-table-column
               prop="component_name"
               label="组件名称"
@@ -34,7 +34,7 @@
           <el-table-column
               fixed="right"
               label="操作"
-              width="140">
+              width="200">
             <template #default="scope">
 
               <el-icon size="20" color="cornflowerblue" style="cursor:pointer;">
