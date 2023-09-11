@@ -72,7 +72,7 @@ import {loadModule} from 'vue3-sfc-loader'
 window.loadModule = loadModule;
 
 
-import {uuid} from "./common/js/uuid.js";
+import {uuid} from "@/common/js/uuid.js";
 window.cbcuuid = uuid;
 
 

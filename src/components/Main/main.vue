@@ -1,22 +1,16 @@
 <template>
   <div style="height: 100%;overflow-y:hidden">
-    <el-container style="height: 100%;">
-      <el-header>
-        <div>
-          <div style="float: left">
-            <span style="font-size: 28px;color:white;font-weight: bold;padding-left: 20px">低代码开发平台</span>
-          </div>
+    <div style="height:60px;background-color: #453628;display: flex;flex-direction: row;align-items:center" >
+      <div style="flex-basis:80%">
+        <span style="font-size: 28px;color:white;font-weight: bold;padding-left: 20px">低代码开发平台</span>
+      </div>
 
-          <div style="float: right;cursor: pointer;padding-right:20px;color:white">
-            {{ userid }}
-          </div>
+      <div style="flex-basis:20%;color:white;padding-right: 20px;" align="right" >{{ userid }}</div>
+    </div>
 
-        </div>
-      </el-header>
-      <el-container style="height: 100%;padding-top: 2px">
-        <el-aside width="201px">
-          <div style="height: 100%;">
-            <el-menu
+    <div style="width:100%;height:calc(100% - 60px);display: flex;flex-direction: row;">
+      <div style="height:100%;flex-basis:200px;background-color: #2c3e50">
+        <el-menu
               style="background:transparent ;"
               :default-active="activeIndex"
               class="elmenu-vertical"
@@ -47,15 +41,15 @@
               </el-menu-item>
 
             </el-menu>
-          </div>
-        </el-aside>
+      </div>
 
-        <el-main>
-          <router-view></router-view>
-        </el-main>
+      <div style="flex: 1;">
+        <router-view></router-view>
+      </div>
+    
+    </div>
 
-      </el-container>
-    </el-container>
+    
   </div>
 </template>
 
@@ -131,18 +125,6 @@ export default {
 </script>
 
 <style>
-.el-header {
-  line-height: 60px;
-  height: 60px;
-  padding: 0;
-  margin-bottom: -2px;
-  padding-bottom: 20px;
-  background-color: #453628;
-}
-
-.el-aside {
-  background-color: #2c3e50 !important;
-}
 
 .el-menu {
   border-right: solid 0px #333 !important;
@@ -167,17 +149,6 @@ export default {
 
 .el-submenu__title:hover {
   background-color: rgba(13, 13, 13, 0.5) !important;
-}
-
-
-.el-main {
-  --el-main-padding: 0px;
-  display: block;
-  flex: 1;
-  flex-basis: auto;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: var(--el-main-padding);
 }
 
 

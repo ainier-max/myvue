@@ -1,9 +1,9 @@
 <template>
-  <div style="height: 80%;margin: 20px">
+  <div style="height:calc(100% - 60px);margin: 20px;">
     <div class="titleClass">蓝图工具</div>
 
-    <el-row style="margin:40px 50px;">
-      <el-col :span="14">
+    <div style="display: flex;flex-direction: row;height: calc(100% - 220px);" >
+      <div style="flex-basis:50%">
         <el-divider content-position="left"><span style="font-size: 18px">蓝图工具信息</span>
         </el-divider>
         <div style="color:red;padding-bottom: 10px">
@@ -12,7 +12,7 @@
         </div>
         <el-table
             :data="blueScriptData"
-            style="width: 100%;height:50%">
+            style="width: 100%;height:100%">
           <el-table-column
               prop="blue_script_name"
               label="蓝图名称"
@@ -48,8 +48,8 @@
             </template>
           </el-table-column>
         </el-table>
-      </el-col>
-      <el-col :span="10">
+      </div>
+      <div style="flex-basis:50%;">
         <el-divider content-position="left" style="margin-left:50px;"><span style="font-size: 18px">蓝图工具树</span>
         </el-divider>
 
@@ -84,9 +84,10 @@
 
 
         </el-tree>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
 
+ 
 
     <el-dialog
         :title="BlueScriptInfoDialogTitle"

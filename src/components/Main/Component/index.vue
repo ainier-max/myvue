@@ -1,10 +1,10 @@
 <!--照片字段后续如果使用不到，可进行删除-->
 <template>
-  <div style="height: 80%;margin: 20px">
+  <div style="height:calc(100% - 60px);margin: 20px;">
     <div class="titleClass">前端组件</div>
 
-    <el-row style="margin:40px 50px;">
-      <el-col :span="14">
+    <div style="display: flex;flex-direction: row;height: calc(100% - 220px);padding:20px" >
+      <div style="flex-basis:50%">
         <el-divider content-position="left"><span style="font-size: 18px">组件信息</span>
         </el-divider>
         <div style="color:red;padding-bottom: 10px">
@@ -20,7 +20,7 @@
         </div>
         <el-table
             :data="componentData"
-            style="width: 100%;height: 50%">
+            style="width: 100%;height: 100%">
           <el-table-column
               prop="component_name"
               label="组件名称"
@@ -61,9 +61,9 @@
             </template>
           </el-table-column>
         </el-table>
+      </div>
 
-      </el-col>
-      <el-col :span="10">
+      <div style="flex-basis:45%;">
         <el-divider content-position="left" style="margin-left:50px"><span style="font-size: 18px">组件树</span>
         </el-divider>
         <!--:default-expanded-keys="[1]"-->
@@ -98,8 +98,11 @@
           </template>
 
         </el-tree>
-      </el-col>
-    </el-row>
+
+      </div>
+    </div>
+
+
 
 
 
