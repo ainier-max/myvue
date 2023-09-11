@@ -476,7 +476,7 @@ export default {
 
       let obj={};
       obj.component_name = param.name;
-      obj.component_type=param.type;
+      obj.component_id=param.type;
       obj.type = type;
       obj.page_block_ref = window.cbcPageInstance.data.currentPageBlock.page_block_ref;
       obj.layout_ref = window.cbcPageInstance.data.currentPageBlockLayout.layout_ref;

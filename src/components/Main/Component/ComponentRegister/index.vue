@@ -1,5 +1,5 @@
 <template>
-    <component :style="componentStyle" :is="component_type" v-if="showFlag" @event="eventFun" :component="component">
+    <component :style="componentStyle" :is="component_id" v-if="showFlag" @event="eventFun" :component="component">
     </component>
 </template>
 
@@ -19,8 +19,8 @@ export default {
     return {
       showFlag:true,
       componentStyle: null,
-      //component_type为空时，警告：Invalid vnode type when creating vnode: .
-      component_type:'component_type',
+      //component_id为空时，警告：Invalid vnode type when creating vnode: .
+      component_id:'component_id',
       component:null,
     }
   },
@@ -65,25 +65,25 @@ export default {
     },
     //清除组件
     clearComponent(){
-      this.$options.components[this.component_type]=null;
+      this.$options.components[this.component_id]=null;
     },
 
     //设置组件代码
     setComponentInfo(componentInfo) {
       this.component=componentInfo;
-      this.component_type=componentInfo.component_type;
+      this.component_id=componentInfo.component_id;
       //如果组件的属性show为false,则不进行展示
       if(typeof (componentInfo.component_config.attr)=="undefined"){
         console.log("配置内容无attr属性！")
         return;
       }else if(componentInfo.component_config.attr.show==false){
-        console.log(componentInfo.component_type+"组件被隐藏")
+        console.log(componentInfo.component_id+"组件被隐藏")
         return;
       }
 
-      let componentTemp=this.$options.components[this.component_type];
+      let componentTemp=this.$options.components[this.component_id];
       //console.log("componentTemp",componentTemp);
-      if(typeof (componentTemp)=="undefined" || this.$options.components[this.component_type]==null){
+      if(typeof (componentTemp)=="undefined" || this.$options.components[this.component_id]==null){
         this.registerComponent(componentInfo.component_code);
       }
       this.showFlag=false;
@@ -107,11 +107,11 @@ export default {
       };
       let component = window.loadModule("./Main.vue", option);
       //局部动态注册组件
-      this.$options.components[this.component_type]=Vue.defineAsyncComponent(() => component);
+      this.$options.components[this.component_id]=Vue.defineAsyncComponent(() => component);
       //console.log("this.$options:",this.$options);
       //全局动态注册组件
-      //window.cbcApp.component(this.componentInfo.component_type, Vue.defineAsyncComponent(() => component));
-      console.log("注册组件", this.component_type);
+      //window.cbcApp.component(this.componentInfo.component_id, Vue.defineAsyncComponent(() => component));
+      console.log("注册组件", this.component_id);
     }
   },
   mounted() {

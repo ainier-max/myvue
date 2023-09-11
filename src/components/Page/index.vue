@@ -844,7 +844,7 @@ export default {
         }
 
 
-        item.component_type = pageComponentsTemp[i].component_type;
+        item.component_id = pageComponentsTemp[i].component_id;
         item.page_block_ref = pageComponentsTemp[i].page_block_ref;
         item.layout_ref = pageComponentsTemp[i].layout_ref;
         item.page_id = this.$route.query.page_id;

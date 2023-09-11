@@ -12,7 +12,7 @@
 
       <div style="padding-left: 15px;margin-top: 10px;color:rgba(255, 255, 255, 0.5);font-size: 14px">组件id：
       </div>
-      <el-input v-model="currentPageBlockComponent.component_type" disabled
+      <el-input v-model="currentPageBlockComponent.component_id" disabled
                 style="padding-top:5px;padding-left: 15px;padding-right: 15px" placeholder="未选中组件"/>
 
       <div style="padding-left: 15px;margin-top: 10px;color:rgba(255, 255, 255, 0.5);font-size: 14px">组件名称：

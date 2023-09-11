@@ -42,16 +42,16 @@ export default {
   methods: {
     getCheckNode(){
       let nodeTemp=this.$refs.componentChooseTreeRef.getCurrentNode();
-      this.findPageComponentByID(nodeTemp.component_type);
+      this.findPageComponentByID(nodeTemp.component_id);
     },
-    findPageComponentByID(component_type) {
-      if(component_type==null || component_type==''){
+    findPageComponentByID(component_id) {
+      if(component_id==null || component_id==''){
         this.$message.error("当前选择不是组件！");
         return;
       }
       let param = {};
       param.sql = "page_component.find";
-      param.component_type = component_type;
+      param.component_id = component_id;
       console.log("findPageComponentByID--param",param);
       commonSelectRequest(axios, param, this.findPageComponentByIDCallBack);
     },
@@ -66,7 +66,7 @@ export default {
 
         obj.component_visualize_str = result.objects[0].component_visualize_str;
         obj.component_code = result.objects[0].component_code;
-        obj.component_type = result.objects[0].component_type;
+        obj.component_id = result.objects[0].component_id;
         obj.component_config_str = result.objects[0].component_config_str;
         obj.component_config = eval("(" + result.objects[0].component_config_str + ")");
         obj.component_name = result.objects[0].component_name;
@@ -86,7 +86,7 @@ export default {
       commonSelectRequest(axios, param, this.findPageComponentTreeCallBack);
     },
     findPageComponentTreeCallBack(result) {
-      this.componentChooseTreeData = getListData(result.objects, ["component_type"]);
+      this.componentChooseTreeData = getListData(result.objects, ["component_id"]);
     },
     pageCentreTreeNodeClick(data, node) {
       //记录点击次数
@@ -108,7 +108,7 @@ export default {
           //双击事件
           //console.log('双击事件,可在此处理对应逻辑')
           //console.log("data11:",data);
-          //this.findPageComponentByID(data.component_type);
+          //this.findPageComponentByID(data.component_id);
         }
       }, 500);
     },

@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;">
     <component :ref="componentInfo.component_ref" v-if="showFlag && componentInfo!=null && componentInfo.component_config.attr.show==true"
-               :style="{width: '100%',height: '100%',zIndex:componentInfo.component_config.attr.zIndex}" :is="componentInfo.component_type"
+               :style="{width: '100%',height: '100%',zIndex:componentInfo.component_config.attr.zIndex}" :is="componentInfo.component_id"
                @event="eventFun"
                :component="componentInfo">
     </component>
@@ -33,8 +33,8 @@ export default {
       showFlag: true,
       type: "type",
       componentStyle: null,
-      //component_type为空时，警告：Invalid vnode type when creating vnode: .
-      component_type: 'component_type',
+      //component_id为空时，警告：Invalid vnode type when creating vnode: .
+      component_id: 'component_id',
       component: null,
     }
   },
@@ -129,7 +129,7 @@ export default {
 
     //清除组件
     clearComponent() {
-      this.$options.components[this.component_type] = null;
+      this.$options.components[this.component_id] = null;
     },
     refreshFun(component) {
       //console.log("更新的组件信息：", component);
@@ -141,7 +141,7 @@ export default {
         console.log("配置内容无attr属性！")
         return;
       } else if (component.component_config.attr.show == false) {
-        console.log(component.component_type + "组件被隐藏")
+        console.log(component.component_id + "组件被隐藏")
         return;
       }
       this.resetPageComponents(component);
@@ -166,12 +166,12 @@ export default {
       } else {
         this.type = "component";
         this.component = componentInfo;
-        this.component_type = componentInfo.component_type;
-        let componentTemp = this.$options.components[this.component_type];
+        this.component_id = componentInfo.component_id;
+        let componentTemp = this.$options.components[this.component_id];
         //console.log("componentTemp",componentTemp);
         this.showFlag = false;
 
-        if (typeof (componentTemp) == "undefined" || this.$options.components[this.component_type] == null) {
+        if (typeof (componentTemp) == "undefined" || this.$options.components[this.component_id] == null) {
           this.registerComponent(componentInfo.component_code);
         } else {
           let the = this;
@@ -197,11 +197,11 @@ export default {
       };
       let component = loadModule("./Main.vue", option);
       //局部动态注册组件
-      this.$options.components[this.component_type] = Vue.defineAsyncComponent(() => component);
+      this.$options.components[this.component_id] = Vue.defineAsyncComponent(() => component);
       //console.log("this.$options:",this.$options);
       //全局动态注册组件
-      //window.cbcApp.component(this.componentInfo.component_type, Vue.defineAsyncComponent(() => component));
-      console.log("注册组件", this.component_type);
+      //window.cbcApp.component(this.componentInfo.component_id, Vue.defineAsyncComponent(() => component));
+      console.log("注册组件", this.component_id);
       let the = this;
       this.$nextTick(() => {
         the.showFlag = true;

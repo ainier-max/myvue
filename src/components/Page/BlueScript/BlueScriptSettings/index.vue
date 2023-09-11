@@ -223,7 +223,7 @@ export default {
       let param = {};
       if(typeof (this.currentBlueScript.component_ref)!="undefined" && this.currentBlueScript.component_ref!=""){
         param.sql = "page_component.updateBlueScriptLogicConfig";
-        param.component_type = this.currentBlueScript.type;
+        param.component_id = this.currentBlueScript.type;
         param.blue_script_logic_config_str = this.currentBlueScript.config.logic_config_str;
 
       }else{

@@ -28,7 +28,7 @@
           </el-table-column>
 
           <el-table-column
-              prop="component_type"
+              prop="component_id"
               label="组件类型">
           </el-table-column>
           <el-table-column
@@ -74,19 +74,19 @@
           <template #default="{ node, data }">
 
           <span class="custom-tree-node">
-            <span v-if="data.component_type==null">
+            <span v-if="data.component_id==null">
               <Folder style="width: 1em; height: 1em; "/>
               {{ node.label }}
             </span>
-            <span v-if="data.component_type!=null">
+            <span v-if="data.component_id!=null">
               {{ node.label }}
             </span>
             <span>
-              <Plus v-if="(data.component_type==null || data.component_type=='')"
+              <Plus v-if="(data.component_id==null || data.component_id=='')"
                     style="width: 1em; height: 1em;color: blueviolet;margin-left: 8px"
                     @click="() => treeAppend(data)"></Plus>
 
-              <Edit v-if="(data.component_type==null || data.component_type=='') && data.id!=1"
+              <Edit v-if="(data.component_id==null || data.component_id=='') && data.id!=1"
                     style="width: 1em; height: 1em;color: blueviolet;margin-left: 8px"
                     @click="() => treeEdit(data)"></Edit>
 
@@ -118,8 +118,8 @@
         <el-form-item label="组件名称" prop="component_name">
           <el-input v-model="ComponentInfoDataForm.component_name" placeholder="组件名称"></el-input>
         </el-form-item>
-        <el-form-item  label="组件类型" prop="component_type">
-          <el-input v-model="ComponentInfoDataForm.component_type" placeholder="组件类型"></el-input>
+        <el-form-item  label="组件类型" prop="component_id">
+          <el-input v-model="ComponentInfoDataForm.component_id" placeholder="组件类型"></el-input>
         </el-form-item>
         <el-form-item label="组件照片" prop="component_photo">
           <div class="filediv" ref="fileRef" >
@@ -201,19 +201,19 @@ export default {
       componentData: [],
       ComponentInfoDialogTitle: '新增组件',
       ComponentInfoDialogVisible: false,
-      ComponentInfoDataForm: {component_name: '', component_type:'',component_type: '',component_photo:'',component_user:''},
+      ComponentInfoDataForm: {component_name: '', component_id:'',component_id: '',component_photo:'',component_user:''},
       ComponentInfoRules: {
         component_name: [
           {required: true, message: '组件名称不能为空', trigger: 'blur'}
         ],
-        component_type: [
+        component_id: [
           {required: true, message: '组件ID不能为空', trigger: 'blur'}
         ],
       },
       upholdFlag: 'add',
       currentComponentInfo: {
         component_name: '',
-        component_type: ''
+        component_id: ''
       },
       deleteComponentInfoDialogVisible: false,
 
@@ -295,7 +295,7 @@ export default {
       let param = {};
       param.name = this.treeNodeName;
       param.pid = this.treeOpData.id;
-      param.component_type = this.treeOpData.component_type;
+      param.component_id = this.treeOpData.component_id;
       param.sql = "page_component_tree.insert";
       commonExcuteRequest(window.axios, param, this.addTreeDicDataCallBack);
     },
@@ -347,7 +347,7 @@ export default {
     findDefaultComponent(){
       let param = {};
       param.sql = "page_component.find";
-      param.component_type="echart-one-bar";
+      param.component_id="echart-one-bar";
       commonSelectRequest(axios, param, this.findDefaultComponentCallBack);
     },
     findDefaultComponentCallBack(result){
@@ -359,7 +359,7 @@ export default {
     },
 
     toEditBlueScriptCode(row){
-      this.$router.push({ name: 'BlueScriptName', query: { blue_script_type:row.component_type,type:"component" }})
+      this.$router.push({ name: 'BlueScriptName', query: { blue_script_type:row.component_id,type:"component" }})
     },
     //查找组件树
     findPageComponentTree() {
@@ -369,7 +369,7 @@ export default {
     },
     findPageComponentTreeCallBack(result) {
 
-      this.componentInfoTreeData = getListData(result.objects,["component_type"]);
+      this.componentInfoTreeData = getListData(result.objects,["component_id"]);
       console.log("this.componentInfoTreeData11", this.componentInfoTreeData);
       let the=this;
       this.$nextTick(() => {
@@ -385,7 +385,7 @@ export default {
           //表单验证后执行
           let param = {};
           param.sql = "page_component.add";
-          param.component_type = this.ComponentInfoDataForm.component_type;
+          param.component_id = this.ComponentInfoDataForm.component_id;
           param.component_name = this.ComponentInfoDataForm.component_name;
           param.type = "frontEndComponent";
           param.component_photo = this.ComponentInfoDataForm.component_photo;
@@ -452,7 +452,7 @@ export default {
       this.upholdFlag="edit";
       var param = {};
       param.sql = "page_component.findPhoto";
-      param.component_type = row.component_type;
+      param.component_id = row.component_id;
       commonSelectRequest(axios, param, this.findPhotoCallBack);
     },
     findPhotoCallBack(result){
@@ -474,7 +474,7 @@ export default {
       param.sql = "page_component.update";
       param.id = this.ComponentInfoDataForm.id;
       param.component_name = this.ComponentInfoDataForm.component_name;
-      param.component_type = this.ComponentInfoDataForm.component_type;
+      param.component_id = this.ComponentInfoDataForm.component_id;
       param.type = this.ComponentInfoDataForm.type;
       param.component_photo = this.ComponentInfoDataForm.component_photo;
       commonExcuteRequest(window.axios, param, this.editComponentInfoCallBack);
@@ -489,7 +489,7 @@ export default {
     toEditCode(row){
       //this.$router.push('/Main/ComponentUpload')
       //console.log("row:",row);
-      this.$router.push({ name: 'ComponentUploadName', query: { component_type:row.component_type }})
+      this.$router.push({ name: 'ComponentUploadName', query: { component_id:row.component_id }})
     },
     handleCancle() {
       this.ComponentInfoDialogVisible = false;
@@ -497,7 +497,7 @@ export default {
     showAddComponentInfoWin() {
       //console.log("showAddComponentInfoWin");
       //数据置空
-      this.ComponentInfoDataForm.component_type = '';
+      this.ComponentInfoDataForm.component_id = '';
       this.ComponentInfoDataForm.component_name = '';
       this.ComponentInfoDataForm.component_photo = '';
       this.ComponentInfoDataForm.type = '';
@@ -530,13 +530,13 @@ export default {
         return;
       }
       this.treeCurrentKey = node.id;
-      if (node.component_type != null && node.component_type != '') {
+      if (node.component_id != null && node.component_id != '') {
         this.$message.error('图层不能添加到图层！');
         return;
       }
       if (node.children.length > 0) {
         for (let i = 0; i < node.children.length; i++) {
-          if (row.component_type == node.children[i].component_type) {
+          if (row.component_id == node.children[i].component_id) {
             this.$message.error('同一个目录下不能存在两个相同图层！');
             return;
           }
@@ -546,7 +546,7 @@ export default {
       let param = {};
       param.name = row.component_name;
       param.pid = node.id;
-      param.component_type = row.component_type;
+      param.component_id = row.component_id;
       param.sql = "page_component_tree.insert";
       commonExcuteRequest(window.axios, param, this.componentDeployCallBack);
     },

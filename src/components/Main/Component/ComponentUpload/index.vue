@@ -86,7 +86,7 @@ export default {
     saveComponentInfo() {
       var param = {};
       param.sql = "page_component.updateComponentConfigAndCode";
-      param.component_type = this.componentInfo.component_type;
+      param.component_id = this.componentInfo.component_id;
       param.component_config_str = objectToString(this.componentInfo.component_config);
       param.component_code = this.componentInfo.component_code;
       param.component_visualize_str = this.component_visualize_str;
@@ -101,13 +101,13 @@ export default {
     findComponentInfo() {
       var param = {};
       param.sql = "page_component.find";
-      param.component_type = this.$route.query.component_type;
+      param.component_id = this.$route.query.component_id;
       commonSelectRequest(axios, param, this.findComponentInfoCallBack);
     },
     findComponentInfoCallBack(result) {
       this.componentInfo={};
       this.component_config_str = js_beautify(result.objects[0].component_config_str);
-      this.componentInfo.component_type = result.objects[0].component_type;
+      this.componentInfo.component_id = result.objects[0].component_id;
       this.componentInfo.component_code = result.objects[0].component_code;
       this.component_visualize_str=result.objects[0].component_visualize_str;
       this.componentInfo.component_config = stringToObject(result.objects[0].component_config_str);

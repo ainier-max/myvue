@@ -111,8 +111,8 @@ export default {
       if(item.type=="buildInComponent"){
         for (let i = 0; i < pathConfigArr.length; i++){
           console.log("pathConfigArr[i].type", pathConfigArr[i].type);
-          console.log("item.type",item.component_type);
-          if(pathConfigArr[i].type==item.component_type){
+          console.log("item.type",item.component_id);
+          if(pathConfigArr[i].type==item.component_id){
             let optionPath="../../../buildin/"+pathConfigArr[i].optionPath;
             import(/* @vite-ignore */optionPath)
                 .then(option => {
@@ -172,7 +172,7 @@ export default {
       pageBlueScriptTemp.type = item.type;
 
       if(item.type=="buildInComponent" || item.type=="frontEndComponent"){
-        pageBlueScriptTemp.blue_script_type = item.component_type;
+        pageBlueScriptTemp.blue_script_type = item.component_id;
         console.log("addBlueScriptByAdd--pageBlueScriptTemp", pageBlueScriptTemp);
       }else if(item.type=="blueScriptTool"){
         pageBlueScriptTemp.blue_script_type = item.blue_script_type;

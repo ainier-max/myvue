@@ -30,7 +30,6 @@ export default {
 
   created() {
     console.log("this.showFlag",this.showFlag);
-    console.log("组件create",this.component.component_id);
     //如果组件的属性show为false,则不进行展示
     if(typeof (this.component.component_config.attr)=="undefined"){
       console.log("配置内容无attr属性！")
