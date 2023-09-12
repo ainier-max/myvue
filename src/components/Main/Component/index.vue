@@ -10,6 +10,7 @@
         <div style="color:red;padding-bottom: 10px">
           <el-button @click="showAddComponentInfoWin" type="success">新增
           </el-button>
+          <el-input v-model="filterValue" style="padding-left:20px;width:300px" placeholder="组件名称或组件ID过滤"></el-input>
           <!--
           <span style="padding-left: 10px">注：点击</span>
           <el-icon size="20" color="cornflowerblue">
@@ -20,7 +21,7 @@
         </div>
         <el-table
             :data="componentData"
-            style="width: 100%;height: 100%">
+            style="width: 100%;height: 95%">
           <el-table-column
               prop="component_name"
               label="组件名称"
@@ -29,7 +30,7 @@
 
           <el-table-column
               prop="component_id"
-              label="组件类型">
+              label="组件ID">
           </el-table-column>
           <el-table-column
               fixed="right"
@@ -69,16 +70,17 @@
         <!--:default-expanded-keys="[1]"-->
         <el-tree ref="componentInfoTreeRef" :data="componentInfoTreeData" node-key="id" :default-expand-all="false"
                  :expand-on-click-node="false" :props="defaultProps" :highlight-current="true" :default-expanded-keys="[1]"
-                 style="margin-left:50px;height:450px;overflow-y:auto;">
+                 @node-click="handleNodeClick"
+                 style="margin-left:50px;height:100%;overflow-y:auto;">
 
           <template #default="{ node, data }">
 
           <span class="custom-tree-node">
-            <span v-if="data.component_id==null">
+            <span v-if="data.component_id==null || data.component_id==''">
               <Folder style="width: 1em; height: 1em; "/>
               {{ node.label }}
             </span>
-            <span v-if="data.component_id!=null">
+            <span v-if="data.component_id!=null && data.component_id!=''">
               {{ node.label }}
             </span>
             <span>
@@ -118,8 +120,8 @@
         <el-form-item label="组件名称" prop="component_name">
           <el-input v-model="ComponentInfoDataForm.component_name" placeholder="组件名称"></el-input>
         </el-form-item>
-        <el-form-item  label="组件类型" prop="component_id">
-          <el-input v-model="ComponentInfoDataForm.component_id" placeholder="组件类型"></el-input>
+        <el-form-item  label="组件ID" prop="component_id">
+          <el-input v-model="ComponentInfoDataForm.component_id" placeholder="组件ID"></el-input>
         </el-form-item>
         <el-form-item label="组件照片" prop="component_photo">
           <div class="filediv" ref="fileRef" >
@@ -199,6 +201,7 @@ export default {
   data() {
     return {
       componentData: [],
+      originComponentData:[],
       ComponentInfoDialogTitle: '新增组件',
       ComponentInfoDialogVisible: false,
       ComponentInfoDataForm: {component_name: '', component_id:'',component_id: '',component_photo:'',component_user:''},
@@ -234,10 +237,18 @@ export default {
       deleteIDS: [],
       treeCurrentKey: '',
 
+      filterValue:"",
+
 
     };
   },
-  watch: {},
+  watch: {
+    //方法1
+    "filterValue"(newVal, oldVal) {
+      console.log('filterValue--this.originComponentData', this.originComponentData);
+      this.filterByValue(newVal);
+    }
+  },
   mounted: function () {
     this.ComponentInfoDataForm.component_user= window.localStorage.getItem('loginUserid');
     this.findComponentInfo();
@@ -247,6 +258,27 @@ export default {
   },
 
   methods: {
+    handleNodeClick(item, data) {
+      if (item.component_id!=null && item.component_id!="") {
+        this.findByComponentID(item.component_id);
+      }
+    },
+    findByComponentID(id) {
+      this.componentData = [];
+      for (let i = 0; i < this.originComponentData.length;i++){
+        if (this.originComponentData[i].component_id==id) {
+          this.componentData.push(this.originComponentData[i]);
+        }
+      }
+    },
+    filterByValue(val) {
+      this.componentData = [];
+      for (let i = 0; i < this.originComponentData.length;i++){
+        if (this.originComponentData[i].component_name.indexOf(val)>=0 || this.originComponentData[i].component_id.indexOf(val)>=0) {
+          this.componentData.push(this.originComponentData[i]);
+        }
+      }
+    },
     deleteTreeNodeCancle(){
       this.deleteTreeNodeDialogVisible = false;
     },
@@ -518,6 +550,7 @@ export default {
     },
     findComponentInfoCallBack(result) {
       this.componentData = result.objects;
+      this.originComponentData=result.objects;
     },
     //组件配置到组件树中
     componentDeploy(row) {

@@ -9,6 +9,8 @@
         <div style="color:red;padding-bottom: 10px">
           <el-button @click="showAddBlueScriptInfoWin" type="success">新增
           </el-button>
+          <el-input v-model="filterValue" style="padding-left:20px;width:300px" placeholder="蓝图名称或蓝图ID过滤"></el-input>
+
         </div>
         <el-table
             :data="blueScriptData"
