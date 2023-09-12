@@ -140,7 +140,7 @@ export default {
       console.log("item11113", item);
       var param = {};
       param.sql = "page_blue_script_tools.find";
-      param.blue_script_type = item.blue_script_type;
+      param.blue_script_id = item.blue_script_id;
       commonSelectRequestAndOtherParam(axios, param, this.addBlueScriptByTreeCallBack, item);
       //this.addBlueScript(item);
     },
@@ -149,7 +149,7 @@ export default {
         item.blue_script_ref = "blueScriptRef-" + window.cbcuuid();
         item.component_ref = "";
         item.label = item.label;
-        if(item.blue_script_type=="EventStartRun"){
+        if(item.blue_script_id=="EventStartRun"){
           item.startPointFlag = true;
         }else{
           item.startPointFlag = false;
@@ -172,10 +172,10 @@ export default {
       pageBlueScriptTemp.type = item.type;
 
       if(item.type=="buildInComponent" || item.type=="frontEndComponent"){
-        pageBlueScriptTemp.blue_script_type = item.component_id;
+        pageBlueScriptTemp.blue_script_id = item.component_id;
         console.log("addBlueScriptByAdd--pageBlueScriptTemp", pageBlueScriptTemp);
       }else if(item.type=="blueScriptTool"){
-        pageBlueScriptTemp.blue_script_type = item.blue_script_type;
+        pageBlueScriptTemp.blue_script_id = item.blue_script_id;
       }
       pageBlueScriptTemp.page_id = this.$route.query.page_id;
       pageBlueScriptTemp.config_str = "";

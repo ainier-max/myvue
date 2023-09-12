@@ -82,7 +82,7 @@ export default {
         param.blue_script_node_config_str=this.currentBlueScript.blue_script_node_config_str;
         param.blue_script_in_out_config_str=this.currentBlueScript.blue_script_in_out_config_str;
         param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;
-        param.component_id=this.GetQueryString("blue_script_type");
+        param.component_id=this.GetQueryString("blue_script_id");
         commonExcuteRequest(window.axios, param, this.saveBlueScriptInfoCallBack);
       }else if(type=="bluescript"){
         //表单验证后执行
@@ -93,7 +93,7 @@ export default {
         param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;
 
 
-        param.blue_script_type=this.GetQueryString("blue_script_type");
+        param.blue_script_id=this.GetQueryString("blue_script_id");
         commonExcuteRequest(window.axios, param, this.saveBlueScriptInfoCallBack);
       }
 
@@ -114,7 +114,7 @@ export default {
     findBlueScriptInfoByComponentType(){
       let param = {};
       param.sql = "page_component.find";
-      param.component_id = this.GetQueryString("blue_script_type");
+      param.component_id = this.GetQueryString("blue_script_id");
       commonSelectRequest(axios, param, this.findBlueScriptInfoByComponentTypeCallBack);
     },
     findBlueScriptInfoByComponentTypeCallBack(result){
@@ -131,7 +131,7 @@ export default {
     findBlueScriptInfoByBlueScriptType(){
       let param = {};
       param.sql = "page_blue_script_tools.find";
-      param.blue_script_type = this.GetQueryString("blue_script_type");
+      param.blue_script_id = this.GetQueryString("blue_script_id");
       commonSelectRequest(axios, param, this.findBlueScriptInfoByTypeCallBack);
     },
     findBlueScriptInfoByTypeCallBack(result){

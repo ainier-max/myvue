@@ -4,7 +4,7 @@
       <el-divider  content-position="left"><span style="font-size: 18px">蓝图Ref</span></el-divider>
       <div style="font-size: 14px;color: rgba(255, 255, 255, 0.6);">{{currentBlueScript.blue_script_ref}}</div>
       <el-divider  content-position="left"><span style="font-size: 18px">类型</span></el-divider>
-      <div style="font-size: 14px;color: rgba(255, 255, 255, 0.6);">{{currentBlueScript.blue_script_type}}</div>
+      <div style="font-size: 14px;color: rgba(255, 255, 255, 0.6);">{{currentBlueScript.blue_script_id}}</div>
     </div>
 
     <div v-if="currentBlueScript!=null && currentBlueScript?.config?.visualize_config?.describe">
@@ -228,7 +228,7 @@ export default {
 
       }else{
         param.sql = "page_blue_script_tools.updateBlueScriptLogicConfig";
-        param.blue_script_type = this.currentBlueScript.type;
+        param.blue_script_id = this.currentBlueScript.type;
         param.blue_script_logic_config_str = this.currentBlueScript.config.logic_config_str;
       }
       console.log("blueScriptLogicSave--param",param);

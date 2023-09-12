@@ -264,7 +264,7 @@ export default {
         item.blue_script_ref = result.objects[i].blue_script_ref;
         item.component_ref = result.objects[i].component_ref;
         item.type=result.objects[i].type;
-        item.blue_script_type=result.objects[i].blue_script_type;
+        item.blue_script_id=result.objects[i].blue_script_id;
 
         item.config=eval("(" + result.objects[i].config_str + ")");
 
@@ -801,7 +801,7 @@ export default {
         }
 
 
-        item.blue_script_type = pageBlueScriptsTemp[i].blue_script_type;
+        item.blue_script_id = pageBlueScriptsTemp[i].blue_script_id;
         item.name = pageBlueScriptsTemp[i].name;
         item.config_str = objectToString(pageBlueScriptsTemp[i].config);
 

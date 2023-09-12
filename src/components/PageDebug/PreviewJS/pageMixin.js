@@ -10,7 +10,7 @@ export const pageMixin = {
             console.log("寻找所有流程的起点");
             let startBlueScripts = [];
             for (let i = 0; i < this.pageBlueScripts.length; i++) {
-                if (this.pageBlueScripts[i].config.startPointFlag == true && this.pageBlueScripts[i].blue_script_type !="EventStartRun") {
+                if (this.pageBlueScripts[i].config.startPointFlag == true && this.pageBlueScripts[i].blue_script_id !="EventStartRun") {
                     startBlueScripts.push(this.pageBlueScripts[i]);
                 }
                 //重置所有的运行状态

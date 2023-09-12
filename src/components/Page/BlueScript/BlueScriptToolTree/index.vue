@@ -44,7 +44,7 @@ export default {
       commonSelectRequest(axios, param, this.findPageBlueScriptTreeCallBack);
     },
     findPageBlueScriptTreeCallBack(result) {
-      this.blueScriptInfoTreeData = getListData(result.objects,["blue_script_type"]);
+      this.blueScriptInfoTreeData = getListData(result.objects,["blue_script_id"]);
       console.log("findPageBlueScriptTreeCallBack--this.blueScriptInfoTreeData", this.blueScriptInfoTreeData);
     },
     blueScriptTreeNodeClick(data, node){

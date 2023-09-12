@@ -276,7 +276,7 @@ export default {
         item.blue_script_ref = result.objects[i].blue_script_ref;
         item.component_ref = result.objects[i].component_ref;
         item.type=result.objects[i].type;
-        item.blue_script_type=result.objects[i].blue_script_type;
+        item.blue_script_id=result.objects[i].blue_script_id;
 
         item.config=eval("(" + result.objects[i].config_str + ")");
         item.config.startPointFlag = item.config.startPointFlag;
@@ -402,7 +402,7 @@ export default {
           }
         }
 
-        if(this.pageBlueScripts[i].blue_script_type =="EventStartRun"){
+        if(this.pageBlueScripts[i].blue_script_id =="EventStartRun"){
           EventStartRunBlueScriptTemp=this.pageBlueScripts[i];
         }
 

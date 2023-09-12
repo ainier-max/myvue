@@ -2,7 +2,7 @@
   <div style="height:calc(100% - 60px);margin: 20px;">
     <div class="titleClass">蓝图工具</div>
 
-    <div style="display: flex;flex-direction: row;height: calc(100% - 220px);" >
+    <div style="display: flex;flex-direction: row;height: calc(100% - 220px);padding:20px" >
       <div style="flex-basis:50%">
         <el-divider content-position="left"><span style="font-size: 18px">蓝图工具信息</span>
         </el-divider>
@@ -22,8 +22,8 @@
           </el-table-column>
 
           <el-table-column
-              prop="blue_script_type"
-              label="蓝图类型">
+              prop="blue_script_id"
+              label="蓝图ID">
           </el-table-column>
           <el-table-column
               fixed="right"
@@ -51,29 +51,30 @@
           </el-table-column>
         </el-table>
       </div>
-      <div style="flex-basis:50%;">
+      <div style="flex-basis:45%;">
         <el-divider content-position="left" style="margin-left:50px;"><span style="font-size: 18px">蓝图工具树</span>
         </el-divider>
 
         <el-tree ref="blueScriptInfoTreeRef" :data="blueScriptInfoTreeData" node-key="id" :default-expand-all="false"
                  :expand-on-click-node="false" :props="defaultProps" :highlight-current="true" :default-expanded-keys="[1]"
+                 @node-click="handleNodeClick"
                  style="margin-left:50px;height:450px;overflow-y:auto;">
           <template #default="{ node, data }">
 
           <span class="custom-tree-node">
-            <span v-if="data.blue_script_type==null">
+            <span v-if="data.blue_script_id==null">
               <Folder style="width: 1em; height: 1em; "/>
               {{ node.label }}
             </span>
-            <span v-if="data.blue_script_type!=null">
+            <span v-if="data.blue_script_id!=null">
               {{ node.label }}
             </span>
             <span>
-              <Plus v-if="data.blue_script_type==null"
+              <Plus v-if="data.blue_script_id==null"
                     style="width: 1em; height: 1em;color: blueviolet;margin-left: 8px"
                     @click="() => treeAppend(data)"></Plus>
 
-              <Edit v-if="data.blue_script_type==null && data.id!=1"
+              <Edit v-if="data.blue_script_id==null && data.id!=1"
                     style="width: 1em; height: 1em;color: blueviolet;margin-left: 8px"
                     @click="() => treeEdit(data)"></Edit>
 
@@ -101,8 +102,8 @@
         <el-form-item label="蓝图名称" prop="blue_script_name">
           <el-input v-model="BlueScriptInfoDataForm.blue_script_name" placeholder="蓝图名称"></el-input>
         </el-form-item>
-        <el-form-item label="蓝图类型" prop="blue_script_type">
-          <el-input v-model="BlueScriptInfoDataForm.blue_script_type" placeholder="蓝图类型"></el-input>
+        <el-form-item label="蓝图类型" prop="blue_script_id">
+          <el-input v-model="BlueScriptInfoDataForm.blue_script_id" placeholder="蓝图类型"></el-input>
         </el-form-item>
       </el-form>
 
@@ -181,12 +182,13 @@ export default {
       BlueScriptInfoDialogTitle: '新增蓝图工具',
       BlueScriptInfoDialogVisible: false,
       blueScriptData: [],
-      BlueScriptInfoDataForm: {blue_script_name: '', blue_script_type: '', component_user: ''},
+      originBlueScriptData: [],
+      BlueScriptInfoDataForm: {blue_script_name: '', blue_script_id: '', component_user: ''},
       BlueScriptInfoRules: {
         blue_script_name: [
           {required: true, message: '蓝图名称不能为空', trigger: 'blur'}
         ],
-        blue_script_type: [
+        blue_script_id: [
           {required: true, message: '蓝图类型不能为空', trigger: 'blur'}
         ],
       },
@@ -207,14 +209,44 @@ export default {
       deleteIDS: [],
       treeCurrentKey: '',
 
+      filterValue:''
+
     };
   },
-  watch: {},
+  watch: {
+    //方法1
+    "filterValue"(newVal, oldVal) {
+      console.log('filterValue--this.originBlueScriptData', this.originBlueScriptData);
+      this.filterByValue(newVal);
+    }
+  },
   mounted: function () {
     this.findBlueScriptInfo();
     this.findPageBlueScriptTree();
   },
   methods: {
+    handleNodeClick(item, data) {
+      console.log("handleNodeClick--item",item);
+      if (item.blue_script_id!=null && item.blue_script_id!="") {
+        this.findByBlueScriptID(item.blue_script_id);
+      }
+    },
+    findByBlueScriptID(id) {
+      this.blueScriptData = [];
+      for (let i = 0; i < this.originBlueScriptData.length;i++){
+        if (this.originBlueScriptData[i].blue_script_id==id) {
+          this.blueScriptData.push(this.originBlueScriptData[i]);
+        }
+      }
+    },
+    filterByValue(val) {
+      this.blueScriptData = [];
+      for (let i = 0; i < this.originBlueScriptData.length;i++){
+        if (this.originBlueScriptData[i].blue_script_name.indexOf(val)>=0 || this.originBlueScriptData[i].blue_script_id.indexOf(val)>=0) {
+          this.blueScriptData.push(this.originBlueScriptData[i]);
+        }
+      }
+    },
     blueScriptDeploy(row) {
       //获取当前选中树菜单
       let node = this.$refs.blueScriptInfoTreeRef.getCurrentNode();
@@ -224,13 +256,13 @@ export default {
         return;
       }
       this.treeCurrentKey = node.id;
-      if (node.blue_script_type != null) {
+      if (node.blue_script_id != null) {
         this.$message.error('图层不能添加到图层！');
         return;
       }
       if (node.children.length > 0) {
         for (let i = 0; i < node.children.length; i++) {
-          if (row.blue_script_type == node.children[i].blue_script_type) {
+          if (row.blue_script_id == node.children[i].blue_script_id) {
             this.$message.error('同一个目录下不能存在两个相同图层！');
             return;
           }
@@ -240,7 +272,7 @@ export default {
       let param = {};
       param.name = row.blue_script_name;
       param.pid = node.id;
-      param.blue_script_type = row.blue_script_type;
+      param.blue_script_id = row.blue_script_id;
       param.sql = "page_blue_script_tools_tree.insert";
       commonExcuteRequest(window.axios, param, this.blueScriptDeployCallBack);
 
@@ -313,7 +345,7 @@ export default {
       let param = {};
       param.name = this.treeNodeName;
       param.pid = this.treeOpData.id;
-      param.blue_script_type = this.treeOpData.blue_script_type;
+      param.blue_script_id = this.treeOpData.blue_script_id;
       param.sql = "page_blue_script_tools_tree.insert";
       commonExcuteRequest(window.axios, param, this.addTreeDicDataCallBack);
     },
@@ -351,7 +383,7 @@ export default {
       commonSelectRequest(axios, param, this.findPageBlueScriptTreeCallBack);
     },
     findPageBlueScriptTreeCallBack(result) {
-      this.blueScriptInfoTreeData = getListData(result.objects, ["blue_script_type"]);
+      this.blueScriptInfoTreeData = getListData(result.objects, ["blue_script_id"]);
       console.log("this.blueScriptInfoTreeData", this.blueScriptInfoTreeData);
       let the = this;
       this.$nextTick(() => {
@@ -369,7 +401,7 @@ export default {
     toEditBlueScriptCode(row) {
       //this.$router.push('/Main/ComponentUpload')
       console.log("row:", row);
-      this.$router.push({name: 'BlueScriptName', query: {blue_script_type: row.blue_script_type, type: "bluescript"}})
+      this.$router.push({name: 'BlueScriptName', query: {blue_script_id: row.blue_script_id, type: "bluescript"}})
     },
     addBlueScriptInfo() {
       //console.log("this.$refs111",this.$refs);
@@ -381,7 +413,7 @@ export default {
           let param = {};
           param.sql = "page_blue_script_tools.insert";
           param.blue_script_name = this.BlueScriptInfoDataForm.blue_script_name;
-          param.blue_script_type = this.BlueScriptInfoDataForm.blue_script_type;
+          param.blue_script_id = this.BlueScriptInfoDataForm.blue_script_id;
           param.component_user = window.localStorage.getItem('loginUserid');
           param.blue_script_node_config_str = "{\r\n    shape: 'static-in-rect',\r\n    width: 150,\r\n    height: 180,\r\n    attrs: {\r\n        body: {\r\n            fill: 'rgba(40, 44, 52,0.9)',\r\n            stroke: '#d9d9d9',\r\n            strokeWidth: 1,\r\n        },\r\n        label: {\r\n            fill: 'rgba(255,255,255,0.8)', // 文字颜色\r\n            fontSize: 14, // 文字大小\r\n            refX: 0.5,\r\n            refY: 8,\r\n            textAnchor: 'middle',\r\n            textVerticalAnchor: 'top',\r\n        },\r\n    },\r\n}";
           param.blue_script_in_out_config_str = "{\r\n    in: [{\r\n        key: 'event',\r\n        label: 'event',\r\n        value: null,\r\n        type: 'event',\r\n        connected: false,\r\n        show: true\r\n    }],\r\n    out: [{\r\n        key: 'string',\r\n        label: 'value',\r\n        value: null,\r\n        type: 'string',\r\n        show: true,\r\n        connected: false,\r\n        connectedTargetArr: []\r\n    }],\r\n}";
@@ -398,7 +430,7 @@ export default {
         this.$message.success('插入成功！');
         this.BlueScriptInfoDialogVisible = false;
         this.BlueScriptInfoDataForm.blue_script_name = "";
-        this.BlueScriptInfoDataForm.blue_script_type = "";
+        this.BlueScriptInfoDataForm.blue_script_id = "";
         this.findBlueScriptInfo();
       }
     },
@@ -409,7 +441,7 @@ export default {
       param.sql = "page_blue_script_tools.update";
       param.id = this.BlueScriptInfoDataForm.id;
       param.blue_script_name = this.BlueScriptInfoDataForm.blue_script_name;
-      param.blue_script_type = this.BlueScriptInfoDataForm.blue_script_type;
+      param.blue_script_id = this.BlueScriptInfoDataForm.blue_script_id;
       commonExcuteRequest(window.axios, param, this.editBlueScriptInfoCallBack);
     },
     editBlueScriptInfoCallBack(result) {
@@ -431,7 +463,7 @@ export default {
     deleteBlueScriptInfo() {
       let param = {};
       param.sql = "page_blue_script_tools.delete";
-      param.blue_script_type = this.currentBlueScriptInfo.blue_script_type;
+      param.blue_script_id = this.currentBlueScriptInfo.blue_script_id;
       commonExcuteRequest(window.axios, param, this.deleteBlueScriptInfoCallBack);
     },
 
@@ -452,12 +484,13 @@ export default {
     },
     findBlueScriptInfoCallBack(result) {
       this.blueScriptData = result.objects;
+      this.originBlueScriptData=result.objects;
     },
     showEditBlueScriptInfoWin(row) {
       this.upholdFlag = "edit";
       var param = {};
       param.sql = "page_blue_script_tools.find";
-      param.blue_script_type = row.blue_script_type;
+      param.blue_script_id = row.blue_script_id;
       commonSelectRequest(axios, param, this.showEditBlueScriptInfoWinCallBack);
     },
     showEditBlueScriptInfoWinCallBack(result) {

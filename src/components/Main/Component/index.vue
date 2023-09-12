@@ -391,7 +391,7 @@ export default {
     },
 
     toEditBlueScriptCode(row){
-      this.$router.push({ name: 'BlueScriptName', query: { blue_script_type:row.component_id,type:"component" }})
+      this.$router.push({ name: 'BlueScriptName', query: { blue_script_id:row.component_id,type:"component" }})
     },
     //查找组件树
     findPageComponentTree() {
