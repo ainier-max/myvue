@@ -101,7 +101,7 @@ export const pageMixin = {
 
             blueScript.logic_config = eval("(" + blueScript.config.logic_config_str + ")");
 
-
+            
             if (fromPort != '' || toPort != '') {
                 console.log("this.pageDebugFlag556",this.pageDebugFlag);
 
@@ -494,6 +494,7 @@ export const pageMixin = {
         },
 
         changeEdgeStyle(fromPort, toPort) {
+           
             //console.log("ttttt1fromPort,toPort", fromPort, toPort);
             const edges = window.cbcBlueScriptInstance.data.graph.getEdges();
             console.log("ttttt1edges", edges);
