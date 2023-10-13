@@ -60,18 +60,17 @@ window.cbcApp.component("draggable", draggable)
 const contextComponentArr = Object.keys(window.cbcApp._context.components);
 //console.log("已注册组件：",contextComponentArr.length);
 
-//全局依赖
+//全局依赖(可供打包组件使用)
+import * as vue from 'vue';
+window.vue = vue;
 import axios from 'axios';
 window.axios = axios;
 import qs from 'qs'
 window.qs = qs;
 import lodash from 'lodash'
 window.lodash = lodash;
-
 import {loadModule} from 'vue3-sfc-loader'
 window.loadModule = loadModule;
-
-
 import {uuid} from "@/common/js/uuid.js";
 window.cbcuuid = uuid;
 

@@ -106,6 +106,15 @@ const routes = [
         component: () => import('../components/Page/BlueScript/BlueScriptBlockTree/index.vue'),
     },
     {
+        path: '/TestPackUmdComponent',
+        component: () => import('../components/Test/TestPackUmdComponent/index.vue'),
+    },
+    {
+        path: '/TestPackmjsComponent',
+        component: () => import('../components/Test/TestPackmjsComponent/index.vue'),
+    },
+    
+    {
         path: '/Main',
         component: () => import('../components/Main/main.vue'),
         children: [
