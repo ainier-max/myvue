@@ -117,7 +117,7 @@ export default {
     updateVisualizeOptions(itemConfig) {
       console.log("itemConfig:",itemConfig);
       let strTemp = "";
-      if (itemConfig.type == "color" || itemConfig.type == "word" || itemConfig.type == "photo") {
+      if (itemConfig.type == "color" || itemConfig.type == "string" || itemConfig.type == "photo") {
         strTemp = "this.currentPageBlockComponent.component_config." + itemConfig.name + "='" + itemConfig.value + "'";
       } else {
         strTemp = "this.currentPageBlockComponent.component_config." + itemConfig.name + "=" + itemConfig.value;
@@ -135,7 +135,7 @@ export default {
         let visualizeOptionsTemp = eval("(" + this.currentPageBlockComponent.component_visualize_str + ")").visualizeOptions;
         for (let j = 0; j < visualizeOptionsTemp.length; j++) {
           const strTemp = "this.currentPageBlockComponent.component_config." + visualizeOptionsTemp[j].name;
-          if (visualizeOptionsTemp[j].type == "word") {
+          if (visualizeOptionsTemp[j].type == "string") {
             visualizeOptionsTemp[j].value = eval("(" + strTemp + ")") + "";
           } else {
             visualizeOptionsTemp[j].value = eval("(" + strTemp + ")");

@@ -22,10 +22,10 @@
         <el-color-picker v-model="item.value" show-alpha @change="colorChange(item)"/>
       </div>
 
-      <div v-if="item.type=='word'" style="margin-top: 5px">
+      <div v-if="item.type=='string'" style="margin-top: 5px">
         <p style="color: rgba(255,255,255,0.8)">{{item.label}}</p>
         <div style="height: 3px">{{item.options}}</div>
-        <el-input v-model="item.value" style="width:200px" @input="wordChange(item)" />
+        <el-input v-model="item.value" style="width:200px" @input="stringChange(item)" />
       </div>
 
       <div v-if="item.type=='photo'" style="margin-top: 5px">
@@ -76,7 +76,7 @@ export default {
       console.log("item:",item);
       this.$emit("updateConfigParam",item);
     },
-    wordChange(item){
+    stringChange(item){
       this.$emit("updateConfigParam",item);
     },
     photoChange(item){

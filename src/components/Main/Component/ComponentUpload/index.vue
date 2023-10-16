@@ -119,7 +119,7 @@ export default {
       this.visualizeOptionsTemp=eval("(" + component_visualize_str + ")").visualizeOptions;
       for(let i=0;i<this.visualizeOptionsTemp.length;i++){
         const strTemp="this.componentInfo.component_config."+this.visualizeOptionsTemp[i].name;
-        if(this.visualizeOptionsTemp[i].type=="word"){
+        if(this.visualizeOptionsTemp[i].type=="string"){
           this.visualizeOptionsTemp[i].value=eval("(" + strTemp + ")")+"";
         }else{
           this.visualizeOptionsTemp[i].value=eval("(" + strTemp + ")");
@@ -132,7 +132,7 @@ export default {
 
     updateConfigParam(item){
       let strTemp="";
-      if(item.type=="color" || item.type=="word" || item.type=="photo"){
+      if(item.type=="color" || item.type=="string" || item.type=="photo"){
         strTemp="this.componentInfo.component_config."+item.name+"='"+item.value+"'";
       }else{
         strTemp="this.componentInfo.component_config."+item.name+"="+item.value;
