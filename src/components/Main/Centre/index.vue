@@ -148,10 +148,10 @@ export default {
 
     goPage(item){
       const { href } = this.$router.resolve({
-        path: '/Page',
+        path: '/PageEdit',
         query: {
           page_id: item.page_id,
-          pageDebugFlag:true
+          page_debug_flag:true
         }
       });
       window.open(href, '_blank');
@@ -178,6 +178,8 @@ export default {
       let nodeTemp=this.$refs.pageTreeRef.getCurrentNode();
       //console.log("nodeTemp112：",nodeTemp);
       param.page_tree_id =  nodeTemp.id;
+      param.type =  "block";
+      param.page_block_type='main';
       param.page_img =  "6da8931c36284f8ea8160b9770a39577";
       param.page_block_ref='blockRef-'+window.cbcuuid();
       param.page_block_config_str="{\"attr\":{\"height\":"+this.pageInfoDataForm.pageHeight+",\"width\":"+this.pageInfoDataForm.pageWidth+",\"unit\":\"px\"}}";

@@ -223,6 +223,19 @@ export default {
 
     };
   },
+  watch: {
+    'currentPageBlockLayout': {
+      handler(newValue, oldValue) {
+        console.log('Page/index.vue--watch--currentPageBlockLayout:',newValue);
+        console.log('Page/index.vue--watch--currentPageBlockLayout--this.pageLayouts',this.pageLayouts);
+
+      },
+      deep: true,
+      //immediate: true
+    }
+
+  },
+
   components: {
     ViewSketchRuler: ViewSketchRuler,
     BlueScript: BlueScript,

@@ -101,7 +101,7 @@ export default {
     this.allPageComponents=window.cbcPageInstance.data.pageComponents;
     this.allPageLayouts=window.cbcPageInstance.data.pageLayouts;
     this.LayoutRenderFlag=true;
-    console.log("ViewDraggableResizable--created",this.allPageComponents);
+    console.log("ViewDraggableResizable--created--this.allPageComponents（所有组件）",this.allPageComponents);
   },
   methods: {
     deleteCurrentPageBlockLayout(pageBlockLayout){
@@ -344,12 +344,7 @@ export default {
 
   },
   mounted() {
-    console.log("window.cbcViewDraggleResizableInstance初始化......");
-    //this.findPageComponents();
     window.cbcViewDraggleResizableInstance = getCurrentInstance();
-    //console.log("window.cbcViewDraggleResizableInstance::1",window.cbcViewDraggleResizableInstance);
-
-    //console.log("window.viewDraggleResizableInstance",window.cbcViewDraggleResizableInstance);
   }
 }
 </script>

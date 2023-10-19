@@ -356,8 +356,8 @@ export default {
     },
 
     inputHandle(value,type){
-      console.log("currentPageBlock11",window.cbcPageInstance.data.currentPageBlock);
-      console.log("event",value,type);
+      console.log("inputHandle--window.cbcPageInstance.data.currentPageBlock",window.cbcPageInstance.data.currentPageBlock);
+      console.log("inputHandle--value,type",value,type);
       if(type=="x"){
         this.currentPageBlockLayout.layout_config.attr.x=window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.width*(value)/100;
       }else if(type=="y"){
@@ -366,8 +366,8 @@ export default {
       }else if(type=="w"){
         this.currentPageBlockLayout.layout_config.attr.w=window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.width*(value)/100;
       }else if(type=="h"){
-        this.currentPageBlockLayout.layout_config.attr.h=window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.height*(value)/100;
-        console.log("onDrag-y布局组件高度1：",this.currentPageBlockLayout.layout_config.attr.h);
+        window.cbcPageInstance.data.currentPageBlockLayout.layout_config.attr.h=window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.height*(value)/100;
+        console.log("inputHandle--window.cbcPageInstance.data.currentPageBlockLayout",window.cbcPageInstance.data.currentPageBlockLayout);
       }
 
      this.refreshLayout();

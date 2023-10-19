@@ -72,8 +72,6 @@ export default {
         this.rectWidth=param.page_block_config.attr.width*1920;
         this.rectHeight=param.page_block_config.attr.height*1080;
       }
-      console.log("编辑块宽度：",this.rectWidth);
-      console.log("编辑块高度：",this.rectHeight);
 
       this.canvasStyle= {
         position: 'absolute',

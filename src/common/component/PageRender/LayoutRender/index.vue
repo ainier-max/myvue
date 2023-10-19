@@ -2,10 +2,12 @@
   <div style="overflow: hidden"
        v-if="currentPageLayout!=null && (currentPageLayout.layout_type=='flex-column' || currentPageLayout.layout_type=='flex-row')"
        :style="{'height':'100%','width':'100%','display':'flex','flex-direction':currentPageLayout.layout_config.type}">
+
     <div v-for="(layout_component, index) in currentPageLayout.layout_config.blocks_components"
          :style="pageBlocksComponentsStyle(layout_component)">
-      <!--展示前端类组件  ,'border':'1px dashed yellowgreen'-->
-      <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='frontEndComponent'">
+
+      <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='frontEndComponent'">
+        <!--LayoutRender/index.vue渲染前端类组件-->
               <template v-for="(componentInfo, index) in allPageComponents">
                 <LayoutFrontEndComponent :ref="componentInfo.component_ref"
                                  v-if="layout_component.type=='frontEndComponent' && layout_component.ref==componentInfo.component_ref"
@@ -13,10 +15,11 @@
                                  :style="{'backgroundSize':'100% 100%'}">
               </LayoutFrontEndComponent>
               </template>
-          </span>
+          </template>
 
-      <!--展示内置类组件-->
-      <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='buildInComponent'">
+
+      <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='buildInComponent'">
+        <!--LayoutRender/index.vue渲染内置类组件-->
             <template v-for="(componentInfo, index) in allPageComponents">
               <LayoutBuildInComponent
                   v-if="layout_component.type=='buildInComponent' && layout_component.ref==componentInfo.component_ref"
@@ -24,18 +27,18 @@
                   :componentInfo="componentInfo" :ref="layout_component.ref"
                   :layoutComponentInfo="layout_component"></LayoutBuildInComponent>
             </template>
-          </span>
-      <!--展示布局类组件-->
-      <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='layout'">
+          </template>
+      <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='layout'">
+        <!--LayoutRender/index.vue渲染布局类组件-->
               <LayoutRender :pageLayoutRef="layout_component.ref"
                            :allPageComponents="allPageComponents"
                            :topPageBlockRef="topPageBlockRef"
                            :allPageLayouts="allPageLayouts" :pageDebugFlag="pageDebugFlag" :renderType="renderType">
               </LayoutRender>
-        </span>
+        </template>
 
-      <!--展示页面块 ,'border':'1px dashed yellowgreen'-->
-      <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='block'">
+      <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='block'">
+         <!--LayoutRender/index.vue渲染页面块-->
               <LayoutPageBlock
                   v-if="renderType=='Edit' && pageDebugFlag=='true'"
                   :renderType="renderType"
@@ -49,7 +52,7 @@
                                :style="{'backgroundImage':'url('+currentPageLayout.layout_config.attr.backgroundImageURL+')','backgroundSize':'100% 100%'}">
               </LayoutPageBlock>
 
-      </span>
+      </template>
 
 
 
@@ -71,6 +74,7 @@ export default {
       type: String,
       default: ''
     },
+
     allPageComponents:{
       type: Array,
       default: []
@@ -79,6 +83,7 @@ export default {
       type: Array,
       default: []
     },
+
     pageLayoutRef: {
       type: String,
       default: ''
@@ -134,8 +139,12 @@ export default {
   },
 
   created() {
-    console.log("pageDebugFlag111,",this.pageDebugFlag);
-    console.log("LayoutRender--created--this.allPageLayouts11", this.allPageLayouts);
+
+    //this.allPageLayouts=window.cbcDebugPageInstance[this.topPageBlockRef].data.pageLayouts;
+    //this.allPageComponents=window.cbcDebugPageInstance[this.topPageBlockRef].data.pageComponents;
+
+    console.log("LayoutRender--created--this.allPageLayouts", this.allPageLayouts);
+    console.log("LayoutRender--created--this.allPageComponents", this.allPageComponents);
     console.log("LayoutRender--created--this.pageLayoutRef", this.pageLayoutRef);
     if (this.renderType=="View") {
       this.page_id=this.$route.query.page_id;
@@ -146,7 +155,7 @@ export default {
         this.currentPageLayout = this.allPageLayouts[i];
       }
     }
-    console.log("LayoutRender--this.currentPageLayout", this.currentPageLayout);
+    console.log("LayoutRender--created--this.currentPageLayout", this.currentPageLayout);
 
   
   },

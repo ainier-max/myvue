@@ -30,25 +30,32 @@ export default {
   components: {},
   methods: {
     setFlexLayout(type){
+      console.log("setFlexLayout--type",type);
+      console.log("setFlexLayout--window.cbcPageInstance.data.currentPageBlock.page_block_config.attr",window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.width);
+      
+
       let pageLayoutTemp = {}
       pageLayoutTemp.layout_config = {};
+      pageLayoutTemp.layout_config.type="innerLayout";
       pageLayoutTemp.layout_config.attr = {};
-      pageLayoutTemp.layout_config.attr.x = 10;
-      pageLayoutTemp.layout_config.attr.y = 10;
-      pageLayoutTemp.layout_config.attr.w = 200;
-      pageLayoutTemp.layout_config.attr.h = 200;
+      pageLayoutTemp.layout_config.attr.x = "布局中布局不需要坐标值x";
+      pageLayoutTemp.layout_config.attr.y = "布局中布局不需要坐标值y";
+
+      pageLayoutTemp.layout_config.attr.w = "布局中布局不需要宽度值w";
+      pageLayoutTemp.layout_config.attr.h = "布局中布局不需要高度值h";
       pageLayoutTemp.layout_config.attr.zIndex = 100;
       pageLayoutTemp.layout_config.attr.background = {};
       pageLayoutTemp.layout_config.attr.background.type="img";
       pageLayoutTemp.layout_config.attr.background.value="";
 
-
-      let pageWidthTemp = window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.width;
-      let pageHeightTemp = window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.height;
-      pageLayoutTemp.layout_config.attr.xPer = toDecimal((10 / pageWidthTemp) * 100);
-      pageLayoutTemp.layout_config.attr.yPer = toDecimal((10 / pageHeightTemp) * 100);
-      pageLayoutTemp.layout_config.attr.wPer = toDecimal((200 / pageWidthTemp) * 100);
-      pageLayoutTemp.layout_config.attr.hPer = toDecimal((200 / pageHeightTemp) * 100);
+      //let pageWidthTemp = window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.width;
+      //let pageHeightTemp = window.cbcPageInstance.data.currentPageBlock.page_block_config.attr.height;
+      //pageLayoutTemp.layout_config.attr.xPer = toDecimal((10 / pageWidthTemp) * 100);
+      //pageLayoutTemp.layout_config.attr.yPer = toDecimal((10 / pageHeightTemp) * 100);
+      //pageLayoutTemp.layout_config.attr.wPer = toDecimal((200 / pageWidthTemp) * 100);
+      //pageLayoutTemp.layout_config.attr.hPer = toDecimal((200 / pageHeightTemp) * 100);
+      //pageLayoutTemp.layout_config.attr.wPer = 50.0;
+      //pageLayoutTemp.layout_config.attr.hPer = 50.0;
 
       pageLayoutTemp.layout_config.blocks_components = [];
       let obj1 = {};

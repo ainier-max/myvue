@@ -20,6 +20,11 @@ const routes = [
         component: () => import('../components/Page/index.vue'),
     },
     {
+        path: '/PageEdit',
+        component: () => import('../components/PageEdit/index.vue'),
+    },
+    
+    {
         path: '/Portal',
         component: () => import('../components/Portal/index.vue'),
     },

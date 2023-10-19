@@ -620,7 +620,7 @@ export default {
 
     },
     pageBlockTreeNodeClick(data, node) {
-      console.log("pageBlockTreeNodeClick--data",data);
+      console.log("页面块树点击--pageBlockTreeNodeClick--data",data);
       //置空
       this.pageBlockLayouts=[];
       if(data.pid==null || data.pid==''){

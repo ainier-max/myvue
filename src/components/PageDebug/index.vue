@@ -8,6 +8,7 @@
                            :ref="layoutPageBlockRef" :pageBlockRef="topPageBlockRef" :page_id="page_id" :topPageBlockRef="topPageBlockRef"
                           :style="TopPageBlockStyle"></LayoutPageBlock>
 
+
     <div v-for="(item,index) in dialogArr">
       <el-dialog
           :append-to-body="true"
@@ -165,13 +166,6 @@ export default {
     window["page"+this.page_id]={};
     window["page"+this.page_id].cbcDebugPageComponentsInstance=[];
 
-    if(this.page_id!=""){
-      this.runDebug();
-    }
-
-
-
-
   },
   watch: {},
   components: {
@@ -207,10 +201,10 @@ export default {
         window.cbcDebugPageInstance={}
       }
       window.cbcDebugPageInstance[this.topPageBlockRef] = this.currentInstance;
-
-
       this.allPageLayouts = window.cbcDebugPageInstance[this.topPageBlockRef].data.pageLayouts;
-      this.allPageComponents=window.cbcDebugPageInstance[this.topPageBlockRef].data.allPageComponents;
+      console.log("pageDebug/index.vue--this.allPageLayouts",this.allPageLayouts);
+      this.allPageComponents=window.cbcDebugPageInstance[this.topPageBlockRef].data.pageComponents;
+      console.log("pageDebug/index.vue--this.allPageComponents",this.allPageComponents);
       console.log("findTopPageBlockRefCallBack--window.cbcDebugPageInstance[this.topPageBlockRef]",window.cbcDebugPageInstance[this.topPageBlockRef]);
     },
     //查询所有的组件
@@ -226,7 +220,7 @@ export default {
         result.objects[i].component_config = eval("(" + result.objects[i].component_config_str + ")");
         this.pageComponents.push(result.objects[i]);
       }
-      console.log("this.pageComponentsttg",this.pageComponents);
+      console.log("findAllPageBlockComponent--this.pageComponents",this.pageComponents);
 
       console.log("this.edit_component_flag111",this.edit_component_flag);
 
@@ -422,8 +416,13 @@ export default {
   mounted() {
     console.log("cbc-PageDebug--mounted");
     if(this.page_id!=""){
+      this.runDebug();
+    }
+    if(this.page_id!=""){
       this.ToEventStartRun();
     }
+
+    
 
 
   },

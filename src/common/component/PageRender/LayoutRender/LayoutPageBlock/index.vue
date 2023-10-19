@@ -2,12 +2,13 @@
   <div :style="pageStyle" :id="idStr">
     <div style="color: red" v-if="testFlag">无内容......</div>
     <div v-for="(pageLayout, index) in pageLayouts" :style="pageLayoutStyle(pageLayout)">
+        <div style="color:white">2131</div>
         <div v-if="pageLayout.layout_type=='flex-column' || pageLayout.layout_type=='flex-row'"
              :style="{'height':'100%','display':'flex','flex-direction':pageLayout.layout_config.type}">
           <div v-for="(layout_component, index) in pageLayout.layout_config.blocks_components"
                 :style="pageBlocksComponentsStyle(layout_component)">
-            <!--展示前端组件-->
-            <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='frontEndComponent'" v-for="(componentInfo, index) in pageComponents">
+            <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='frontEndComponent'" v-for="(componentInfo, index) in pageComponents">
+              <!--LayoutPageBlock/index.vue渲染前端组件-->
               <LayoutFrontEndComponent :ref="componentInfo.component_ref"
                                :topPageBlockRef="topPageBlockRef"
                                :renderType="renderType"
@@ -15,9 +16,10 @@
                                :componentInfo="componentInfo"
                                :style="{'backgroundImage':'url('+pageLayout.layout_config.attr.backgroundImageURL+')','backgroundSize':'100% 100%'}">
               </LayoutFrontEndComponent>
-            </span>
-            <!--展示内置组件-->
-            <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='buildInComponent'">
+            </template>
+            
+            <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='buildInComponent'">
+              <!--LayoutPageBlock/index.vue渲染内置组件-->
               <!--渲染类型为View-->
               <template v-for="(componentInfo, index) in pageComponents" v-if="renderType=='View'">
                 <LayoutBuildInComponent v-if="layout_component.type=='buildInComponent' && layout_component.ref==componentInfo.component_ref"
@@ -28,29 +30,35 @@
               </template>
               <!--渲染类型为Edit-->
               <LayoutBuildInComponent  v-if="renderType=='Edit'" :ref="layout_component.ref" :layoutComponentInfo="layout_component"></LayoutBuildInComponent>
-            </span>
+            </template>
 
-            <!--展示布局类组件-->
-            <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='layout'">
-
-              <component is="LayoutRender" v-if="renderType=='View'" :pageLayoutRef="layout_component.ref"
+           
+            <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='layout'">
+            <!--LayoutPageBlock/index.vue渲染布局类组件-->
+              <!-- <component is="LayoutRender" :pageLayoutRef="layout_component.ref"
                             :renderType="renderType"
                             :allPageComponents="allPageComponents"
                             :allPageLayouts="allPageLayouts" :pageDebugFlag="'false'" :topPageBlockRef="topPageBlockRef">
+              </component> -->
 
-              </component>
+              <LayoutRender v-if="renderType=='View' && LayoutRenderLoadEndFlag==true" :pageLayoutRef="layout_component.ref"
+                            :renderType="renderType"
+                            :allPageComponents="allPageComponents"
+                            :allPageLayouts="allPageLayouts" :pageDebugFlag="'false'" :topPageBlockRef="topPageBlockRef">
+              </LayoutRender>
 
               <!-- <LayoutRender v-if="renderType=='View' && LayoutRenderLoadEndFlag==true" :pageLayoutRef="layout_component.ref"
                             :renderType="renderType"
                             :allPageComponents="allPageComponents"
                             :allPageLayouts="allPageLayouts" :pageDebugFlag="'false'" :topPageBlockRef="topPageBlockRef">
-              </LayoutRender> -->
+              </LayoutRender> 
+            v-if="renderType=='View' && LayoutRenderLoadEndFlag==true"
+            -->
 
-            </span>
+            </template>
 
-            <!--展示页面块-->
-            <span v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='block'">
-                  
+            <template v-if="typeof (layout_component.type)!='undefined' && layout_component.type=='block'">
+                   <!--LayoutPageBlock/index.vue渲染页面块-->
                   <LayoutPageBlock  v-if="renderType=='View' && topPageBlockRef!=''" 
                               :topPageBlockRef="topPageBlockRef" 
                               :renderType="renderType" 
@@ -64,17 +72,17 @@
                                  :renderType="renderType" 
                                  :allPageComponents="allPageComponents"
                                  :allPageLayouts="allPageLayouts"></LayoutPageBlock>
-            </span>
+            </template>
 
 
-            <!--展示无组件的状态-->
-            <span v-if="typeof (layout_component.type)=='undefined' ">
+            <template v-if="typeof (layout_component.type)=='undefined' ">
+              <!--LayoutPageBlock/index.vue渲染无组件情况-->
               <div v-if="renderType=='Edit' && (typeof (pageLayout.layout_config.attr.backgroundImageURL)=='undefined' || pageLayout.layout_config.attr.backgroundImageURL=='')"
                    style="width: 100%;height: 100%;background-image: linear-gradient(180deg,#274351,#1a2646);align:center;"></div>
 
               <div v-if="renderType=='Edit' && typeof (pageLayout.layout_config.attr.backgroundImageURL)!='undefined' && pageLayout.layout_config.attr.backgroundImageURL!=''"
                    :style="{'width': '100%','height': '100%','backgroundImage':'url('+pageLayout.layout_config.attr.backgroundImageURL+')','backgroundSize':'100% 100%'}"></div>
-            </span>
+            </template>
 
           </div>
 
@@ -93,7 +101,7 @@ import elementResizeDetectorMaker from "element-resize-detector";
 import LayoutBuildInComponent from "../LayoutBuildInComponent/index.vue";
 import { getCurrentInstance,defineAsyncComponent } from "vue";
 
-//import LayoutRenderView from "@/common/component/PageRender/LayoutRender/index.vue";
+//import LayoutRender from "@/common/component/PageRender/LayoutRender/index.vue";
 
 export default {
   name:"LayoutPageBlock",
@@ -155,7 +163,7 @@ export default {
       let styleTemp={};
       styleTemp.width = "100%";
       if (this.renderType=="View") {
-        console.log("window.cbcDebugPageInstance[this.topPageBlockRef]11112",window.cbcDebugPageInstance[this.topPageBlockRef]);
+        console.log("window.cbcDebugPageInstance[this.topPageBlockRef]",window.cbcDebugPageInstance[this.topPageBlockRef]);
         if(this.topPageBlockInstance==null || this.pageBlock==null){
           styleTemp.height="100%";
         }else{
@@ -190,12 +198,16 @@ export default {
           }
         }
         
+        
         styleTemp.position="absolute";
         styleTemp.left=pageLayout.layout_config.attr.xPer+'%';
         styleTemp.top=pageLayout.layout_config.attr.yPer+'%';
         styleTemp.width=pageLayout.layout_config.attr.wPer+'%';
         styleTemp.height=pageLayout.layout_config.attr.hPer+'%';
         styleTemp.zIndex=pageLayout.layout_config.attr.zIndex;
+        console.log("pageLayoutStyle--styleTemp",styleTemp);
+
+
         return styleTemp;
       }
     },
@@ -225,6 +237,39 @@ export default {
   },
 
   created() {
+    //局部动态注册组件
+    console.log("局部动态注册组件1",this.allPageComponents);
+    let pathUrl="../../LayoutRender/index.vue";
+    this.$options.components["LayoutRender"] = defineAsyncComponent({
+     loader: () => import(/* @vite-ignore */pathUrl)
+    })
+    let the=this;
+    // this.$options.components["LayoutRender"] = defineAsyncComponent(() => {
+    //   return new Promise((resolve, reject) => {
+    //     ;(async function () {
+    //       try {
+    //         console.log("res");
+    //         const res = await import(/* @vite-ignore */pathUrl);
+    //         console.log("组件res",res);
+    //         the.LayoutRenderLoadEndFlag=true;
+    //         resolve(res)
+    //       } catch (error) {
+    //         reject(error)
+    //       }
+    //     })()
+    //   })
+    // })
+
+    console.log("this.$options",this.$options);
+    the.LayoutRenderLoadEndFlag=true;
+    //debugger;
+
+    
+
+    
+    
+
+
     console.log("LayoutPageBlock--created--this.renderType",this.renderType);
     this.idStr = "id" + window.cbcuuid();
     if (this.renderType == "Edit") {
@@ -335,16 +380,6 @@ export default {
   },
 
   mounted() {
-
-    console.log("局部动态注册组件");
-    //局部动态注册组件
-    let pathUrl="./PageRender/LayoutRender/index.vue";
-    this.$options.components["LayoutRender"] = defineAsyncComponent({
-      loader: () => import(/* @vite-ignore */pathUrl)
-    })
-    //this.LayoutRenderLoadEndFlag = true;
-
-
     const the = this;
     const erd = elementResizeDetectorMaker();
     if (this.renderType=="Edit") {
@@ -382,7 +417,7 @@ export default {
         this.testFlag=true;
         return;
       }
-      console.log("this.pageBlock1111",this.pageBlock);
+      console.log("LayoutPageBlock/index--mounted--this.pageBlock",this.pageBlock);
 
       //if(this.$route.query.pageDebugFlag=="false"){
 
