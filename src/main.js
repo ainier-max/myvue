@@ -16,7 +16,6 @@ import router from "./router/index";
 
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import contextmenu from '@imengyu/vue3-context-menu'
-console.log("contextmenu12",contextmenu);
 import VueGridLayout from 'vue-grid-layout'
 
 import microApp from '@micro-zoe/micro-app'
@@ -68,7 +67,7 @@ window.axios = axios;
 import qs from 'qs'
 window.qs = qs;
 import lodash from 'lodash'
-window.lodash = lodash;
+window._ = lodash;
 import {loadModule} from 'vue3-sfc-loader'
 window.loadModule = loadModule;
 import {uuid} from "@/common/js/uuid.js";

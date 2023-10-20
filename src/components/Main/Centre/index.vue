@@ -93,9 +93,10 @@
 </template>
 
 <script>
-import {commonExcuteRequest, commonSelectRequest} from "../../../common/js/request.js";
+import {commonExcuteRequest, commonSelectRequest,commonExcuteByBatchRequest} from "@/common/js/request.js";
 import axios from "axios";
-import {getListData} from "../../../common/js/tree.js";
+import {getListData} from "@/common/js/tree.js";
+import {objectToString} from "@/common/js/objStr.js";
 
 
 
@@ -178,14 +179,26 @@ export default {
       let nodeTemp=this.$refs.pageTreeRef.getCurrentNode();
       //console.log("nodeTemp112：",nodeTemp);
       param.page_tree_id =  nodeTemp.id;
-      param.type =  "block";
-      param.page_block_type='main';
+      param.type =  "mainBlock";
       param.page_img =  "6da8931c36284f8ea8160b9770a39577";
       param.page_block_ref='blockRef-'+window.cbcuuid();
-      param.page_block_config_str="{\"attr\":{\"height\":"+this.pageInfoDataForm.pageHeight+",\"width\":"+this.pageInfoDataForm.pageWidth+",\"unit\":\"px\"}}";
-      param.page_block_blue_script_config_str="{\"attr\":{\"x\":0,\"y\":0,\"width\":3000,\"height\":2000}}"
+      let configObj={
+        pageConfig:{
+          height:this.pageInfoDataForm.pageHeight,
+          width:this.pageInfoDataForm.pageWidth,
+          unit:"px"
+        },
+        blueScriptConfig:{
+          x:0,
+          y:0,
+          width:3000,
+          height:2000
+        }
+      };
+      param.config_str=objectToString(configObj);
+
       console.log("param112:",param);
-      commonExcuteRequest(window.axios, param, this.addPageCallBack);
+      commonExcuteByBatchRequest(window.axios, param, this.addPageCallBack);
 
     },
     addPageCallBack(result){
@@ -233,7 +246,7 @@ export default {
       let param = {};
       param.sql = "page_centre.delete";
       param.page_id = this.currentPage.page_id;
-      commonExcuteRequest(window.axios, param, this.deletePageCallBack);
+      commonExcuteByBatchRequest(window.axios, param, this.deletePageCallBack);
     },
     deletePageCallBack(result){
       if (result.state == "success") {
