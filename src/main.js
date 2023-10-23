@@ -22,12 +22,11 @@ import microApp from '@micro-zoe/micro-app'
 microApp.start();
 
 
+import { createPinia } from "pinia";
+const pinia = createPinia();
 
 
-
-
-
-window.cbcApp.use(ElementPlus).use(router).use(contextmenu).use(VueGridLayout).mount('#app');
+window.cbcApp.use(ElementPlus).use(router).use(pinia).use(contextmenu).use(VueGridLayout).mount('#app');
 
 //ElementPlusIcons(按需注册)
 //import * as ElementPlusIconsVue from '@element-plus/icons-vue'

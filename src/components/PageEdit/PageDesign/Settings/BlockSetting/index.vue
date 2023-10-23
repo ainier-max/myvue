@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%">
+  <div style="width: 100%; height: 100%; overflow: hidden">
     <div class="titleClass" align="center">页面块配置</div>
     <div v-if="settingParam">
       <div class="leftTitle">页面块Ref：</div>
@@ -38,12 +38,18 @@
       />
 
       <div align="center" style="margin-top: 15px">
-        <el-button @click="updateBlockSetting" type="primary">页面块更新</el-button>
+        <el-button @click="updateBlockSetting" type="primary"
+          >页面块更新</el-button
+        >
       </div>
-      <div class="titleClass" style="margin-top: 15px" align="center">插入内容</div>
+      <div class="titleClass" style="margin-top: 15px" align="center">
+        插入内容
+      </div>
       <div align="center" style="margin-top: 15px">
-        <el-button @click="addFlexColumn" type="success">水平布局</el-button>
-        <el-button @click="addFlexRow" type="success">垂直布局</el-button>
+        <el-button @click="addFlex('flex-column')" type="success"
+          >水平布局</el-button
+        >
+        <el-button @click="addFlex('flex-row')" type="success">垂直布局</el-button>
       </div>
     </div>
   </div>
@@ -55,6 +61,12 @@ import { commonExcuteByBatchRequest } from "@/common/js/request.js";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
+import { toDecimal } from "@/common/js/decimal.js";
+import { uuid } from "@/common/js/uuid.js";
+
+import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
+const pageEditStoreObj = pageRenderTreeDataStore();
+
 const props = defineProps({
   settingParam: null,
 });
@@ -77,6 +89,37 @@ const updateBlockSettingCallBack = (result) => {
     ElMessage.success("更新成功！");
   }
 };
+const addFlex = (type) => {
+  let layoutTemp = {};
+  layoutTemp.config = {};
+  layoutTemp.config.x = 10;
+  layoutTemp.config.y = 10;
+  layoutTemp.config.w = 200;
+  layoutTemp.config.h = 200;
+  layoutTemp.config.zIndex = 100;
+  layoutTemp.config.background = {};
+  layoutTemp.config.background.type = "img";
+  layoutTemp.config.background.value = "";
+  let blockWidthTemp = props.settingParam.config.pageConfig.width;
+  let blockHeightTemp = props.settingParam.config.pageConfig.height;
+  layoutTemp.config.xPer = toDecimal((10 / blockWidthTemp) * 100);
+  layoutTemp.config.yPer = toDecimal((10 / blockHeightTemp) * 100);
+  layoutTemp.config.wPer = toDecimal((200 / blockWidthTemp) * 100);
+  layoutTemp.config.hPer = toDecimal((200 / blockHeightTemp) * 100);
+  layoutTemp.id = "id-" + uuid();
+  layoutTemp.pid = props.settingParam.id;
+  if(type=="flex-column"){
+    layoutTemp.label="水平布局";
+  }else if(type=="flex-row"){
+    layoutTemp.label="垂直布局";
+  }
+  layoutTemp.ref="layoutRef-" + uuid();
+  layoutTemp.type=type;
+
+  pageEditStoreObj.addNodeByPID(layoutTemp.pid,layoutTemp);
+  
+};
+
 // 生命周期钩子
 onMounted(() => {
   console.log("接收到的参数值", props.settingParam);
@@ -87,8 +130,8 @@ onMounted(() => {
 .titleClass {
   width: 100%;
   height: 30px;
-  background: #000000;
-  color: rgba(255, 255, 255, 0.6);
+  background: #fc74fd;
+  color: rgba(255, 255, 255, 1);
   padding-top: 8px;
   font-weight: bold;
 }

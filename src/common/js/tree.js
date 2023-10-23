@@ -81,3 +81,34 @@ export function translateDataToTree(datas) {
   //返回最终的结果
   return parents
 }
+
+
+
+// 根据id查找节点
+export function findNodeById(nodes, id) {
+  for (const node of nodes) {
+    if (node.id === id) {
+      return node
+    }
+    if (node.children) {
+      const foundNode = findNodeById(node.children, id)
+      if (foundNode) {
+        return foundNode
+      }
+    }
+  }
+  return null;
+}
+
+
+
+//树节点转数组
+export function treeToArray(nodes, array) {
+  for (const node of nodes) {
+    array.push(node);
+    if (node.children) {
+      treeToArray(node.children,array)
+    }
+  }
+  return array;
+}

@@ -97,6 +97,7 @@ import {commonExcuteRequest, commonSelectRequest,commonExcuteByBatchRequest} fro
 import axios from "axios";
 import {getListData} from "@/common/js/tree.js";
 import {objectToString} from "@/common/js/objStr.js";
+import { uuid } from "@/common/js/uuid.js";
 
 
 
@@ -180,6 +181,7 @@ export default {
       //console.log("nodeTemp112：",nodeTemp);
       param.page_tree_id =  nodeTemp.id;
       param.type =  "mainBlock";
+      param.id=window.cbcuuid();
       param.page_img =  "6da8931c36284f8ea8160b9770a39577";
       param.page_block_ref='blockRef-'+window.cbcuuid();
       let configObj={
