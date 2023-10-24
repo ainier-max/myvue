@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 500px;height:500px">
+  <div>
     <div class="wrapper">
       <SketchRule
           :thick="thick"
@@ -24,7 +24,7 @@
 
         <div ref="containerRef" class="screen-container">
           <div id="canvasID" :style="canvasStyle">
-            <ViewDraggableResizable></ViewDraggableResizable>
+            
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default {
           .querySelector('#screens')
           .getBoundingClientRect()
       const canvasRect = document
-          .querySelector('#canvas')
+          .querySelector('#canvasID')
           .getBoundingClientRect()
       // 标尺开始的刻度
       const startX =
@@ -114,16 +114,7 @@ export default {
 }
 </script>
 <style lang="scss">
-body {
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  font-family: sans-serif;
-}
-body * {
-  box-sizing: border-box;
-  user-select: none;
-}
+
 .wrapper {
   position: absolute;
   top: 100px;
@@ -137,24 +128,15 @@ body * {
   position: absolute;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: scroll;
 }
 .screen-container {
   position: absolute;
   width: 5000px;
   height: 3000px;
 }
-.scale-value {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-}
-.button {
-  position: absolute;
-  bottom: 100%;
-  left: 100px;
-}
-#canvas {
+
+#canvasID {
   position: absolute;
   top: 50px;
   left: 50%;

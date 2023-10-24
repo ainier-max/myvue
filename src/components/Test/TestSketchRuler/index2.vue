@@ -1,178 +1,175 @@
 <template>
-  <div style="width: 500px;height:500px">
-
-
-    <div class="wrapper" id="wrapper">
+  <!-- Nuxt3 中展示代码 -->
+    <div class="top">缩放比例:{{ scale }}</div>
+    <div class="wrapper">
       <SketchRule
-          :lang="lang"
-          :thick="thick"
-          :scale="scale"
-          :width="width"
-          :height="height"
-          :startX="startX"
-          :startY="startY"
-          :horLineArr="lines.h"
-          :verLineArr="lines.v"
-          :cornerActive="true"
-          @handleLine="handleLine"
-          @onCornerClick="handleCornerClick"
+        :thick="thick"
+        :scale="scale"
+        :width="1380"
+        :height="780"
+        :start-x="startX"
+        :start-y="startY"
+        :shadow="shadow"
+        :lines="lines"
       >
       </SketchRule>
       <div
-          ref='screensRef'
-          id="screens"
-          @wheel="handleWheel"
-          @scroll="handleScroll"
+        id="screens"
+        ref="screensRef"
+        @wheel="handleWheel"
+        @scroll="handleScroll"
       >
         <div ref="containerRef" class="screen-container">
-          <div id="canvas" :style="canvasStyle"/>
+          <div id="canvas" :style="canvasStyle" />
         </div>
       </div>
     </div>
-  </div>
-</template>
-<script>
-import {SketchRule} from 'vue3-sketch-ruler'
-import 'vue3-sketch-ruler/lib/style.css'
-
-const rectWidth = 1920;
-const rectHeight = 1080;
-export default {
-  data() {
+  </template>
+  
+  <script setup lang="ts">
+  import { computed, toRefs, ref, reactive, onMounted, nextTick } from "vue";
+  import { SketchRule } from "vue3-sketch-ruler";
+  // import "@/assets/style.css";
+  import "vue3-sketch-ruler/lib/style.css";
+  
+  const rectWidth = 600;
+  const rectHeight = 320;
+  const screensRef = ref(null);
+  const containerRef = ref(null);
+  const state = reactive({
+    scale: 2, //658813476562495, //1,
+    startX: 0,
+    startY: 0,
+    lines: {
+      h: [433, 588],
+      v: [33, 143],
+    },
+    thick: 20,
+    isShowRuler: true, // 显示标尺
+    isShowReferLine: true, // 显示参考线
+  });
+  const shadow = computed(() => {
     return {
-      scale: 0.6, //658813476562495, //1,
-      startX: 0,
-      startY: 0,
-      lines: {
-        h: [100, 200],
-        v: [100, 200]
-      },
-      thick: 20,
-      width: 0,
-      height: 0,
-      lang: "zh-CN", // 中英文
-      isShowRuler: true, // 显示标尺
-      isShowReferLine: true // 显示参考线
-    }
-  },
-  components: {
-    SketchRule
-  },
-  computed: {
-    canvasStyle() {
-      return {
-        width: rectWidth + 'px',
-        height: rectHeight + 'px',
-        transform: `scale(${this.scale})`
-      }
-    }
-  },
-  methods: {
-    handleLine(lines) {
-      this.lines = lines;
-    },
-    handleCornerClick() {
-      return;
-    },
-    handleScroll() {
-      const screensRect = document
-          .querySelector("#screens")
-          .getBoundingClientRect();
-      const canvasRect = document
-          .querySelector("#canvas")
-          .getBoundingClientRect();
-      console.log("screensRect.left",screensRect.left);
-      console.log("screensRect.top",screensRect.top);
-      console.log("canvasRect.left",canvasRect.left);
-      console.log("canvasRect.top",canvasRect.top);
-      // 标尺开始的刻度
-      const startX = (screensRect.left + this.thick - canvasRect.left) / this.scale;
-      const startY = (screensRect.top + this.thick - canvasRect.top) / this.scale;
-      this.startX = startX >> 0;
-      this.startY = startY >> 0;
-      console.log("this.startX",this.startX);
-      console.log("this.startY",this.startY);
-    },
-    // 控制缩放值
-    handleWheel(e) {
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        const nextScale = parseFloat(
-            Math.max(0.2, this.scale - e.deltaY / 500).toFixed(2)
-        );
-        this.scale = nextScale;
-      }
-      this.$nextTick(() => {
-        this.handleScroll();
-      });
-    },
-    initSize() {
-      const wrapperRect = document
-          .querySelector("#wrapper")
-          .getBoundingClientRect();
-      const borderWidth = 1;
-      this.width = wrapperRect.width - this.thick - borderWidth;
-      this.height = wrapperRect.height - this.thick - borderWidth;
-      this.handleScroll();
-    }
-  },
-  mounted() {
+      x: 0,
+      y: 0,
+      width: rectWidth,
+      height: rectHeight,
+    };
+  });
+  const canvasStyle = computed(() => {
+    return {
+      width: rectWidth,
+      height: rectHeight,
+      transform: `scale(${state.scale})`,
+    };
+  });
+  onMounted(() => {
     // 滚动居中
-    console.log("this.$refs.containerRef.getBoundingClientRect()：", this.$refs.containerRef.getBoundingClientRect());
-    //this.$refs.screensRef.scrollLeft = this.$refs.containerRef.getBoundingClientRect().width / 2 - 2500; // 300 = #screens.width / 2
-    this.$refs.screensRef.scrollLeft=500;
-    console.log("this.$refs.screensRef.scrollLeft", this.$refs.screensRef.scrollLeft);
-
-    this.$nextTick(() => {
-      this.initSize();
+    screensRef.value.scrollLeft =
+      containerRef.value.getBoundingClientRect().width / 2 - 400;
+  });
+  
+  const handleScroll = () => {
+    const screensRect = document
+      .querySelector("#screens")
+      .getBoundingClientRect();
+    const canvasRect = document.querySelector("#canvas").getBoundingClientRect();
+  
+    // 标尺开始的刻度
+    const startX =
+      (screensRect.left + state.thick - canvasRect.left) / state.scale;
+    const startY = (screensRect.top + state.thick - canvasRect.top) / state.scale;
+    state.startX = startX;
+    state.startY = startY;
+  };
+  // 控制缩放值
+  const handleWheel = (e: {
+    ctrlKey: any;
+    metaKey: any;
+    preventDefault: () => void;
+    deltaY: number;
+  }) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const nextScale = parseFloat(
+        Math.max(0.2, state.scale - e.deltaY / 500).toFixed(2)
+      );
+      state.scale = nextScale;
+    }
+    nextTick(() => {
+      handleScroll();
     });
+  };
+  
+  const { scale, startX, startY, lines, thick } = toRefs(state);
+  </script>
+  
+  <style lang="scss">
+  .top {
+    position: absolute;
+    right: 100px;
+    font-size: 20px;
   }
-};
-</script>
-<style>
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  overflow: hidden;
-}
-
-body * {
-  box-sizing: border-box;
-  user-select: none;
-}
-
-.wrapper {
-  background-color: #f5f5f5;
-  position: absolute;
-  top: 100px;
-  left: 100px;
-  width: 960px;
-  height: 720px;
-  border: 1px solid #DADADC;
-}
-
-#screens {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-}
-
-.screen-container {
-  position: absolute;
-  width: 5000px;
-  height: 3000px;
-}
-
-#canvas {
-  position: absolute;
-  top: 50px;
-  left: -250px;
-  margin-left: -80px;
-  width: 160px;
-  height: 200px;
-  background: lightblue;
-  transform-origin: 50% 0;
-}
-</style>
+  body {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+  
+  body * {
+    box-sizing: border-box;
+    user-select: none;
+  }
+  
+  .wrapper {
+    // position: absolute;
+    // top: 100px;
+    // left: 240px;
+    /* 特别注意,这个width要和传入组件的width成对应关系,
+     也就是 780width +thick20 =800
+     否则影子不和容器搭配,这个在2X中会进行自动匹配修正,省得配置麻烦
+      */
+    width: 1400px;
+    height: 800px;
+    background-color: #f5f5f5;
+    border: 1px solid #dadadc;
+  }
+  
+  #screens {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+  
+  .screen-container {
+    position: absolute;
+    width: 5000px;
+    height: 3000px;
+  }
+  
+  .scale-value {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+  }
+  
+  .button {
+    position: absolute;
+    bottom: 100%;
+    left: 100px;
+  }
+  
+  #canvas {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    width: 600px;
+    height: 320px;
+    background: url("../assets/bg.jfif") no-repeat;
+    background-size: 100% 100%;
+    transform-origin: 50% 0;
+  }
+  </style>
+  
