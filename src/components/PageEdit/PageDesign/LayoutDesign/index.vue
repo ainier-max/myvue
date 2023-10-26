@@ -23,7 +23,8 @@
         @scroll="handleScroll"
       >
         <div ref="containerRef" class="screen-container">
-          <div id="canvasID" :style="canvasStyle"></div>
+          <ViewDraggableResizable id="canvasID" :scale="scale" :style="canvasStyle" v-if="topPageBlock" :topPageBlock="topPageBlock"></ViewDraggableResizable>
+          <!-- <div id="canvasID" :style="canvasStyle"></div> -->
         </div>
       </div>
     </div>
@@ -32,9 +33,26 @@
 <script setup lang="ts">
 import { SketchRule } from "vue3-sketch-ruler";
 import "vue3-sketch-ruler/lib/style.css";
+import ViewDraggableResizable from "@/components/PageEdit/PageDesign/LayoutDesign/ViewDraggableResizable/index.vue";
 import { ref, nextTick, onMounted, computed } from "vue";
-const rectWidth = 1920;
-const rectHeight = 1080;
+import { findParent } from "@/common/js/tree.js";
+import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
+const pageEditStoreObj = pageRenderTreeDataStore();
+
+import { storeToRefs } from "pinia";
+const { pageRenderTreeData } = storeToRefs(pageEditStoreObj);
+
+
+import { currentDealDataStore } from "@/store/currentDealData.ts";
+const currentDealDataStoreObj = currentDealDataStore();
+const { currentPageRenderTreeNodeData, currentPageLayoutData } = storeToRefs(
+  currentDealDataStoreObj
+);
+//获取顶层的block
+const topPageBlock=findParent(pageRenderTreeData.value,currentPageRenderTreeNodeData,[])[0];
+
+const rectWidth = parseInt(topPageBlock.config.pageConfig.width);
+const rectHeight = parseInt(topPageBlock.config.pageConfig.height);
 const scale = ref(0.6);
 const startX = ref(-50);//该值与canvasID的宽度一致
 const startY = ref(-50);//该值与canvasID的宽度一致
@@ -86,8 +104,8 @@ const handleScroll = () => {
   startX.value =
     (screensRect.left + thick.value - canvasRect.left) / scale.value;
   startY.value = (screensRect.top + thick.value - canvasRect.top) / scale.value;
-  console.log("startX", startX);
-  console.log("startY", startY);
+  //console.log("startX", startX);
+  //console.log("startY", startY);
 };
 const handleWheel = (e) => {
   if (e.ctrlKey || e.metaKey) {

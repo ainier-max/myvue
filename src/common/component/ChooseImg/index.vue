@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="imgUrl!='' && imgUrl.indexOf('rgba(')<0">
+    <div v-if="imgUrl!='' && imgUrl.indexOf('rgba(')<0 ">
       <el-popconfirm title="确定删除该照片?"
                      confirm-button-text="删除"
                      cancel-button-text="取消"

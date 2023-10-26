@@ -188,7 +188,10 @@ export default {
         pageConfig:{
           height:this.pageInfoDataForm.pageHeight,
           width:this.pageInfoDataForm.pageWidth,
-          unit:"px"
+          unit:"px",
+          backgroundType:"color",
+          backgroundColorValue:"rgba(0,0,0,0.8)",
+          backgroundImgValue:"",
         },
         blueScriptConfig:{
           x:0,
