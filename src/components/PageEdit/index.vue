@@ -12,7 +12,27 @@
           :highlight-current="true"
           :current-node-key="setNodeKey()"
           @node-click="nodeClick"
-        />
+        >
+          <template #default="{ node, data }">
+          <span class="custom-tree-node">
+            <span v-if="data.type=='mainBlock'">
+              <Folder style="width: 1em; height: 1em; "/>
+              {{ node.label }}
+            </span>
+            <span v-else>
+              <Folder style="width: 1em; height: 1em; "/>
+              {{ node.label }}
+            </span>
+            <span v-if="data.component_id!=null && data.component_id!=''">
+              {{ node.label }}
+            </span>
+            <span>
+            <Delete v-if="data.type!='mainBlock'" style="width: 1em; height: 1em;color: red;margin-left: 8px"
+                    @click.stop="() => treeRemove(data)"></Delete>
+            </span>
+          </span>
+        </template>
+      </el-tree>
       </div>
 
       <!-- <div style="border-top: 1px solid gray">子页面</div> -->
@@ -62,6 +82,13 @@
     </div>
 
     <div style="flex-basis: 18%">
+      <!--布局配置-->
+      <LayoutSetting
+        v-if="
+          currentPageRenderTreeNodeData?.type == 'flex-column' ||
+          currentPageRenderTreeNodeData?.type == 'flex-row'
+        "></LayoutSetting>
+      <!--页面块配置-->
       <BlockSetting
         v-if="
           currentPageRenderTreeNodeData?.type == 'mainBlock' ||
@@ -74,12 +101,16 @@
 </template>
 
 <script setup lang="ts">
+import 'default-passive-events'; 
 import { ref, nextTick, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
+
 import BlockSetting from "@/components/PageEdit/PageDesign/Settings/BlockSetting/index.vue";
+import LayoutSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/index.vue";
+
 
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
@@ -90,7 +121,7 @@ import {
   commonBatchSelectRequest,
   commonExcuteRequestAndOtherParam,
 } from "@/common/js/request.js";
-import { getListData } from "@/common/js/tree.js";
+import { getListData,deleteNode } from "@/common/js/tree.js";
 
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
@@ -99,7 +130,7 @@ const { pageRenderTreeData } = storeToRefs(pageEditStoreObj);
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
-const { currentPageRenderTreeNodeData, currentPageLayoutData } = storeToRefs(
+const { currentPageRenderTreeNodeData } = storeToRefs(
   currentDealDataStoreObj
 );
 
@@ -114,6 +145,7 @@ const layoutDesignShowFlag = ref(true);
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
 
+
 const setNodeKey = () => {
   //console.log("currentPageRenderTreeNodeData11",currentPageRenderTreeNodeData);
   if(currentPageRenderTreeNodeData.value){
@@ -122,6 +154,12 @@ const setNodeKey = () => {
     return "";
   }
 };
+
+//
+const treeRemove=(nodeData)=>{
+  deleteNode(pageRenderTreeData.value,nodeData.id);
+  currentDealDataStoreObj.setCurrentPageRenderTreeNodeData({});
+}
 
 //布局设计页面刷新
 const refreshLayouDesign = () => {
@@ -133,8 +171,8 @@ const refreshLayouDesign = () => {
 };
 
 const nodeClick = (data) => {
-  currentPageRenderTreeNodeData.value = data;
-  currentPageLayoutData.value = data;
+  //console.log("树节点点击事件--data",data);
+  currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
 };
 
 //查询页面渲染树
@@ -194,5 +232,13 @@ onMounted(() => {
   height: 100%;
   overflow: hidden;
   margin: 0px;
+}
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
 }
 </style>

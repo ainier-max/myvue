@@ -23,7 +23,7 @@
         @scroll="handleScroll"
       >
         <div ref="containerRef" class="screen-container">
-          <ViewDraggableResizable id="canvasID" :scale="scale" :style="canvasStyle" v-if="topPageBlock" :topPageBlock="topPageBlock"></ViewDraggableResizable>
+          <ViewDraggableResizable id="canvasID" :scale="scale" :style="canvasStyle" v-if="currentTopPageBlockData"></ViewDraggableResizable>
           <!-- <div id="canvasID" :style="canvasStyle"></div> -->
         </div>
       </div>
@@ -45,14 +45,12 @@ const { pageRenderTreeData } = storeToRefs(pageEditStoreObj);
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
-const { currentPageRenderTreeNodeData, currentPageLayoutData } = storeToRefs(
+const {currentTopPageBlockData } = storeToRefs(
   currentDealDataStoreObj
 );
-//获取顶层的block
-const topPageBlock=findParent(pageRenderTreeData.value,currentPageRenderTreeNodeData,[])[0];
 
-const rectWidth = parseInt(topPageBlock.config.pageConfig.width);
-const rectHeight = parseInt(topPageBlock.config.pageConfig.height);
+const rectWidth = parseInt(currentTopPageBlockData.value.config.pageConfig.width);
+const rectHeight = parseInt(currentTopPageBlockData.value.config.pageConfig.height);
 const scale = ref(0.6);
 const startX = ref(-50);//该值与canvasID的宽度一致
 const startY = ref(-50);//该值与canvasID的宽度一致

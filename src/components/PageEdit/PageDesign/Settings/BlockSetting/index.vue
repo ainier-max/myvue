@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden">
+  <div style="width: 100%; height: 100%; overflow: auto;padding-bottom:50px">
     <div class="titleClass" align="center">页面块配置</div>
     <div v-if="currentPageRenderTreeNodeData">
       <div class="leftTitle">页面块Ref：</div>
@@ -77,14 +77,16 @@
         插入内容
       </div>
       <div align="center" style="margin-top: 15px">
-        <el-button @click="addFlex('flex-column')" type="success"
+        <el-button @click="addFlex('flex-row')" type="success"
           >水平布局</el-button
         >
-        <el-button @click="addFlex('flex-row')" type="success"
+        <el-button @click="addFlex('flex-column')" type="success"
           >垂直布局</el-button
         >
       </div>
     </div>
+    <div style="height:50px"></div>
+
   </div>
 </template>
 
@@ -104,7 +106,7 @@ const pageEditStoreObj = pageRenderTreeDataStore();
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
-const { currentPageRenderTreeNodeData, currentPageLayoutData } = storeToRefs(
+const { currentPageRenderTreeNodeData } = storeToRefs(
   currentDealDataStoreObj
 );
 
@@ -139,21 +141,23 @@ const addFlex = (type) => {
   layoutTemp.config.y = 10;
   layoutTemp.config.w = 200;
   layoutTemp.config.h = 200;
+  layoutTemp.config.unit = "px";
   layoutTemp.config.zIndex = 100;
   layoutTemp.config.backgroundType="color";
-  layoutTemp.config.backgroundColorValue = "rgba(0,0,0,0.8)";
+  layoutTemp.config.backgroundColorValue = "rgba(24, 166, 54, 0.8)";
   layoutTemp.config.backgroundImgValue = "";
-  let blockWidthTemp = props.currentPageRenderTreeNodeData.config.pageConfig.width;
-  let blockHeightTemp = props.currentPageRenderTreeNodeData.config.pageConfig.height;
+  let blockWidthTemp = currentPageRenderTreeNodeData.value.config.pageConfig.width;
+  let blockHeightTemp = currentPageRenderTreeNodeData.value.config.pageConfig.height;
   layoutTemp.config.xPer = toDecimal((10 / blockWidthTemp) * 100);
   layoutTemp.config.yPer = toDecimal((10 / blockHeightTemp) * 100);
   layoutTemp.config.wPer = toDecimal((200 / blockWidthTemp) * 100);
   layoutTemp.config.hPer = toDecimal((200 / blockHeightTemp) * 100);
   layoutTemp.id = "id-" + uuid();
-  layoutTemp.pid = props.currentPageRenderTreeNodeData.id;
-  if (type == "flex-column") {
+  layoutTemp.pid = currentPageRenderTreeNodeData.value.id;
+  layoutTemp.children = [];
+  if (type == "flex-row") {
     layoutTemp.label = "水平布局";
-  } else if (type == "flex-row") {
+  } else if (type == "flex-column") {
     layoutTemp.label = "垂直布局";
   }
   layoutTemp.ref = "layoutRef-" + uuid();
@@ -161,7 +165,7 @@ const addFlex = (type) => {
   pageEditStoreObj.addNodeByPID(layoutTemp.pid, layoutTemp);
 };
 const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
-  props.currentPageRenderTreeNodeData.config.pageConfig.backgroundImgValue = imgUUID;
+  currentPageRenderTreeNodeData.value.config.pageConfig.backgroundImgValue = imgUUID;
 };
 
 // 生命周期钩子
