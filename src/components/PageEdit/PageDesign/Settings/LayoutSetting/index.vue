@@ -100,9 +100,19 @@
       >
         <div class="leftTitle">
           布局组件占比
-          <WarningFilled
-            style="width: 1em; height: 1em; color: gray; "
-          ></WarningFilled>
+          <el-popover
+            placement="left-start"
+            :width="480"
+            trigger="hover"
+            content="与该布局组件同属的父节点下，其《布局组件占比》相加需要等于100！"
+          >
+            <template #reference>
+              <WarningFilled
+                style="width: 1em; height: 1em; color: gray"
+              ></WarningFilled>
+            </template>
+          </el-popover>
+          
         </div>
         <el-input
           v-model="currentPageRenderTreeNodeData.config.flexBasis"
@@ -236,6 +246,8 @@
           type="primary"
           >前端组件</el-button
         >
+
+
         <el-button
           @click="addPackComponent"
           style="margin-top: 15px"
@@ -255,6 +267,19 @@
     </div>
     <div style="height: 50px"></div>
   </div>
+
+
+  <el-dialog
+        v-model="frontEndComponentChooseDialogFlag"
+        title="前端组件(双击选择组件)"
+        append-to-body
+        :draggable="true"
+        width="60%"
+        top="10vh"
+        style="height: 550px;">
+      <FrontEndComponentChoose ref="frontEndComponentChooseRef" @getFrontEndComponent="getFrontEndComponent"></FrontEndComponentChoose>
+    </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -266,6 +291,7 @@ import ChooseImg from "@/common/component/ChooseImg/index.vue";
 import { storeToRefs } from "pinia";
 
 const activeName = ref(null);
+const frontEndComponentChooseDialogFlag=ref(false);
 
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageEditStoreObj = pageRenderTreeDataStore();
@@ -283,7 +309,20 @@ const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
 console.log("currentPageRenderTreeNodeData1", currentTopPageBlockData);
 
 //添加前端组件
-const addFrontEndComponent = () => {};
+import FrontEndComponentChoose from '@/components/PageEdit/PageDesign/Settings/LayoutSetting/FrontEndComponentChoose/index.vue';
+const frontEndComponentChooseRef = ref(null);
+const frontEndComponentChooseCloseHandle=()=>{
+  console.log("frontEndComponentChooseRef",frontEndComponentChooseRef);
+  frontEndComponentChooseRef.value.getCheckNode();
+}
+const addFrontEndComponent = () => {
+  frontEndComponentChooseDialogFlag.value=true;
+};
+const getFrontEndComponent = (componentInfo) => {
+  console.log("getFrontEndComponent--componentInfo", componentInfo);
+  pageEditStoreObj.createOrReplaceNodeByPID(currentPageRenderTreeNodeData.value.id, componentInfo);
+  frontEndComponentChooseDialogFlag.value=false;
+}
 //添加打包组件
 const addPackComponent = () => {};
 //添加内置组件

@@ -1,6 +1,9 @@
 <template>
   <div :style="pageLayoutStyle(pageLayoutData)">
-    <div v-for="(item, index) in pageLayoutData.children" :style="setStyle(item)">
+    <div
+      v-for="(item, index) in pageLayoutData.children"
+      :style="setStyle(item)"
+    >
       <PageLayoutRender
         v-if="item.type == 'flex-row' || item.type == 'flex-column'"
         :pageLayoutData="item"
@@ -10,9 +13,9 @@
 </template>
 
 <script lang="ts">
-    export default {
-        name: 'PageLayoutRender' //给组件命名
-    }
+export default {
+  name: "PageLayoutRender", //给组件命名
+};
 </script>
 
 <script setup lang="ts">
@@ -63,15 +66,15 @@ const pageLayoutStyle = computed(() => {
       styleObj.background = pageLayout.config.backgroundColorValue;
     }
 
-    if(pageLayout.type=="flex-column"){
-      styleObj.display="flex";
-      styleObj.flexDirection="column"
+    if (pageLayout.type == "flex-column") {
+      styleObj.display = "flex";
+      styleObj.flexDirection = "column";
     }
-    if(pageLayout.type=="flex-row"){
-      styleObj.display="flex";
-      styleObj.flexDirection="row"
+    if (pageLayout.type == "flex-row") {
+      styleObj.display = "flex";
+      styleObj.flexDirection = "row";
     }
-    console.log("pageLayoutStyle--styleObj",styleObj);
+    console.log("pageLayoutStyle--styleObj", styleObj);
     return styleObj;
   };
 });
@@ -80,25 +83,32 @@ const pageLayoutStyle = computed(() => {
 const setStyle = computed(() => {
   return function (item) {
     console.log("setStyle--item", item);
-    let styleObj = {};
-    styleObj.flexBasis = item.config.flexBasis + "%";
-    if (currentPageRenderTreeNodeData.value.ref == item.ref) {
-      //选中边框样式
-      styleObj.border = "2px solid blue";
-    } else {
-      styleObj.border = "1px dashed yellow";
-    }
-    //内边距
-    styleObj.paddingTop=item.config.padding.top+item.config.padding.unit;
-    styleObj.paddingBottom=item.config.padding.bottom+item.config.padding.unit;
-    styleObj.paddingLeft=item.config.padding.left+item.config.padding.unit;
-    styleObj.paddingRight=item.config.padding.right+item.config.padding.unit;
-    //外边距
-    styleObj.marginTop=item.config.margin.top+item.config.margin.unit;
-    styleObj.marginBottom=item.config.margin.bottom+item.config.margin.unit;
-    styleObj.marginLeft=item.config.margin.left+item.config.margin.unit;
-    styleObj.marginRight=item.config.margin.right+item.config.margin.unit;
 
+    let styleObj = {};
+    //内部布局组件样式
+    if (item.type == "flex-column" || item.type == "flex-row") {
+      styleObj.flexBasis = item.config.flexBasis + "%";
+      if (currentPageRenderTreeNodeData.value.ref == item.ref) {
+        //选中边框样式
+        styleObj.border = "2px solid blue";
+      } else {
+        styleObj.border = "1px dashed yellow";
+      }
+      //内边距
+      styleObj.paddingTop = item.config.padding.top + item.config.padding.unit;
+      styleObj.paddingBottom =
+        item.config.padding.bottom + item.config.padding.unit;
+      styleObj.paddingLeft =
+        item.config.padding.left + item.config.padding.unit;
+      styleObj.paddingRight =
+        item.config.padding.right + item.config.padding.unit;
+      //外边距
+      styleObj.marginTop = item.config.margin.top + item.config.margin.unit;
+      styleObj.marginBottom =
+        item.config.margin.bottom + item.config.margin.unit;
+      styleObj.marginLeft = item.config.margin.left + item.config.margin.unit;
+      styleObj.marginRight = item.config.margin.right + item.config.margin.unit;
+    }
     return styleObj;
   };
 });

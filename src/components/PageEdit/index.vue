@@ -23,9 +23,6 @@
               <Folder style="width: 1em; height: 1em; "/>
               {{ node.label }}
             </span>
-            <span v-if="data.component_id!=null && data.component_id!=''">
-              {{ node.label }}
-            </span>
             <span>
             <Delete v-if="data.type!='mainBlock'" style="width: 1em; height: 1em;color: red;margin-left: 8px"
                     @click.stop="() => treeRemove(data)"></Delete>
@@ -202,10 +199,10 @@ const savePageRenderTree = () => {
   console.log("savePageRenderTree--arrayTemp", arrayTemp);
   let newArrayTemp = [];
   for (let i = 0; i < arrayTemp.length; i++) {
-    let { id, pid, ref, type } = { ...arrayTemp[i] };
+    let { id, pid, ref, type,related_value } = { ...arrayTemp[i] };
     let config_str = objectToString(arrayTemp[i].config);
     let name = arrayTemp[i].label;
-    newArrayTemp.push({ id, pid, name, ref, type, page_id, config_str });
+    newArrayTemp.push({ id, pid, name, ref, type,related_value, page_id, config_str });
   }
   let param = {};
   param.sql = "page_render_tree.savePageRenderTree";

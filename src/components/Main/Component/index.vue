@@ -287,7 +287,7 @@ export default {
       //表单验证后执行
       var param = {};
       param.ids = this.deleteIDS;
-      param.sql = "page_component_tree.delete";
+      param.sql = "page_component_frontend_tree.delete";
       commonExcuteRequest(window.axios, param, this.deleteTreeNodeCallBack);
     },
     deleteTreeNodeCallBack(result) {
@@ -311,7 +311,7 @@ export default {
       let param = {};
       param.name = this.treeNodeName;
       param.id = this.treeOpData.id;
-      param.sql = "page_component_tree.update";
+      param.sql = "page_component_frontend_tree.update";
       commonExcuteRequest(window.axios, param, this.editTreeDicDataCallBack);
     },
     editTreeDicDataCallBack(result) {
@@ -328,7 +328,7 @@ export default {
       param.name = this.treeNodeName;
       param.pid = this.treeOpData.id;
       param.component_id = this.treeOpData.component_id;
-      param.sql = "page_component_tree.insert";
+      param.sql = "page_component_frontend_tree.insert";
       commonExcuteRequest(window.axios, param, this.addTreeDicDataCallBack);
     },
     addTreeDicDataCallBack(result) {
@@ -378,7 +378,7 @@ export default {
      */
     findDefaultComponent(){
       let param = {};
-      param.sql = "page_component.find";
+      param.sql = "page_component_frontend.find";
       param.component_id="echart-one-bar";
       commonSelectRequest(axios, param, this.findDefaultComponentCallBack);
     },
@@ -396,7 +396,7 @@ export default {
     //查找组件树
     findPageComponentTree() {
       var param = {};
-      param.sql = "page_component_tree.find";
+      param.sql = "page_component_frontend_tree.find";
       commonSelectRequest(axios, param, this.findPageComponentTreeCallBack);
     },
     findPageComponentTreeCallBack(result) {
@@ -416,7 +416,7 @@ export default {
         if (valid) {
           //表单验证后执行
           let param = {};
-          param.sql = "page_component.add";
+          param.sql = "page_component_frontend.add";
           param.component_id = this.ComponentInfoDataForm.component_id;
           param.component_name = this.ComponentInfoDataForm.component_name;
           param.type = "frontEndComponent";
@@ -469,7 +469,7 @@ export default {
     },
     deleteComponentInfo() {
       let param = {};
-      param.sql = "page_component.delete";
+      param.sql = "page_component_frontend.delete";
       param.id = this.currentComponentInfo.id;
       commonExcuteRequest(window.axios, param, this.deleteComponentInfoCallBack);
     },
@@ -483,7 +483,7 @@ export default {
     showEditComponentInfoWin(row){
       this.upholdFlag="edit";
       var param = {};
-      param.sql = "page_component.findPhoto";
+      param.sql = "page_component_frontend.findPhoto";
       param.component_id = row.component_id;
       commonSelectRequest(axios, param, this.findPhotoCallBack);
     },
@@ -503,7 +503,7 @@ export default {
     editComponentInfo() {
       //表单验证后执行
       let param = {};
-      param.sql = "page_component.update";
+      param.sql = "page_component_frontend.update";
       param.id = this.ComponentInfoDataForm.id;
       param.component_name = this.ComponentInfoDataForm.component_name;
       param.component_id = this.ComponentInfoDataForm.component_id;
@@ -545,7 +545,7 @@ export default {
     },
     findComponentInfo() {
       var param = {};
-      param.sql = "page_component.find";
+      param.sql = "page_component_frontend.find";
       commonSelectRequest(axios, param, this.findComponentInfoCallBack);
     },
     findComponentInfoCallBack(result) {
@@ -580,7 +580,7 @@ export default {
       param.name = row.component_name;
       param.pid = node.id;
       param.component_id = row.component_id;
-      param.sql = "page_component_tree.insert";
+      param.sql = "page_component_frontend_tree.insert";
       commonExcuteRequest(window.axios, param, this.componentDeployCallBack);
     },
     componentDeployCallBack(result) {

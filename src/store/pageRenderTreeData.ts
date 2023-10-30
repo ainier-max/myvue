@@ -12,7 +12,9 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
   actions: {
     //设置数据
     setData(data) {
+      
       this.pageRenderTreeData = data;
+      console.log("页面渲染树数据--pageRenderTreeData",this.pageRenderTreeData);
     },
     //找出type为mainBlock的数据
     getNodeForMainBlock() {
@@ -22,6 +24,17 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
     addNodeByPID(pid,node) {
       let nodeTemp = findNodeById(this.pageRenderTreeData, pid);
       nodeTemp.children.push(node);
+      console.log("addNodeByPID--this.pageRenderTreeData",this.pageRenderTreeData);
+    },
+    //布局组件添加前端组件、内置组件、打包组件、页面块时使用
+    createOrReplaceNodeByPID(pid,node) {
+      let nodeTemp = findNodeById(this.pageRenderTreeData, pid);
+      if (nodeTemp.children.length>0) {
+        nodeTemp.children[0]=node;
+      } else {
+        nodeTemp.children.push(node);
+      }
+      console.log("createOrReplaceNodeByPID--this.pageRenderTreeData",this.pageRenderTreeData);
     },
     //树节点转数组
     getPageRenderTreeDataForArray() {

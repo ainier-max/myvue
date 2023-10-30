@@ -14,6 +14,13 @@
 
             </div>
           </el-collapse-item>
+          <el-collapse-item title="系统设计" name="5">
+            <div>
+              <div @click="toPath('系统设计/页面渲染树.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">页面渲染树</div>
+              <div @click="toPath('系统设计/全局配置.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">全局配置</div>
+            </div>
+          </el-collapse-item>
+
           <el-collapse-item title="页面组件" name="2">
             <div>
               <div @click="toPath('页面组件/组件依赖较多.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件依赖较多</div>

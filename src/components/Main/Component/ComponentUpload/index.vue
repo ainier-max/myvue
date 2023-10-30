@@ -85,7 +85,7 @@ export default {
     //保存组件
     saveComponentInfo() {
       var param = {};
-      param.sql = "page_component.updateComponentConfigAndCode";
+      param.sql = "page_component_frontend.updateComponentConfigAndCode";
       param.component_id = this.componentInfo.component_id;
       param.component_config_str = objectToString(this.componentInfo.component_config);
       param.component_code = this.componentInfo.component_code;
@@ -100,7 +100,7 @@ export default {
 
     findComponentInfo() {
       var param = {};
-      param.sql = "page_component.find";
+      param.sql = "page_component_frontend.find";
       param.component_id = this.$route.query.component_id;
       commonSelectRequest(axios, param, this.findComponentInfoCallBack);
     },
