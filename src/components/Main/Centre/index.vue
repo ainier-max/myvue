@@ -185,19 +185,19 @@ export default {
       param.page_img =  "6da8931c36284f8ea8160b9770a39577";
       param.page_block_ref='blockRef-'+window.cbcuuid();
       let configObj={
-        pageConfig:{
-          height:this.pageInfoDataForm.pageHeight,
-          width:this.pageInfoDataForm.pageWidth,
+        attr:{
+          h:this.pageInfoDataForm.pageHeight,
+          w:this.pageInfoDataForm.pageWidth,
           unit:"px",
           backgroundType:"color",
           backgroundColorValue:"rgba(0,0,0,0.8)",
           backgroundImgValue:"",
         },
-        blueScriptConfig:{
+        blueScriptAttr:{
           x:0,
           y:0,
-          width:3000,
-          height:2000
+          w:3000,
+          h:2000
         }
       };
       param.config_str=objectToString(configObj);

@@ -82,11 +82,35 @@ const findPageComponentByIDCallBack = (result) => {
     obj.ref = "frontEndComponentRef-" + uuid();
     obj.type = result.objects[0].type;
     obj.page_id = page_id;
+    obj.component_code = result.objects[0].component_code;
     obj.related_value = result.objects[0].component_id;
     obj.config_str = result.objects[0].component_config_str;
     obj.config = eval(
       "(" + result.objects[0].component_config_str + ")"
     );
+
+    
+    obj.config.attr.flexBasis = 100;
+    obj.config.attr.padding = {};
+    obj.config.attr.padding.unit = "px";
+    obj.config.attr.padding.top = "0";
+    obj.config.attr.padding.bottom = "0";
+    obj.config.attr.padding.left = "0";
+    obj.config.attr.padding.right = "0";
+
+    obj.config.attr.margin = {};
+    obj.config.attr.margin.unit = "px";
+    obj.config.attr.margin.top = "0";
+    obj.config.attr.margin.bottom = "0";
+    obj.config.attr.margin.left = "0";
+    obj.config.attr.margin.right = "0";
+
+    obj.config.attr.zIndex = 100;
+    obj.config.attr.show = true;
+    obj.config.attr.backgroundType = "color";
+    obj.config.attr.backgroundColorValue = null;
+    obj.config.attr.backgroundImgValue = "";
+
     emit("getFrontEndComponent",obj);
   }
 };
@@ -129,6 +153,7 @@ const pageCentreTreeNodeClick = (data, node) => {
 // 生命周期钩子
 onMounted(() => {
   findPageComponentTree();
+  
 });
 </script>
 

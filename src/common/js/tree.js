@@ -9,6 +9,7 @@ export function getListData(objects, otherParams) {
         id: objects[i].id,
         label: objects[i].name,
         pid: objects[i].pid,
+        children:[]
       };
       for (let j = 0; j < otherParams.length; j++) {
         objTemp[otherParams[j]] = objects[i][otherParams[j]];
@@ -33,6 +34,7 @@ export function data2treeDG(datas, dataArray, otherParams) {
           id: data.id,
           label: data.name,
           pid: data.pid,
+          children:[]
         };
         for (let j = 0; j < otherParams.length; j++) {
           objTemp[otherParams[j]] = data[otherParams[j]];

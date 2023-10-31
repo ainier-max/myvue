@@ -18,7 +18,7 @@
 
       <div class="leftTitle">页面块高度：</div>
       <el-input
-        v-model="currentPageRenderTreeNodeData.config.pageConfig.height"
+        v-model="currentPageRenderTreeNodeData.config.attr.h"
         class="rightValue"
         @change="refreshLayouDesign"
         placeholder="页面块高度"
@@ -26,7 +26,7 @@
 
       <div class="leftTitle">页面块宽度：</div>
       <el-input
-        v-model="currentPageRenderTreeNodeData.config.pageConfig.width"
+        v-model="currentPageRenderTreeNodeData.config.attr.w"
         class="rightValue"
         @change="refreshLayouDesign"
         placeholder="页面块宽度"
@@ -34,7 +34,7 @@
 
       <div class="leftTitle">单位：</div>
       <el-input
-        v-model="currentPageRenderTreeNodeData.config.pageConfig.unit"
+        v-model="currentPageRenderTreeNodeData.config.attr.unit"
         class="rightValue"
         placeholder="单位"
       />
@@ -44,7 +44,7 @@
       <div style="padding-left: 15px; margin-top: 10px; font-size: 12px">
         颜色
         <el-switch
-          v-model="currentPageRenderTreeNodeData.config.pageConfig.backgroundType"
+          v-model="currentPageRenderTreeNodeData.config.attr.backgroundType"
           class="mb-2"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           active-value="img"
@@ -55,14 +55,14 @@
         <div>
           <!--otherParam 会跟着子组件调用父组件的事件参数-->
           <ChooseImg
-            v-if="currentPageRenderTreeNodeData.config.pageConfig.backgroundType == 'img'"
+            v-if="currentPageRenderTreeNodeData.config.attr.backgroundType == 'img'"
             otherParam=""
-            :imgUUID="currentPageRenderTreeNodeData.config.pageConfig.backgroundImgValue"
+            :imgUUID="currentPageRenderTreeNodeData.config.attr.backgroundImgValue"
             @getNewImgUrl="getNewImgUrlByTopPageBlock"
           ></ChooseImg>
           <el-color-picker
-            v-if="currentPageRenderTreeNodeData.config.pageConfig.backgroundType == 'color'"
-            v-model="currentPageRenderTreeNodeData.config.pageConfig.backgroundColorValue"
+            v-if="currentPageRenderTreeNodeData.config.attr.backgroundType == 'color'"
+            v-model="currentPageRenderTreeNodeData.config.attr.backgroundColorValue"
             show-alpha
           />
         </div>
@@ -137,21 +137,23 @@ const refreshLayouDesign = (event) => {
 const addFlex = (type) => {
   let layoutTemp = {};
   layoutTemp.config = {};
-  layoutTemp.config.x = 10;
-  layoutTemp.config.y = 10;
-  layoutTemp.config.w = 200;
-  layoutTemp.config.h = 200;
-  layoutTemp.config.unit = "px";
-  layoutTemp.config.zIndex = 100;
-  layoutTemp.config.backgroundType="color";
-  layoutTemp.config.backgroundColorValue = "rgba(24, 166, 54, 0.8)";
-  layoutTemp.config.backgroundImgValue = "";
-  let blockWidthTemp = currentPageRenderTreeNodeData.value.config.pageConfig.width;
-  let blockHeightTemp = currentPageRenderTreeNodeData.value.config.pageConfig.height;
-  layoutTemp.config.xPer = toDecimal((10 / blockWidthTemp) * 100);
-  layoutTemp.config.yPer = toDecimal((10 / blockHeightTemp) * 100);
-  layoutTemp.config.wPer = toDecimal((200 / blockWidthTemp) * 100);
-  layoutTemp.config.hPer = toDecimal((200 / blockHeightTemp) * 100);
+  layoutTemp.config.attr={};
+  layoutTemp.config.attr.x = 10;
+  layoutTemp.config.attr.y = 10;
+  layoutTemp.config.attr.w = 200;
+  layoutTemp.config.attr.h = 200;
+  layoutTemp.config.attr.unit = "px";
+  layoutTemp.config.attr.zIndex = 100;
+  layoutTemp.config.attr.show = true;
+  layoutTemp.config.attr.backgroundType="color";
+  layoutTemp.config.attr.backgroundColorValue = "rgba(24, 166, 54, 0.8)";
+  layoutTemp.config.attr.backgroundImgValue = "";
+  let blockWidthTemp = currentPageRenderTreeNodeData.value.config.attr.w;
+  let blockHeightTemp = currentPageRenderTreeNodeData.value.config.attr.h;
+  layoutTemp.config.attr.xPer = toDecimal((10 / blockWidthTemp) * 100);
+  layoutTemp.config.attr.yPer = toDecimal((10 / blockHeightTemp) * 100);
+  layoutTemp.config.attr.wPer = toDecimal((200 / blockWidthTemp) * 100);
+  layoutTemp.config.attr.hPer = toDecimal((200 / blockHeightTemp) * 100);
   layoutTemp.id = "id-" + uuid();
   layoutTemp.pid = currentPageRenderTreeNodeData.value.id;
   layoutTemp.children = [];
@@ -165,7 +167,7 @@ const addFlex = (type) => {
   pageEditStoreObj.addNodeByPID(layoutTemp.pid, layoutTemp);
 };
 const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
-  currentPageRenderTreeNodeData.value.config.pageConfig.backgroundImgValue = imgUUID;
+  currentPageRenderTreeNodeData.value.config.attr.backgroundImgValue = imgUUID;
 };
 
 // 生命周期钩子

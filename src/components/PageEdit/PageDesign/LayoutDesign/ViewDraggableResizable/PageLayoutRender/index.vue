@@ -4,11 +4,17 @@
       v-for="(item, index) in pageLayoutData.children"
       :style="setStyle(item)"
     >
+      <!--内部水平布局和垂直布局的渲染-->
       <PageLayoutRender
         v-if="item.type == 'flex-row' || item.type == 'flex-column'"
         :pageLayoutData="item"
       ></PageLayoutRender>
+      <!--前端组件渲染-->
+      <FrontEndComponentRender :frontEndComponentData="item" v-if="item.type == 'frontEndComponent'">
+
+      </FrontEndComponentRender>
     </div>
+
   </div>
 </template>
 
@@ -19,6 +25,8 @@ export default {
 </script>
 
 <script setup lang="ts">
+import FrontEndComponentRender from './FrontEndComponentRender/index.vue';
+
 import { ref, nextTick, onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";
 
@@ -47,23 +55,23 @@ const pageLayoutStyle = computed(() => {
     styleObj.width = "100%";
     styleObj.height = "100%";
     styleObj.cursor = "move";
-    styleObj.zIndex = pageLayout.config.zIndex;
+    styleObj.zIndex = pageLayout.config.attr.zIndex;
     if (
-      pageLayout.config.backgroundType == "img" &&
-      pageLayout.config.backgroundImgValue != ""
+      pageLayout.config.attr.backgroundType == "img" &&
+      pageLayout.config.attr.backgroundImgValue != ""
     ) {
       let imgURL =
         window.cbcConfig.getFileUrl +
         "?uuid=" +
-        pageLayout.config.backgroundImgValue +
+        pageLayout.config.attr.backgroundImgValue +
         "&type=photo";
       styleObj.backgroundImage = "url(" + imgURL + ")";
       styleObj.backgroundSize = "100% 100%";
     } else if (
-      pageLayout.config.backgroundType == "color" &&
-      pageLayout.config.backgroundColorValue != ""
+      pageLayout.config.attr.backgroundType == "color" &&
+      pageLayout.config.attr.backgroundColorValue != ""
     ) {
-      styleObj.background = pageLayout.config.backgroundColorValue;
+      styleObj.background = pageLayout.config.attr.backgroundColorValue;
     }
 
     if (pageLayout.type == "flex-column") {
@@ -86,29 +94,27 @@ const setStyle = computed(() => {
 
     let styleObj = {};
     //内部布局组件样式
-    if (item.type == "flex-column" || item.type == "flex-row") {
-      styleObj.flexBasis = item.config.flexBasis + "%";
-      if (currentPageRenderTreeNodeData.value.ref == item.ref) {
-        //选中边框样式
-        styleObj.border = "2px solid blue";
-      } else {
-        styleObj.border = "1px dashed yellow";
-      }
-      //内边距
-      styleObj.paddingTop = item.config.padding.top + item.config.padding.unit;
-      styleObj.paddingBottom =
-        item.config.padding.bottom + item.config.padding.unit;
-      styleObj.paddingLeft =
-        item.config.padding.left + item.config.padding.unit;
-      styleObj.paddingRight =
-        item.config.padding.right + item.config.padding.unit;
-      //外边距
-      styleObj.marginTop = item.config.margin.top + item.config.margin.unit;
-      styleObj.marginBottom =
-        item.config.margin.bottom + item.config.margin.unit;
-      styleObj.marginLeft = item.config.margin.left + item.config.margin.unit;
-      styleObj.marginRight = item.config.margin.right + item.config.margin.unit;
+
+    styleObj.flexBasis = item.config.attr.flexBasis + "%";
+    if (currentPageRenderTreeNodeData.value.ref == item.ref) {
+      //选中边框样式
+      styleObj.border = "2px solid blue";
+    } else {
+      styleObj.border = "1px dashed yellow";
     }
+    //内边距
+    styleObj.paddingTop = item.config.attr.padding.top + item.config.attr.padding.unit;
+    styleObj.paddingBottom =
+      item.config.attr.padding.bottom + item.config.attr.padding.unit;
+    styleObj.paddingLeft = item.config.attr.padding.left + item.config.attr.padding.unit;
+    styleObj.paddingRight =
+      item.config.attr.padding.right + item.config.attr.padding.unit;
+    //外边距
+    styleObj.marginTop = item.config.attr.margin.top + item.config.attr.margin.unit;
+    styleObj.marginBottom = item.config.attr.margin.bottom + item.config.attr.margin.unit;
+    styleObj.marginLeft = item.config.attr.margin.left + item.config.attr.margin.unit;
+    styleObj.marginRight = item.config.attr.margin.right + item.config.attr.margin.unit;
+
     return styleObj;
   };
 });

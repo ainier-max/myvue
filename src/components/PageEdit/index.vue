@@ -14,22 +14,29 @@
           @node-click="nodeClick"
         >
           <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <span v-if="data.type=='mainBlock'">
-              <Folder style="width: 1em; height: 1em; "/>
-              {{ node.label }}
+            <span class="custom-tree-node">
+              <span v-if="data.type == 'mainBlock'">
+                <Folder style="width: 1em; height: 1em" />
+                {{ node.label }}
+              </span>
+              <span v-else>
+                <Folder style="width: 1em; height: 1em" />
+                {{ node.label }}
+              </span>
+              <span>
+                <Delete
+                  v-if="
+                    data.type != 'mainBlock' &&
+                    currentPageRenderTreeNodeData &&
+                    currentPageRenderTreeNodeData.id == data.id
+                  "
+                  style="width: 1em; height: 1em; color: red; margin-left: 8px"
+                  @click.stop="() => treeRemove(data)"
+                ></Delete>
+              </span>
             </span>
-            <span v-else>
-              <Folder style="width: 1em; height: 1em; "/>
-              {{ node.label }}
-            </span>
-            <span>
-            <Delete v-if="data.type!='mainBlock'" style="width: 1em; height: 1em;color: red;margin-left: 8px"
-                    @click.stop="() => treeRemove(data)"></Delete>
-            </span>
-          </span>
-        </template>
-      </el-tree>
+          </template>
+        </el-tree>
       </div>
 
       <!-- <div style="border-top: 1px solid gray">子页面</div> -->
@@ -84,7 +91,8 @@
         v-if="
           currentPageRenderTreeNodeData?.type == 'flex-column' ||
           currentPageRenderTreeNodeData?.type == 'flex-row'
-        "></LayoutSetting>
+        "
+      ></LayoutSetting>
       <!--页面块配置-->
       <BlockSetting
         v-if="
@@ -98,16 +106,14 @@
 </template>
 
 <script setup lang="ts">
-import 'default-passive-events'; 
+//import 'default-passive-events';
 import { ref, nextTick, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
-
 import BlockSetting from "@/components/PageEdit/PageDesign/Settings/BlockSetting/index.vue";
 import LayoutSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/index.vue";
-
 
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
@@ -118,16 +124,16 @@ import {
   commonBatchSelectRequest,
   commonExcuteRequestAndOtherParam,
 } from "@/common/js/request.js";
-import { getListData,deleteNode } from "@/common/js/tree.js";
+import { getListData, deleteNode } from "@/common/js/tree.js";
 
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
-const pageEditStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData } = storeToRefs(pageEditStoreObj);
+const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
+const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
-const { currentPageRenderTreeNodeData } = storeToRefs(
+const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
   currentDealDataStoreObj
 );
 
@@ -142,21 +148,26 @@ const layoutDesignShowFlag = ref(true);
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
 
-
 const setNodeKey = () => {
   //console.log("currentPageRenderTreeNodeData11",currentPageRenderTreeNodeData);
-  if(currentPageRenderTreeNodeData.value){
+  if (currentPageRenderTreeNodeData.value) {
     return currentPageRenderTreeNodeData.value.id;
-  }else{
+  } else {
     return "";
   }
 };
 
 //
-const treeRemove=(nodeData)=>{
-  deleteNode(pageRenderTreeData.value,nodeData.id);
-  currentDealDataStoreObj.setCurrentPageRenderTreeNodeData({});
-}
+const treeRemove = (nodeData) => {
+  //删除节点
+  pageRenderTreeDataStoreObj.deleteNodeByData(nodeData);
+  //如果删除的节点为当前选中的节点，则设置为当前节点的父节点
+  if (nodeData.id == pageRenderTreeRef.value.getCurrentKey()) {
+    currentDealDataStoreObj.setCurrentPageRenderTreeNodeDataByID(nodeData.pid);
+  }
+  //组件个数发生变化，重新渲染
+  currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
+};
 
 //布局设计页面刷新
 const refreshLayouDesign = () => {
@@ -183,11 +194,18 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
   for (let i = 0; i < result.objects.length; i++) {
     result.objects[i].config = eval("(" + result.objects[i].config_str + ")");
   }
-  pageEditStoreObj.setData(
-    getListData(result.objects, ["ref", "type", "config", "config_str"])
+  pageRenderTreeDataStoreObj.setData(
+    getListData(result.objects, [
+      "ref",
+      "type",
+      "config",
+      "config_str",
+      "related_value",
+      "component_code",
+    ])
   );
   //找出type为mainBlock的数据
-  let nodeTemp = pageEditStoreObj.getNodeForMainBlock();
+  let nodeTemp = pageRenderTreeDataStoreObj.getNodeForMainBlock();
   nextTick(() => {
     pageRenderTreeRef.value.setCurrentKey(nodeTemp.id);
     nodeClick(nodeTemp);
@@ -195,14 +213,23 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
 };
 //保存页面渲染树
 const savePageRenderTree = () => {
-  let arrayTemp = pageEditStoreObj.getPageRenderTreeDataForArray();
+  let arrayTemp = pageRenderTreeDataStoreObj.getPageRenderTreeDataForArray();
   console.log("savePageRenderTree--arrayTemp", arrayTemp);
   let newArrayTemp = [];
   for (let i = 0; i < arrayTemp.length; i++) {
-    let { id, pid, ref, type,related_value } = { ...arrayTemp[i] };
+    let { id, pid, ref, type, related_value } = { ...arrayTemp[i] };
     let config_str = objectToString(arrayTemp[i].config);
     let name = arrayTemp[i].label;
-    newArrayTemp.push({ id, pid, name, ref, type,related_value, page_id, config_str });
+    newArrayTemp.push({
+      id,
+      pid,
+      name,
+      ref,
+      type,
+      related_value,
+      page_id,
+      config_str,
+    });
   }
   let param = {};
   param.sql = "page_render_tree.savePageRenderTree";

@@ -44,52 +44,52 @@
       >
         <div class="leftTitle">
           布局组件X坐标：<span
-            >{{ currentPageRenderTreeNodeData.config.xPer }}%</span
+            >{{ currentPageRenderTreeNodeData.config.attr.xPer }}%</span
           >
         </div>
         <el-input
-          @input="handleInput"
-          v-model.number="currentPageRenderTreeNodeData.config.x"
+          @input="handleInput('x')"
+          v-model.number="currentPageRenderTreeNodeData.config.attr.x"
           class="rightValue"
           placeholder="布局组件X坐标"
         />
         <div class="leftTitle">
           布局组件Y坐标：<span
-            >{{ currentPageRenderTreeNodeData.config.yPer }}%</span
+            >{{ currentPageRenderTreeNodeData.config.attr.yPer }}%</span
           >
         </div>
         <el-input
-          @input="handleInput"
-          v-model.number="currentPageRenderTreeNodeData.config.y"
+          @input="handleInput('y')"
+          v-model.number="currentPageRenderTreeNodeData.config.attr.y"
           class="rightValue"
           placeholder="布局组件Y坐标"
         />
         <div class="leftTitle">
           布局组件高度：<span
-            >{{ currentPageRenderTreeNodeData.config.hPer }}%</span
+            >{{ currentPageRenderTreeNodeData.config.attr.hPer }}%</span
           >
         </div>
         <el-input
-          @input="handleInput"
-          v-model.number="currentPageRenderTreeNodeData.config.h"
+          @input="handleInput('h')"
+          v-model.number="currentPageRenderTreeNodeData.config.attr.h"
           class="rightValue"
           placeholder="布局组件高度"
         />
         <div class="leftTitle">
           布局组件宽度：<span
-            >{{ currentPageRenderTreeNodeData.config.wPer }}%</span
+            >{{ currentPageRenderTreeNodeData.config.attr.wPer }}%</span
           >
         </div>
         <el-input
-          @input="handleInput"
-          v-model.number="currentPageRenderTreeNodeData.config.w"
+          @input="handleInput('w')"
+          v-model.number="currentPageRenderTreeNodeData.config.attr.w"
           class="rightValue"
           placeholder="布局组件宽度"
         />
 
         <div class="leftTitle">单位：</div>
         <el-input
-          v-model="currentPageRenderTreeNodeData.config.unit"
+          v-model="currentPageRenderTreeNodeData.config.attr.unit"
           class="rightValue"
           placeholder="单位"
         />
@@ -115,7 +115,7 @@
           
         </div>
         <el-input
-          v-model="currentPageRenderTreeNodeData.config.flexBasis"
+          v-model="currentPageRenderTreeNodeData.config.attr.flexBasis"
           class="rightValue"
         />
         <el-collapse v-model="activeName" accordion style="margin: 20px">
@@ -123,31 +123,31 @@
             <div class="leftTitle">单位：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.padding.unit"
+              v-model="currentPageRenderTreeNodeData.config.attr.padding.unit"
               class="rightValue"
             />
             <div class="leftTitle">上边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.padding.top"
+              v-model="currentPageRenderTreeNodeData.config.attr.padding.top"
               class="rightValue"
             />
             <div class="leftTitle">下边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.padding.bottom"
+              v-model="currentPageRenderTreeNodeData.config.attr.padding.bottom"
               class="rightValue"
             />
             <div class="leftTitle">左边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.padding.left"
+              v-model="currentPageRenderTreeNodeData.config.attr.padding.left"
               class="rightValue"
             />
             <div class="leftTitle">右边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.padding.right"
+              v-model="currentPageRenderTreeNodeData.config.attr.padding.right"
               class="rightValue"
             />
           </el-collapse-item>
@@ -155,31 +155,31 @@
             <div class="leftTitle">单位：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.margin.unit"
+              v-model="currentPageRenderTreeNodeData.config.attr.margin.unit"
               class="rightValue"
             />
             <div class="leftTitle">上边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.margin.top"
+              v-model="currentPageRenderTreeNodeData.config.attr.margin.top"
               class="rightValue"
             />
             <div class="leftTitle">下边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.margin.bottom"
+              v-model="currentPageRenderTreeNodeData.config.attr.margin.bottom"
               class="rightValue"
             />
             <div class="leftTitle">左边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.margin.left"
+              v-model="currentPageRenderTreeNodeData.config.attr.margin.left"
               class="rightValue"
             />
             <div class="leftTitle">右边距：</div>
             <el-input
               size="small"
-              v-model="currentPageRenderTreeNodeData.config.margin.right"
+              v-model="currentPageRenderTreeNodeData.config.attr.margin.right"
               class="rightValue"
             />
           </el-collapse-item>
@@ -188,7 +188,7 @@
 
       <div class="leftTitle">层级：</div>
       <el-input
-        v-model="currentPageRenderTreeNodeData.config.zIndex"
+        v-model="currentPageRenderTreeNodeData.config.attr.zIndex"
         class="rightValue"
         placeholder="层级"
       />
@@ -198,7 +198,7 @@
       <div style="padding-left: 15px; margin-top: 10px; font-size: 12px">
         颜色
         <el-switch
-          v-model="currentPageRenderTreeNodeData.config.backgroundType"
+          v-model="currentPageRenderTreeNodeData.config.attr.backgroundType"
           class="mb-2"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           active-value="img"
@@ -209,16 +209,16 @@
         <div>
           <!--otherParam 会跟着子组件调用父组件的事件参数-->
           <ChooseImg
-            v-if="currentPageRenderTreeNodeData.config.backgroundType == 'img'"
+            v-if="currentPageRenderTreeNodeData.config.attr.backgroundType == 'img'"
             otherParam=""
-            :imgUUID="currentPageRenderTreeNodeData.config.backgroundImgValue"
+            :imgUUID="currentPageRenderTreeNodeData.config.attr.backgroundImgValue"
             @getNewImgUrl="getNewImgUrlByTopPageBlock"
           ></ChooseImg>
           <el-color-picker
             v-if="
-              currentPageRenderTreeNodeData.config.backgroundType == 'color'
+              currentPageRenderTreeNodeData.config.attr.backgroundType == 'color'
             "
-            v-model="currentPageRenderTreeNodeData.config.backgroundColorValue"
+            v-model="currentPageRenderTreeNodeData.config.attr.backgroundColorValue"
             show-alpha
           />
         </div>
@@ -294,7 +294,7 @@ const activeName = ref(null);
 const frontEndComponentChooseDialogFlag=ref(false);
 
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
-const pageEditStoreObj = pageRenderTreeDataStore();
+const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -303,7 +303,7 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 );
 
 const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
-  currentPageRenderTreeNodeData.value.config.backgroundImgValue = imgUUID;
+  currentPageRenderTreeNodeData.value.config.attr.backgroundImgValue = imgUUID;
 };
 
 console.log("currentPageRenderTreeNodeData1", currentTopPageBlockData);
@@ -320,8 +320,10 @@ const addFrontEndComponent = () => {
 };
 const getFrontEndComponent = (componentInfo) => {
   console.log("getFrontEndComponent--componentInfo", componentInfo);
-  pageEditStoreObj.createOrReplaceNodeByPID(currentPageRenderTreeNodeData.value.id, componentInfo);
+  pageRenderTreeDataStoreObj.addNodeByPID(currentPageRenderTreeNodeData.value.id, componentInfo);
   frontEndComponentChooseDialogFlag.value=false;
+  //组件个数发生变化，重新渲染
+  currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
 }
 //添加打包组件
 const addPackComponent = () => {};
@@ -334,26 +336,30 @@ const addPageBlock = () => {};
 const addFlex = (type) => {
   let layoutTemp = {};
   layoutTemp.config = {};
-  layoutTemp.config.flexBasis = 50;
+  layoutTemp.config.attr={};
+  layoutTemp.config.attr.flexBasis = 100;
+  
 
-  layoutTemp.config.padding = {};
-  layoutTemp.config.padding.unit = "px";
-  layoutTemp.config.padding.top = "0";
-  layoutTemp.config.padding.bottom = "0";
-  layoutTemp.config.padding.left = "0";
-  layoutTemp.config.padding.right = "0";
+  layoutTemp.config.attr.padding = {};
+  layoutTemp.config.attr.padding.unit = "px";
+  layoutTemp.config.attr.padding.top = "0";
+  layoutTemp.config.attr.padding.bottom = "0";
+  layoutTemp.config.attr.padding.left = "0";
+  layoutTemp.config.attr.padding.right = "0";
 
-  layoutTemp.config.margin = {};
-  layoutTemp.config.margin.unit = "px";
-  layoutTemp.config.margin.top = "0";
-  layoutTemp.config.margin.bottom = "0";
-  layoutTemp.config.margin.left = "0";
-  layoutTemp.config.margin.right = "0";
+  layoutTemp.config.attr.margin = {};
+  layoutTemp.config.attr.margin.unit = "px";
+  layoutTemp.config.attr.margin.top = "0";
+  layoutTemp.config.attr.margin.bottom = "0";
+  layoutTemp.config.attr.margin.left = "0";
+  layoutTemp.config.attr.margin.right = "0";
 
-  layoutTemp.config.zIndex = 100;
-  layoutTemp.config.backgroundType = "color";
-  layoutTemp.config.backgroundColorValue = null;
-  layoutTemp.config.backgroundImgValue = "";
+  layoutTemp.config.attr.zIndex = 100;
+  layoutTemp.config.attr.show = true;
+  layoutTemp.config.attr.backgroundType = "color";
+  layoutTemp.config.attr.backgroundColorValue = null;
+  layoutTemp.config.attr.backgroundImgValue = "";
+
   layoutTemp.id = "id-" + uuid();
   layoutTemp.pid = currentPageRenderTreeNodeData.value.id;
   layoutTemp.children = [];
@@ -364,31 +370,38 @@ const addFlex = (type) => {
   }
   layoutTemp.ref = "layoutRef-" + uuid();
   layoutTemp.type = type;
-  pageEditStoreObj.addNodeByPID(layoutTemp.pid, layoutTemp);
+  pageRenderTreeDataStoreObj.addNodeByPID(layoutTemp.pid, layoutTemp);
+
+  //布局个数发生变化，重新渲染
+  currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
 };
 
-const handleInput = () => {
+const handleInput = (type) => {
   //大小设置
-  currentPageRenderTreeNodeData.value.config.xPer = toDecimal(
-    (currentPageRenderTreeNodeData.value.config.x /
-      currentTopPageBlockData.value.config.pageConfig.width) *
+  currentPageRenderTreeNodeData.value.config.attr.xPer = toDecimal(
+    (currentPageRenderTreeNodeData.value.config.attr.x /
+      currentTopPageBlockData.value.config.attr.w) *
       100
   );
-  currentPageRenderTreeNodeData.value.config.yPer = toDecimal(
-    (currentPageRenderTreeNodeData.value.config.y /
-      currentTopPageBlockData.value.config.pageConfig.height) *
+  currentPageRenderTreeNodeData.value.config.attr.yPer = toDecimal(
+    (currentPageRenderTreeNodeData.value.config.attr.y /
+      currentTopPageBlockData.value.config.attr.h) *
       100
   );
-  currentPageRenderTreeNodeData.value.config.wPer = toDecimal(
-    (currentPageRenderTreeNodeData.value.config.w /
-      currentTopPageBlockData.value.config.pageConfig.width) *
+  currentPageRenderTreeNodeData.value.config.attr.wPer = toDecimal(
+    (currentPageRenderTreeNodeData.value.config.attr.w /
+      currentTopPageBlockData.value.config.attr.w) *
       100
   );
-  currentPageRenderTreeNodeData.value.config.hPer = toDecimal(
-    (currentPageRenderTreeNodeData.value.config.h /
-      currentTopPageBlockData.value.config.pageConfig.height) *
+  currentPageRenderTreeNodeData.value.config.attr.hPer = toDecimal(
+    (currentPageRenderTreeNodeData.value.config.attr.h /
+      currentTopPageBlockData.value.config.attr.h) *
       100
   );
+  if(type=='h' || type=='w'){
+    //大小变化，重新渲染
+    currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
+  }
 };
 
 // 生命周期钩子

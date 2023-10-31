@@ -1,12 +1,13 @@
 <template>
   <div :style="pageBlockStyle">
     <vue-draggable-resizable
+      style="border:1px solid #1987cf"
       v-for="(pageLayout, index) in pageRenderTreeData[pageBlockIndex].children"
       :key="index"
-      :x="pageLayout.config.x"
-      :y="pageLayout.config.y"
-      :w="pageLayout.config.w"
-      :h="pageLayout.config.h"
+      :x="pageLayout.config.attr.x"
+      :y="pageLayout.config.attr.y"
+      :w="pageLayout.config.attr.w"
+      :h="pageLayout.config.attr.h"
       @dragging="onDrag"
       @resizing="onResize"
       @resizestop="onResizstop"
@@ -22,7 +23,7 @@
       <!--@contextmenu="onContextMenu($event, pageLayout)"-->
       <!--透明蒙版-->
       <div class="mb"></div>
-      <PageLayoutRender :pageLayoutData="pageLayout" ></PageLayoutRender>
+      <PageLayoutRender v-if="pageLayout.config.attr.show" :pageLayoutData="pageLayout"></PageLayoutRender>
     </vue-draggable-resizable>
   </div>
 </template>
@@ -37,11 +38,10 @@ const { pageRenderTreeData } = storeToRefs(pageEditStoreObj);
 import { ref, nextTick, onMounted, computed } from "vue";
 import { toDecimal } from "@/common/js/decimal.js";
 import { deleteNode } from "@/common/js/tree.js";
-import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
-import ContextMenu from '@imengyu/vue3-context-menu'
+import "@imengyu/vue3-context-menu/lib/vue3-context-menu.css";
+import ContextMenu from "@imengyu/vue3-context-menu";
 
 import PageLayoutRender from "@/components/PageEdit/PageDesign/LayoutDesign/ViewDraggableResizable/PageLayoutRender/index.vue";
-
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -83,9 +83,9 @@ const onContextMenu = (e, pageLayout) => {
     ],
   });
 };
-const deleteLayout=(pageLayout)=>{
-  deleteNode(pageRenderTreeData.value,pageLayout.id);
-}
+const deleteLayout = (pageLayout) => {
+  deleteNode(pageRenderTreeData.value, pageLayout.id);
+};
 
 //页面块样式
 const pageBlockStyle = computed(() => {
@@ -96,26 +96,25 @@ const pageBlockStyle = computed(() => {
   styleObj.position = "relative";
   let blockData = pageRenderTreeData.value[pageBlockIndex.value];
   if (
-    blockData.config.pageConfig.backgroundType == "img" &&
-    blockData.config.pageConfig.backgroundImgValue != ""
+    blockData.config.attr.backgroundType == "img" &&
+    blockData.config.attr.backgroundImgValue != ""
   ) {
     let imgURL =
       window.cbcConfig.getFileUrl +
       "?uuid=" +
-      blockData.config.pageConfig.backgroundImgValue +
+      blockData.config.attr.backgroundImgValue +
       "&type=photo";
     styleObj.backgroundImage = "url(" + imgURL + ")";
     styleObj.backgroundSize = "100% 100%";
   } else if (
-    blockData.config.pageConfig.backgroundType == "color" &&
-    blockData.config.pageConfig.backgroundColorValue != ""
+    blockData.config.attr.backgroundType == "color" &&
+    blockData.config.attr.backgroundColorValue != ""
   ) {
-    styleObj.background = blockData.config.pageConfig.backgroundColorValue;
+    styleObj.background = blockData.config.attr.backgroundColorValue;
   }
 
   return styleObj;
 });
-
 
 const setActived = (pageLayout) => {
   if (pageLayout.ref == currentPageRenderTreeNodeData.value.ref) {
@@ -129,47 +128,40 @@ const onActivated = (pageLayout) => {
 };
 
 const onDrag = (x, y) => {
-  currentPageRenderTreeNodeData.value.config.x = x;
-  currentPageRenderTreeNodeData.value.config.y = y;
-  currentPageRenderTreeNodeData.value.config.xPer = toDecimal(
-    (x /
-      pageRenderTreeData.value[pageBlockIndex.value].config.pageConfig.width) *
-      100
+  currentPageRenderTreeNodeData.value.config.attr.x = x;
+  currentPageRenderTreeNodeData.value.config.attr.y = y;
+  currentPageRenderTreeNodeData.value.config.attr.xPer = toDecimal(
+    (x / pageRenderTreeData.value[pageBlockIndex.value].config.attr.w) * 100
   );
-  currentPageRenderTreeNodeData.value.config.yPer = toDecimal(
-    (y /
-      pageRenderTreeData.value[pageBlockIndex.value].config.pageConfig.height) *
-      100
+  currentPageRenderTreeNodeData.value.config.attr.yPer = toDecimal(
+    (y / pageRenderTreeData.value[pageBlockIndex.value].config.attr.h) * 100
   );
 };
 const onResize = (x, y, width, height) => {
   //位置
-  currentPageRenderTreeNodeData.value.config.x = x;
-  currentPageRenderTreeNodeData.value.config.y = y;
-  currentPageRenderTreeNodeData.value.config.xPer = toDecimal(
-    (x /
-      pageRenderTreeData.value[pageBlockIndex.value].config.pageConfig.width) *
-      100
+  currentPageRenderTreeNodeData.value.config.attr.x = x;
+  currentPageRenderTreeNodeData.value.config.attr.y = y;
+  currentPageRenderTreeNodeData.value.config.attr.xPer = toDecimal(
+    (x / pageRenderTreeData.value[pageBlockIndex.value].config.attr.w) * 100
   );
-  currentPageRenderTreeNodeData.value.config.yPer = toDecimal(
-    (y /
-      pageRenderTreeData.value[pageBlockIndex.value].config.pageConfig.height) *
-      100
+  currentPageRenderTreeNodeData.value.config.attr.yPer = toDecimal(
+    (y / pageRenderTreeData.value[pageBlockIndex.value].config.attr.h) * 100
   );
   //大小
-  currentPageRenderTreeNodeData.value.config.w = width;
-  currentPageRenderTreeNodeData.value.config.h = height;
-  currentPageRenderTreeNodeData.value.config.wPer = toDecimal(
-    (width /
-      pageRenderTreeData.value[pageBlockIndex.value].config.pageConfig.width) *
+  currentPageRenderTreeNodeData.value.config.attr.w = width;
+  currentPageRenderTreeNodeData.value.config.attr.h = height;
+  currentPageRenderTreeNodeData.value.config.attr.wPer = toDecimal(
+    (width / pageRenderTreeData.value[pageBlockIndex.value].config.attr.w) * 100
+  );
+  currentPageRenderTreeNodeData.value.config.attr.hPer = toDecimal(
+    (height / pageRenderTreeData.value[pageBlockIndex.value].config.attr.h) *
       100
   );
-  currentPageRenderTreeNodeData.value.config.hPer = toDecimal(
-    (height /
-      pageRenderTreeData.value[pageBlockIndex.value].config.pageConfig.height) *
-      100
-  );
+  //大小变化，重新渲染
+  currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
 };
+
+
 const onDeactivated = (component) => {};
 const onResizstop = (x, y, width, height) => {};
 const onDragstop = (component) => {};
