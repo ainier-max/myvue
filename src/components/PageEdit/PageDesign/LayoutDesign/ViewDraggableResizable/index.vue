@@ -41,7 +41,7 @@ import { deleteNode } from "@/common/js/tree.js";
 import "@imengyu/vue3-context-menu/lib/vue3-context-menu.css";
 import ContextMenu from "@imengyu/vue3-context-menu";
 
-import PageLayoutRender from "@/components/PageEdit/PageDesign/LayoutDesign/ViewDraggableResizable/PageLayoutRender/index.vue";
+import PageLayoutRender from "@/common/component/PageLayoutRender/index.vue";
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -167,4 +167,7 @@ const onResizstop = (x, y, width, height) => {};
 const onDragstop = (component) => {};
 </script>
 
-<style scoped></style>
+<style scoped>
+.mb{background-color: #000;width:100%;height:100%;opacity: 0;z-index:999;left:0;top:0;position:fixed;}
+
+</style>

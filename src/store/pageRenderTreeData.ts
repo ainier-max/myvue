@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { findNodeById,treeToArray,deleteNode } from "@/common/js/tree.js";
+import { nextTick } from "vue";
 
 
 export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
@@ -56,7 +57,7 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       nodeTemp.children=this.newSortForChildren(nodeTemp.children);
       node.config.attr.flexIndex = nodeTemp.children.length;
       nodeTemp.children.push(node);
-      console.log("addNodeByPID--this.pageRenderTreeData",this.pageRenderTreeData);
+
     },
     newSortForChildren(childrenArr) {
       //排序
@@ -72,14 +73,19 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       return tempArr;
     },
     //布局组件添加前端组件、内置组件、打包组件、页面块时使用
-    createOrReplaceNodeByPID(pid,node) {
-      let nodeTemp = findNodeById(this.pageRenderTreeData, pid);
-      if (nodeTemp.children.length>0) {
-        nodeTemp.children[0]=node;
-      } else {
-        nodeTemp.children.push(node);
-      }
-      console.log("createOrReplaceNodeByPID--this.pageRenderTreeData",this.pageRenderTreeData);
+    replaceNodeByData(currentPageRenderTreeNodeData,data) {
+      console.log("replaceNodeByData--data",data);
+      let nodeTemp = findNodeById(this.pageRenderTreeData, data.pid);
+      console.log("replaceNodeByData--nodeTemp",nodeTemp);
+      let indexTemp = _.findIndex(nodeTemp.children, function (o) {
+        return o.id == currentPageRenderTreeNodeData.value.id;
+      });
+      data.flexIndex=currentPageRenderTreeNodeData.value.flexIndex;
+      nodeTemp.children[indexTemp] = data;
+      nextTick(() => {
+        currentPageRenderTreeNodeData.value = nodeTemp.children[indexTemp];
+      });
+      console.log("replaceNodeByData--indexTemp", indexTemp);
     },
     //树节点转数组
     getPageRenderTreeDataForArray() {

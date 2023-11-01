@@ -77,7 +77,14 @@ const findPageComponentByIDCallBack = (result) => {
     //obj.component_ref = "frontEndComponentRef-" + uuid();
     */
     obj.id="id"+uuid();
-    obj.pid=currentPageRenderTreeNodeData.value.id;
+    if(currentPageRenderTreeNodeData.value.type=="flex-row" || currentPageRenderTreeNodeData.value.type=="flex-column"){
+      //当前节点为flex-row或者flex-column
+      obj.pid=currentPageRenderTreeNodeData.value.id;
+    }else{
+      //当前节点为frontEndComponent/buildInComponent/packComponent
+      obj.pid=currentPageRenderTreeNodeData.value.pid;
+    }
+
     obj.label=result.objects[0].component_name;
     obj.ref = "frontEndComponentRef-" + uuid();
     obj.type = result.objects[0].type;

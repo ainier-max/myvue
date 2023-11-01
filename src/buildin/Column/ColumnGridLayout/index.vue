@@ -254,11 +254,9 @@ export default {
       this.gridItemStyle="cursor:move;border: solid black 1px;background-color: #CCCCCC;";
     }
     console.log("开发者配置123",this.component);
-    if(this.component==null){
-      this.devOption=option.devOption;
-    }else{
-      this.devOption=this.component.component_config;
-    }
+
+    this.devOption = this.component.config;
+
     console.log("开发者配置12",this.devOption);
 
   },

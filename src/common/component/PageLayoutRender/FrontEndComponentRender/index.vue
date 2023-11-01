@@ -1,18 +1,19 @@
 <template>
-  <component
-    :id="'id_' + props.frontEndComponentData.ref"
-    :ref="props.frontEndComponentData.ref"
-    v-if="
-      showFlag &&
-      props.frontEndComponentData != null &&
-      props.frontEndComponentData.config.attr.show == true
-    "
-    :style="{ width: '100%', height: '100%' }"
-    :is="props.frontEndComponentData.related_value"
-    @event="eventFun"
-    :component="props.frontEndComponentData"
-  >
-  </component>
+  <div style="width:100%;height:100%;">
+    <component
+      :id="'id_' + props.frontEndComponentData.ref"
+      :ref="props.frontEndComponentData.ref"
+      v-if="
+        showFlag &&
+        props.frontEndComponentData != null &&
+        props.frontEndComponentData.config.attr.show == true
+      "
+      :is="props.frontEndComponentData.related_value"
+      @event="eventFun"
+      :component="props.frontEndComponentData"
+    >
+    </component>
+  </div>
 </template>
 
 <script setup lang="ts">

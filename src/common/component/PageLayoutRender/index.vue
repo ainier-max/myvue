@@ -4,19 +4,29 @@
       v-for="(item, index) in pageLayoutData.children"
       :style="setFlexStyle(item)"
     >
-        <!--内部水平布局和垂直布局的渲染-->
-        <PageLayoutRender
-          v-if="item.type == 'flex-row' || item.type == 'flex-column'"
-          :pageLayoutData="item"
-          :style="setStyle(item)"
-        ></PageLayoutRender>
-        <!--前端组件渲染-->
-        <FrontEndComponentRender :style="setStyle(item)" :frontEndComponentData="item" v-if="item.type == 'frontEndComponent'">
+      <!--内部水平布局和垂直布局的渲染-->
+      <PageLayoutRender
+        v-if="item.type == 'flex-row' || item.type == 'flex-column'"
+        :pageLayoutData="item"
+        :style="setStyle(item)"
+      ></PageLayoutRender>
+      <!--前端组件渲染-->
+      <FrontEndComponentRender
+        :style="setStyle(item)"
+        :frontEndComponentData="item"
+        v-if="item.type == 'frontEndComponent'"
+      >
+      </FrontEndComponentRender>
+      <!--内置组件渲染-->
+      <BuildInComponentRender
+        :style="setStyle(item)"
+        :buildInComponentData="item"
+        v-if="item.type == 'buildInComponent'"
+      >
+      </BuildInComponentRender>
 
-        </FrontEndComponentRender>
       
     </div>
-
   </div>
 </template>
 
@@ -27,7 +37,8 @@ export default {
 </script>
 
 <script setup lang="ts">
-import FrontEndComponentRender from './FrontEndComponentRender/index.vue';
+import FrontEndComponentRender from "./FrontEndComponentRender/index.vue";
+import BuildInComponentRender from "./BuildInComponentRender/index.vue";
 
 import { ref, nextTick, onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";
@@ -93,19 +104,25 @@ const setStyle = computed(() => {
   return function (item) {
     console.log("setStyle--item", item);
     let styleObj = {};
-    styleObj.boxSizing="border-box";
+    styleObj.boxSizing = "border-box";
     //内边距
-    styleObj.paddingTop = item.config.attr.padding.top + item.config.attr.padding.unit;
+    styleObj.paddingTop =
+      item.config.attr.padding.top + item.config.attr.padding.unit;
     styleObj.paddingBottom =
       item.config.attr.padding.bottom + item.config.attr.padding.unit;
-    styleObj.paddingLeft = item.config.attr.padding.left + item.config.attr.padding.unit;
+    styleObj.paddingLeft =
+      item.config.attr.padding.left + item.config.attr.padding.unit;
     styleObj.paddingRight =
       item.config.attr.padding.right + item.config.attr.padding.unit;
     //外边距
-    styleObj.marginTop = item.config.attr.margin.top + item.config.attr.margin.unit;
-    styleObj.marginBottom = item.config.attr.margin.bottom + item.config.attr.margin.unit;
-    styleObj.marginLeft = item.config.attr.margin.left + item.config.attr.margin.unit;
-    styleObj.marginRight = item.config.attr.margin.right + item.config.attr.margin.unit;
+    styleObj.marginTop =
+      item.config.attr.margin.top + item.config.attr.margin.unit;
+    styleObj.marginBottom =
+      item.config.attr.margin.bottom + item.config.attr.margin.unit;
+    styleObj.marginLeft =
+      item.config.attr.margin.left + item.config.attr.margin.unit;
+    styleObj.marginRight =
+      item.config.attr.margin.right + item.config.attr.margin.unit;
 
     //背景
     styleObj.zIndex = item.config.attr.zIndex;

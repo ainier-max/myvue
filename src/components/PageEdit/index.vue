@@ -89,7 +89,7 @@
 
     <div style="flex-basis: 18%">
       <!--组件配置（前端组件，内置组件，打包组件）-->
-      <ComponentSetting v-if="currentPageRenderTreeNodeData?.type == 'frontEndComponent'"></ComponentSetting>
+      <ComponentSetting v-if="currentPageRenderTreeNodeData?.type == 'frontEndComponent' || currentPageRenderTreeNodeData?.type == 'buildInComponent'"></ComponentSetting>
       <!--布局配置(水平布局，垂直布局)-->
       <LayoutSetting
         v-if="
