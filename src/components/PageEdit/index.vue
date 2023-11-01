@@ -22,6 +22,8 @@
               <span v-else>
                 <Folder style="width: 1em; height: 1em" />
                 {{ node.label }}
+                <!-- <span v-if="data.sumFlexBasis">({{data.sumFlexBasis}})</span>
+                <span v-else>({{data.config.attr.flexBasis}})</span> -->
               </span>
               <span>
                 <Delete
@@ -86,7 +88,9 @@
     </div>
 
     <div style="flex-basis: 18%">
-      <!--布局配置-->
+      <!--组件配置（前端组件，内置组件，打包组件）-->
+      <ComponentSetting v-if="currentPageRenderTreeNodeData?.type == 'frontEndComponent'"></ComponentSetting>
+      <!--布局配置(水平布局，垂直布局)-->
       <LayoutSetting
         v-if="
           currentPageRenderTreeNodeData?.type == 'flex-column' ||
@@ -114,6 +118,7 @@ import { ElMessage } from "element-plus";
 
 import BlockSetting from "@/components/PageEdit/PageDesign/Settings/BlockSetting/index.vue";
 import LayoutSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/index.vue";
+import ComponentSetting from "@/components/PageEdit/PageDesign/Settings/ComponentSetting/index.vue";
 
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 

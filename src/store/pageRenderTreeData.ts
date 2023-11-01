@@ -23,6 +23,13 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       for (const node of treeNode) {
         if (node.children.length) {
           node.children = this.newSortForChildren(node.children);
+          // node.sumFlexBasis = _.reduce(node.children, function (sum, o) {
+          //   if (o.config.attr.flexBasis) {
+          //     return sum + o.config.attr.flexBasis;
+          //   } else {
+          //     return sum;
+          //   }
+          // }, 0);
           this.sortTree(node.children);
         }
       }
@@ -56,12 +63,12 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       let tempArr=_.sortBy(childrenArr, function (o) {
         return o.config.attr.flexIndex;
       });
-      console.log("newSortForChildren--tempArr", tempArr);
+      //console.log("newSortForChildren--tempArr", tempArr);
       //重新赋值排序值
       for (let i = 0; i < tempArr.length;i++){
         tempArr[i].config.attr.flexIndex = i;
       }
-      console.log("newSortForChildren--tempArr", tempArr);
+      //console.log("newSortForChildren--tempArr", tempArr);
       return tempArr;
     },
     //布局组件添加前端组件、内置组件、打包组件、页面块时使用
