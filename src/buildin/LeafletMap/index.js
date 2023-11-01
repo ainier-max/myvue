@@ -2,8 +2,6 @@ let option = {
   devOption: {
     attr: {},
     option: {
-      //地图ID
-      id: "buildInMapID1",
       //矢量瓦片服务地址
       mapUrl:
         "http://t0.tianditu.gov.cn/vec_c/wmts?tk=9024bb5d2e154746bb513878231cc0cf&service=WMTS&request=GetTile&version=1.0.0&layer=vec&style=default&tilematrixSet=c&format=tiles&height=256&width=256&minZoom=1&maxZoom=18&tilematrix={z}&tilerow={y}&tilecol={x}",

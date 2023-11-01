@@ -1,8 +1,8 @@
 <template>
   <div :style="pageBlockStyle">
     <vue-draggable-resizable
-      style="border:1px solid #1987cf"
       v-for="(pageLayout, index) in pageRenderTreeData[pageBlockIndex].children"
+      :style="setPageLayoutStyle(pageLayout)"
       :key="index"
       :x="pageLayout.config.attr.x"
       :y="pageLayout.config.attr.y"
@@ -23,7 +23,7 @@
       <!--@contextmenu="onContextMenu($event, pageLayout)"-->
       <!--透明蒙版-->
       <div class="mb"></div>
-      <PageLayoutRender v-if="pageLayout.config.attr.show" :pageLayoutData="pageLayout"></PageLayoutRender>
+      <PageLayoutRender  v-if="pageLayout.config.attr.show" :pageLayoutData="pageLayout"></PageLayoutRender>
     </vue-draggable-resizable>
   </div>
 </template>
@@ -52,6 +52,19 @@ const { currentTopPageBlockData, currentPageRenderTreeNodeData } = storeToRefs(
 const props = defineProps({
   scale: null,
 });
+
+
+//页面布局样式
+const setPageLayoutStyle = computed(() => {
+  return function (pageLayout) {
+    console.log("pageLayoutStyle--pageLayout", pageLayout);
+    let styleObj = {};
+    styleObj.border="1px solid #1987cf"
+    styleObj.zIndex = pageLayout.config.attr.zIndex;
+    return styleObj;
+  };
+});
+
 const pageBlockIndex = ref(0);
 //找出ref=topPageBlock的下标值
 pageBlockIndex.value = _.findIndex(pageRenderTreeData.value, [
@@ -168,6 +181,5 @@ const onDragstop = (component) => {};
 </script>
 
 <style scoped>
-.mb{background-color: #000;width:100%;height:100%;opacity: 0;z-index:999;left:0;top:0;position:fixed;}
 
 </style>

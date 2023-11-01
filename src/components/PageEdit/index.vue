@@ -197,7 +197,8 @@ const findAllPageRenderTreeByPageID = () => {
 };
 const findAllPageRenderTreeByPageIDCallBack = (result) => {
   for (let i = 0; i < result.objects.length; i++) {
-    result.objects[i].config = eval("(" + result.objects[i].config_str + ")");
+    result.objects[i].config = stringToObject(result.objects[i].config_str);
+    //result.objects[i].config = eval("(" + result.objects[i].config_str + ")");
   }
   pageRenderTreeDataStoreObj.setData(
     getListData(result.objects, [

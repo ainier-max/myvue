@@ -1,5 +1,5 @@
 <template>
-  <div v-if="option" :id="option.devOption.option.id" style="width:100%;height:100%">
+  <div v-if="option && mapID" :id="mapID" style="width:100%;height:100%">
   </div>
 </template>
 
@@ -18,6 +18,7 @@ export default {
   },
   data() {
     return {
+      mapID:"",
       option,
       devOption:null,
       map:null
@@ -61,7 +62,7 @@ export default {
         mapOption.crs = crsTemp;
       }
       //地图初始化
-      this.map = L.map(mapConfig.id, mapOption);
+      this.map = L.map(this.mapID, mapOption);
       //地图坐标系
       this.map.coordinateType = mapConfig.coordinateType;
       //地图距离单位
@@ -103,6 +104,8 @@ export default {
     }
   },
   created() {
+    this.mapID="map_"+window.cbcuuid();
+    console.log("this.mapID1",this.mapID);
     console.log("component1232",this.component);
     if(this.component==null){
       this.devOption=option.devOption;
