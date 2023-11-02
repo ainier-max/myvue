@@ -105,25 +105,38 @@ export function findNodeById(nodes, id) {
 }
 
 //data：要遍历的数据， target：查找目标， result用于装查找结果的数组
-export function findParent(data, target, result) {
-  for (let item of data) {
-    if (item.id === target.id) {
-      //将查找到的目标数据加入结果数组中
-      //可根据需求unshift(item.id)或unshift(item)
-      result.unshift(item);
-      return result;
-    }
-    if (item.children && item.children.length > 0) {
-      //根据查找到的结果往上找父级节点
-      let isFind = findParent(item.children, target, result);
-      if (isFind) {
-        result.unshift(item);
-        return result;
-      }
-    }
+export function findParent(allNodes, target, result) {
+  let nodeTemp = findNodeById(allNodes,target.pid);
+  if (nodeTemp) {
+    result.unshift(nodeTemp);
   }
-  //走到这说明没找到目标
-  return [];
+  if (nodeTemp.pid) {
+    findParent(allNodes, nodeTemp, result);
+  }
+  return result;
+
+  // for (let item of data) {
+  //   if (item.id === target.id) {
+  //     console.log("findParent--item.id", item.id);
+  //     console.log("findParent--target.id",target.id);
+  //     //将查找到的目标数据加入结果数组中
+  //     //可根据需求unshift(item.id)或unshift(item)
+  //     result.unshift(item);
+  //     return result;
+  //   }
+  //   if (item.children && item.children.length > 0) {
+  //     //根据查找到的结果往上找父级节点
+  //     let isFind = findParent(item.children, target, result);
+  //     console.log("findParent--isFind", isFind);
+  //     debugger;
+  //     if (isFind) {
+  //       result.unshift(item);
+  //       return result;
+  //     }
+  //   }
+  // }
+  // //走到这说明没找到目标
+  // return [];
 }
 //根据id删除节点
 export function deleteNode(nodes, id) {

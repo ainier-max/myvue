@@ -28,7 +28,7 @@ const { currentTopPageBlockData, currentPageRenderTreeNodeData } = storeToRefs(
 import { useRoute } from "vue-router";
 const route = useRoute();
 const page_id = route.query.page_id;
-const emit = defineEmits(["getBuildInComponent"]);
+const emit = defineEmits(["getChooseData"]);
 const getBuildInComponent = (type) => {
   let param = {};
   for (let i = 0; i < pathConfigArr.length; i++) {
@@ -83,7 +83,7 @@ const getBuildInComponent = (type) => {
         obj.config.attr.backgroundColorValue = null;
         obj.config.attr.backgroundImgValue = "";
 
-        emit("getBuildInComponent", obj);
+        emit("getChooseData", obj);
       });
     }
   }

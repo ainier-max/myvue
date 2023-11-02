@@ -14,23 +14,17 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
     //设置数据
     setData(data) {
       //this.pageRenderTreeData = data;
-      
+      //顶层父节点排序
+      data = this.newSortForChildren(data);
       this.sortTree(data);
       this.pageRenderTreeData = data;
       console.log("页面渲染树数据--pageRenderTreeData",this.pageRenderTreeData);
     },
-    //根据flexIndex重新排序所有父节点的children数据
+    //根据index重新排序所有父节点的children数据
     sortTree(treeNode) {
       for (const node of treeNode) {
         if (node.children.length) {
           node.children = this.newSortForChildren(node.children);
-          // node.sumFlexBasis = _.reduce(node.children, function (sum, o) {
-          //   if (o.config.attr.flexBasis) {
-          //     return sum + o.config.attr.flexBasis;
-          //   } else {
-          //     return sum;
-          //   }
-          // }, 0);
           this.sortTree(node.children);
         }
       }
@@ -55,19 +49,19 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       console.log("addNodeByPID--nodeTemp", nodeTemp);
       //children新排序
       nodeTemp.children=this.newSortForChildren(nodeTemp.children);
-      node.config.attr.flexIndex = nodeTemp.children.length;
+      node.config.attr.index = nodeTemp.children.length;
       nodeTemp.children.push(node);
 
     },
     newSortForChildren(childrenArr) {
       //排序
       let tempArr=_.sortBy(childrenArr, function (o) {
-        return o.config.attr.flexIndex;
+        return o.config.attr.index;
       });
       //console.log("newSortForChildren--tempArr", tempArr);
       //重新赋值排序值
       for (let i = 0; i < tempArr.length;i++){
-        tempArr[i].config.attr.flexIndex = i;
+        tempArr[i].config.attr.index = i;
       }
       //console.log("newSortForChildren--tempArr", tempArr);
       return tempArr;
@@ -80,7 +74,7 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       let indexTemp = _.findIndex(nodeTemp.children, function (o) {
         return o.id == currentPageRenderTreeNodeData.value.id;
       });
-      data.flexIndex=currentPageRenderTreeNodeData.value.flexIndex;
+      data.index=currentPageRenderTreeNodeData.value.index;
       nodeTemp.children[indexTemp] = data;
       nextTick(() => {
         currentPageRenderTreeNodeData.value = nodeTemp.children[indexTemp];

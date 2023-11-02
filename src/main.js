@@ -14,6 +14,9 @@ window.CBCElementPlus = CBCElementPlus;
 //router
 import router from "./router/index";
 
+
+
+
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import contextmenu from '@imengyu/vue3-context-menu'
 import VueGridLayout from 'vue-grid-layout'
@@ -51,7 +54,6 @@ window.cbcApp.component("Search", Search)
 window.cbcApp.component("ArrowDown", ArrowDown)
 window.cbcApp.component("InfoFilled", InfoFilled)
 window.cbcApp.component("WarningFilled", WarningFilled)
-
 
 
 

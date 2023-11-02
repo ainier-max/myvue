@@ -16,6 +16,11 @@
         <span v-if="currentPageRenderTreeNodeData.type == 'buildInComponent'"
           >内置组件</span
         >
+        <span v-if="currentPageRenderTreeNodeData.type == 'implantBlock'"
+          >内嵌块</span
+        >
+
+        
       </div>
 
       <div class="leftTitle">ref：</div>
@@ -296,14 +301,19 @@
     <FrontEndComponentChoose
     v-if="chooseDialogType=='frontEndComponent'"
       ref="frontEndComponentChooseRef"
-      @getFrontEndComponent="getFrontEndComponent"
+      @getChooseData="getChooseData"
     ></FrontEndComponentChoose>
 
     <BuiltInComponentChoose
     v-if="chooseDialogType=='builtInComponent'"
       ref="BuiltInComponentChooseRef"
-      @getBuildInComponent="getBuildInComponent"
+      @getChooseData="getChooseData"
     ></BuiltInComponentChoose>
+
+    <PageBlockChoose v-if="chooseDialogType=='pageBlock'"
+      ref="PageBlockChooseRef"
+      @getChooseData="getChooseData"></PageBlockChoose>
+
   </el-dialog>
 </template>
 
@@ -334,7 +344,7 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
   currentPageRenderTreeNodeData.value.config.attr.backgroundImgValue = imgUUID;
 };
-console.log("currentPageRenderTreeNodeData1", currentTopPageBlockData);
+
 
 const customContent = ref("");
 const showPopover = () => {
@@ -379,6 +389,27 @@ const showPopover = () => {
   strTemp = strTemp + "建议《布局占比总和》等于100！可以更好的计算<br/>";
   customContent.value = strTemp;
 };
+//获取选中的数据
+const getChooseData = (chooseData) => {
+  console.log("getChooseData--chooseData", chooseData);
+  if (
+    currentPageRenderTreeNodeData.value.type == "flex-row" ||
+    currentPageRenderTreeNodeData.value.type == "flex-column"
+  ) {
+    pageRenderTreeDataStoreObj.addNodeByPID(
+      currentPageRenderTreeNodeData.value.id,
+      chooseData
+    );
+  } else {
+    pageRenderTreeDataStoreObj.replaceNodeByData(
+      currentPageRenderTreeNodeData,
+      chooseData
+    );
+  }
+  chooseDialogFlag.value = false;
+  //组件个数发生变化，重新渲染
+  currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
+};
 
 //添加前端组件
 import FrontEndComponentChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/FrontEndComponentChoose/index.vue";
@@ -392,28 +423,9 @@ const addFrontEndComponent = () => {
   chooseDialogFlag.value = true;
   dialogTitle.value = "前端组件(双击选择组件)";
 };
-const getFrontEndComponent = (componentInfo) => {
-  console.log("getFrontEndComponent--componentInfo", componentInfo);
-  if (
-    currentPageRenderTreeNodeData.value.type == "flex-row" ||
-    currentPageRenderTreeNodeData.value.type == "flex-column"
-  ) {
-    pageRenderTreeDataStoreObj.addNodeByPID(
-      currentPageRenderTreeNodeData.value.id,
-      componentInfo
-    );
-  } else {
-    pageRenderTreeDataStoreObj.replaceNodeByData(
-      currentPageRenderTreeNodeData,
-      componentInfo
-    );
-  }
-  chooseDialogFlag.value = false;
-  //组件个数发生变化，重新渲染
-  currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
-};
 //添加打包组件
 const addPackComponent = () => {};
+
 //添加内置组件
 import BuiltInComponentChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/BuiltInComponentChoose/index.vue";
 const addBuiltInComponent = () => {
@@ -421,30 +433,15 @@ const addBuiltInComponent = () => {
   chooseDialogFlag.value = true;
   dialogTitle.value = "内置组件(双击选择组件)";
 };
-const getBuildInComponent=(componentInfo)=>{
-  if (
-    currentPageRenderTreeNodeData.value.type == "flex-row" ||
-    currentPageRenderTreeNodeData.value.type == "flex-column"
-  ) {
-    pageRenderTreeDataStoreObj.addNodeByPID(
-      currentPageRenderTreeNodeData.value.id,
-      componentInfo
-    );
-  } else {
-    pageRenderTreeDataStoreObj.replaceNodeByData(
-      currentPageRenderTreeNodeData,
-      componentInfo
-    );
-  }
-  chooseDialogFlag.value = false;
-  //组件个数发生变化，重新渲染
-  currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
-}
-
-
 
 //添加页面块
-const addPageBlock = () => {};
+import PageBlockChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/PageBlockChoose/index.vue";
+
+const addPageBlock = () => {
+  chooseDialogType.value = "pageBlock";
+  chooseDialogFlag.value = true;
+  dialogTitle.value = "页面块(双击选择页面块)";
+};
 
 //刷新布局
 const changeToRefresh = () => {

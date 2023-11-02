@@ -186,6 +186,7 @@ export default {
       param.page_block_ref='blockRef-'+window.cbcuuid();
       let configObj={
         attr:{
+          index:0,
           h:this.pageInfoDataForm.pageHeight,
           w:this.pageInfoDataForm.pageWidth,
           unit:"px",

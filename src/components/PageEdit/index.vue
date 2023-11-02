@@ -41,6 +41,15 @@
         </el-tree>
       </div>
 
+      <div align="center">
+        <el-button
+          @click="showPageBlockDidlog"
+          style="margin-top: 15px"
+          type="primary"
+          >添加页面块</el-button
+        >
+      </div>
+
       <!-- <div style="border-top: 1px solid gray">子页面</div> -->
     </div>
     <div style="flex-basis: 65%">
@@ -88,15 +97,17 @@
     </div>
 
     <div style="flex-basis: 18%">
-      <!--组件配置（前端组件，内置组件，打包组件）-->
-      <ComponentSetting v-if="currentPageRenderTreeNodeData?.type == 'frontEndComponent' || currentPageRenderTreeNodeData?.type == 'buildInComponent'"></ComponentSetting>
-      <!--布局配置(水平布局，垂直布局)-->
-      <LayoutSetting
+      <!--基础配置（前端组件，内置组件，打包组件）-->
+      <CommonSetting
         v-if="
+          currentPageRenderTreeNodeData?.type == 'frontEndComponent' ||
+          currentPageRenderTreeNodeData?.type == 'buildInComponent'||
+          currentPageRenderTreeNodeData?.type == 'implantBlock' ||
           currentPageRenderTreeNodeData?.type == 'flex-column' ||
           currentPageRenderTreeNodeData?.type == 'flex-row'
         "
-      ></LayoutSetting>
+      ></CommonSetting>
+      
       <!--页面块配置-->
       <BlockSetting
         v-if="
@@ -107,18 +118,56 @@
       ></BlockSetting>
     </div>
   </div>
+
+  <el-dialog
+    title="新增页面块"
+    v-model="addPageBlockDialogVisible"
+    :close-on-click-modal="false"
+    width="30%"
+  >
+    <el-form :model="pageBlockDataForm" label-width="100px">
+      <el-form-item label="页面名称" prop="pageName">
+        <el-input
+          v-model="pageBlockDataForm.pageName"
+          placeholder="页面名称"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="页面宽度" prop="pageWidth">
+        <el-input
+          v-model="pageBlockDataForm.pageWidth"
+          placeholder="页面宽度(单位px)"
+        ></el-input>
+      </el-form-item>
+
+      <el-form-item label="页面高度" prop="pageHeight">
+        <el-input
+          v-model="pageBlockDataForm.pageHeight"
+          placeholder="页面高度(单位px)"
+        ></el-input>
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <el-button @click="addPageBlockCancle">取 消</el-button>
+      <el-button type="primary" @click="addPageBlock">确 定</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
+
+
+
 //import 'default-passive-events';
-import { ref, nextTick, onMounted } from "vue";
+import { ref, nextTick, onMounted,watchEffect  } from "vue";
 import { useRoute } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
 import BlockSetting from "@/components/PageEdit/PageDesign/Settings/BlockSetting/index.vue";
-import LayoutSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/index.vue";
-import ComponentSetting from "@/components/PageEdit/PageDesign/Settings/ComponentSetting/index.vue";
+
+import CommonSetting from "@/components/PageEdit/PageDesign/Settings/CommonSetting/index.vue";
+
 
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
@@ -183,9 +232,21 @@ const refreshLayouDesign = () => {
   });
 };
 
+watchEffect(() => {
+  //console.log("watchEffect--currentDealDataStoreObj.$state.currentTopPageBlockData",currentDealDataStoreObj.$state.currentTopPageBlockData);
+  if(currentDealDataStoreObj.$state.currentTopPageBlockData){
+    refreshLayouDesign();
+  }
+})
+
 const nodeClick = (data) => {
   //console.log("树节点点击事件--data",data);
   currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
+  //点击的是子页面块，则切换编辑区
+  // if(data.type=="childBlock" || data.type=="mainBlock"){
+  //   console.log("点击的是子页面块，则切换编辑区");
+    
+  // }
 };
 
 //查询页面渲染树
@@ -250,6 +311,58 @@ const savePageRenderTreeCallBack = (result) => {
     ElMessage.success("保存成功！");
   }
 };
+
+//添加页面块
+const pageBlockDataForm = ref({
+  pageName: "",
+  pageWidth: "",
+  pageHeight: "",
+});
+const addPageBlockDialogVisible = ref(false);
+const showPageBlockDidlog = () => {
+  pageBlockDataForm.value.pageName="";
+  pageBlockDataForm.value.pageWidth="";
+  pageBlockDataForm.value.pageHeight="";
+  addPageBlockDialogVisible.value = true;
+};
+const addPageBlockCancle=()=>{
+  addPageBlockDialogVisible.value = false;
+}
+const addPageBlock = () => {
+  console.log("pageRenderTreeData12312",pageRenderTreeData);
+  if(pageBlockDataForm.value.pageName && pageBlockDataForm.value.pageWidth && pageBlockDataForm.value.pageHeight){
+    let obj = {};
+    obj.page_id=page_id;
+    obj.id="id-"+window.cbcuuid();
+    obj.label=pageBlockDataForm.value.pageName;
+    obj.ref='blockRef-'+window.cbcuuid();
+    obj.type="childBlock";
+    obj.index=pageRenderTreeData.value.length;
+    obj.config={
+        attr:{
+          h:pageBlockDataForm.value.pageHeight,
+          w:pageBlockDataForm.value.pageWidth,
+          unit:"px",
+          backgroundType:"color",
+          backgroundColorValue:"rgba(0,0,0,0.8)",
+          backgroundImgValue:"",
+        },
+        blueScriptAttr:{
+          x:0,
+          y:0,
+          w:3000,
+          h:2000
+        }
+      };
+      obj.pid=null;
+      pageRenderTreeData.value.push(obj);
+      addPageBlockDialogVisible.value = false;
+  }else{
+    ElMessage.error("有未输入项");
+  }
+  
+};
+
 
 // 生命周期钩子
 onMounted(() => {

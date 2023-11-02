@@ -17,6 +17,7 @@
         v-if="item.type == 'frontEndComponent'"
       >
       </FrontEndComponentRender>
+
       <!--内置组件渲染-->
       <BuildInComponentRender
         :style="setStyle(item)"
@@ -25,7 +26,14 @@
       >
       </BuildInComponentRender>
 
-      
+        <!--页面块渲染-->
+        <PageBlockRender
+          v-if="item.type == 'implantBlock'"
+          :style="setStyle(item)"
+          :pageBlockData="item"
+        >
+        </PageBlockRender>
+    
     </div>
   </div>
 </template>
@@ -39,6 +47,7 @@ export default {
 <script setup lang="ts">
 import FrontEndComponentRender from "./FrontEndComponentRender/index.vue";
 import BuildInComponentRender from "./BuildInComponentRender/index.vue";
+import PageBlockRender from "./PageBlockRender/index.vue";
 
 import { ref, nextTick, onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";

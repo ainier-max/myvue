@@ -42,7 +42,7 @@ const findPageComponentByID = (component_id) => {
   commonSelectRequest(axios, param, findPageComponentByIDCallBack);
 };
 
-const emit = defineEmits(["getFrontEndComponent"]);
+const emit = defineEmits(["getChooseData"]);
 import { storeToRefs } from "pinia";
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -118,7 +118,7 @@ const findPageComponentByIDCallBack = (result) => {
     obj.config.attr.backgroundColorValue = null;
     obj.config.attr.backgroundImgValue = "";
 
-    emit("getFrontEndComponent",obj);
+    emit("getChooseData",obj);
   }
 };
 const findPageComponentTree = () => {

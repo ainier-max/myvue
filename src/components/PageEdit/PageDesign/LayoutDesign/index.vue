@@ -51,6 +51,7 @@ const {currentTopPageBlockData } = storeToRefs(
 
 const rectWidth = parseInt(currentTopPageBlockData.value.config.attr.w);
 const rectHeight = parseInt(currentTopPageBlockData.value.config.attr.h);
+console.log("布局设计区：rectWidth",rectWidth);
 const scale = ref(0.6);
 const startX = ref(-50);//该值与canvasID的宽度一致
 const startY = ref(-50);//该值与canvasID的宽度一致

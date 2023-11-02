@@ -20,20 +20,28 @@ export const currentDealDataStore = defineStore("currentDealDataID", {
       this.setCurrentPageRenderTreeNodeData(nodeDataTemp);
     },
     setCurrentPageRenderTreeNodeData(data) {
-      console.log("设置当前节点--data",data);
+      //console.log("setCurrentPageRenderTreeNodeData--data",data);
       //设置当前渲染树节点
       this.currentPageRenderTreeNodeData = data;
-      //获取渲染树节点的顶层block
-      this.currentTopPageBlockData = findParent(pageRenderTreeData.value, data, [])[0];
-      //获取渲染树节点的顶层layout
-      this.currentTopPageLayoutData = findParent(pageRenderTreeData.value, data, [])[1];
-      console.log("setCurrentPageRenderTreeNodeData--this.currentTopPageLayoutData",this.currentTopPageLayoutData);
-      //console.log("setCurrentPageRenderTreeNodeData--currentTopPageBlockData",this.currentTopPageBlockData);
+      if (data.type=="mainBlock" || data.type=="childBlock") {
+        this.currentTopPageBlockData = data;
+        this.currentTopPageLayoutData = null;
+      } else {
+        //获取渲染树节点的顶层block
+        let parentPathArr = findParent(pageRenderTreeData.value, data, []);
+        parentPathArr.push(data);
+        //console.log("setCurrentPageRenderTreeNodeData--parentPathArr",parentPathArr);
+        this.currentTopPageBlockData = parentPathArr[0];
+        //console.log("setCurrentPageRenderTreeNodeData--currentTopPageBlockData",this.currentTopPageBlockData);
+        //获取渲染树节点的顶层layout
+        this.currentTopPageLayoutData = parentPathArr[1];
+        //console.log("setCurrentPageRenderTreeNodeData--currentTopPageLayoutData",this.currentTopPageLayoutData);
+      }
+      
     },
     //刷新顶层的layout
     refreshCurrentTopPageLayoutData() {
       //如果当前选中的树节点是顶层页面块，则不刷新
-      console.log("currentTopPageLayoutData666",this.currentTopPageLayoutData);
       if (this.currentTopPageLayoutData) {
         let the = this;
         this.currentTopPageLayoutData.config.attr.show = false;

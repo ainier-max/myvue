@@ -2,6 +2,17 @@
   <div style="width: 100%; height: 100%; overflow: auto;padding-bottom:50px">
     <div class="titleClass" align="center">页面块配置</div>
     <div v-if="currentPageRenderTreeNodeData">
+
+      <div class="leftTitle" style="font-weight: bolder">
+        类型：
+        <span v-if="currentPageRenderTreeNodeData.type == 'mainBlock'"
+          >主页面块</span
+        >
+        <span v-if="currentPageRenderTreeNodeData.type == 'childBlock'"
+          >子页面块</span
+        >
+      </div>
+
       <div class="leftTitle">页面块Ref：</div>
       <el-input
         v-model="currentPageRenderTreeNodeData.ref"
@@ -9,6 +20,12 @@
         disabled
         placeholder="页面块Ref"
       />
+      <!-- <div class="leftTitle">同级节点序号：</div>
+      <el-input
+        v-model="currentPageRenderTreeNodeData.config.attr.index"
+        class="rightValue"
+        placeholder="同级节点序号"
+      /> -->
       <div class="leftTitle">页面块名称：</div>
       <el-input
         v-model="currentPageRenderTreeNodeData.label"
