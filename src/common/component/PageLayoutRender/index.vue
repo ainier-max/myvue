@@ -1,8 +1,9 @@
 <template>
-  <div :style="pageLayoutStyle(pageLayoutData)">
+  <div :style="pageLayoutStyle(pageLayoutData)" class="pageLayoutClass">
     <div
       v-for="(item, index) in pageLayoutData.children"
       :style="setFlexStyle(item)"
+      class="pageLayoutChildrenClass"
     >
       <!--内部水平布局和垂直布局的渲染-->
       <PageLayoutRender
@@ -26,14 +27,13 @@
       >
       </BuildInComponentRender>
 
-        <!--页面块渲染-->
-        <PageBlockRender
-          v-if="item.type == 'implantBlock'"
-          :style="setStyle(item)"
-          :pageBlockData="item"
-        >
-        </PageBlockRender>
-    
+      <!--页面块渲染-->
+      <PageBlockRender
+        v-if="item.type == 'implantBlock'"
+        :style="setStyle(item)"
+        :pageBlockData="item"
+      >
+      </PageBlockRender>
     </div>
   </div>
 </template>
@@ -74,10 +74,31 @@ const pageLayoutStyle = computed(() => {
   return function (pageLayout) {
     console.log("pageLayoutStyle--pageLayout", pageLayout);
     let styleObj = {};
-    styleObj.width = "100%";
-    styleObj.height = "100%";
-    styleObj.cursor = "move";
+    if(pageLayout.config.attr.labelType == "flex"){
+      let widthTemp=Number(pageLayout.config.attr.padding.left)+Number(pageLayout.config.attr.padding.right);
+      let heightTemp=Number(pageLayout.config.attr.padding.top)+Number(pageLayout.config.attr.padding.bottom);
+      let uintTemp=pageLayout.config.attr.padding.unit;
+      styleObj.width = "calc(100% - "+widthTemp+uintTemp+")";
+      styleObj.height = "calc(100% - "+heightTemp+uintTemp+")";
+    } else{
+      styleObj.width = "100%";
+      styleObj.height = "100%";
+    }
+    
     styleObj.zIndex = pageLayout.config.attr.zIndex;
+
+    //内边距
+    styleObj.paddingTop =
+      pageLayout.config.attr.padding.top + pageLayout.config.attr.padding.unit;
+    styleObj.paddingBottom =
+      pageLayout.config.attr.padding.bottom +
+      pageLayout.config.attr.padding.unit;
+    styleObj.paddingLeft =
+      pageLayout.config.attr.padding.left + pageLayout.config.attr.padding.unit;
+    styleObj.paddingRight =
+      pageLayout.config.attr.padding.right +
+      pageLayout.config.attr.padding.unit;
+
     if (
       pageLayout.config.attr.backgroundType == "img" &&
       pageLayout.config.attr.backgroundImgValue != ""
@@ -108,12 +129,16 @@ const pageLayoutStyle = computed(() => {
     return styleObj;
   };
 });
-
+//设置布局里面的组件，页面块样式
 const setStyle = computed(() => {
   return function (item) {
     console.log("setStyle--item", item);
     let styleObj = {};
     styleObj.boxSizing = "border-box";
+    
+    styleObj.minWidth = "0";
+    styleObj.minHeight = "0";
+    styleObj.overflow="hidden";
     //内边距
     styleObj.paddingTop =
       item.config.attr.padding.top + item.config.attr.padding.unit;
@@ -123,15 +148,6 @@ const setStyle = computed(() => {
       item.config.attr.padding.left + item.config.attr.padding.unit;
     styleObj.paddingRight =
       item.config.attr.padding.right + item.config.attr.padding.unit;
-    //外边距
-    styleObj.marginTop =
-      item.config.attr.margin.top + item.config.attr.margin.unit;
-    styleObj.marginBottom =
-      item.config.attr.margin.bottom + item.config.attr.margin.unit;
-    styleObj.marginLeft =
-      item.config.attr.margin.left + item.config.attr.margin.unit;
-    styleObj.marginRight =
-      item.config.attr.margin.right + item.config.attr.margin.unit;
 
     //背景
     styleObj.zIndex = item.config.attr.zIndex;
@@ -157,7 +173,7 @@ const setStyle = computed(() => {
   };
 });
 
-//页面布局样式
+//页面Flex样式
 const setFlexStyle = computed(() => {
   return function (item) {
     //console.log("setFlexStyle--item", item);
@@ -170,19 +186,6 @@ const setFlexStyle = computed(() => {
     } else {
       styleObj.border = "1px dashed yellow";
     }
-    //内边距
-    // styleObj.paddingTop = item.config.attr.padding.top + item.config.attr.padding.unit;
-    // styleObj.paddingBottom =
-    //   item.config.attr.padding.bottom + item.config.attr.padding.unit;
-    // styleObj.paddingLeft = item.config.attr.padding.left + item.config.attr.padding.unit;
-    // styleObj.paddingRight =
-    //   item.config.attr.padding.right + item.config.attr.padding.unit;
-    //外边距
-    // styleObj.marginTop = item.config.attr.margin.top + item.config.attr.margin.unit;
-    // styleObj.marginBottom = item.config.attr.margin.bottom + item.config.attr.margin.unit;
-    // styleObj.marginLeft = item.config.attr.margin.left + item.config.attr.margin.unit;
-    // styleObj.marginRight = item.config.attr.margin.right + item.config.attr.margin.unit;
-
     return styleObj;
   };
 });

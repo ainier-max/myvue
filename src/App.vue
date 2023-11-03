@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <!--使用await  <Suspense></Suspense>-->
+
+      <router-view></router-view>
+    
   </div>
 </template>
 

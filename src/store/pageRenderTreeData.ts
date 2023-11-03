@@ -6,15 +6,21 @@ import { nextTick } from "vue";
 export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
   state: () => ({
     pageRenderTreeData: null,
+    ralativePageRenderTreeData:null,
   }),
   getters: {
 
   },
   actions: {
     //设置数据
-    setData(data) {
-      //this.pageRenderTreeData = data;
-      //顶层父节点排序
+    setRalativePageRenderTreeData(data) {
+      data = this.newSortForChildren(data);
+      this.sortTree(data);
+      this.ralativePageRenderTreeData = data;
+      console.log("关联页面渲染树数据--ralativePageRenderTreeData",this.ralativePageRenderTreeData);
+    },
+    //设置数据
+    setPageRenderTreeDataData(data) {
       data = this.newSortForChildren(data);
       this.sortTree(data);
       this.pageRenderTreeData = data;

@@ -25,15 +25,6 @@ const routes = [
     },
     
     {
-        path: '/Portal',
-        component: () => import('../components/Portal/index.vue'),
-    },
-    {
-        path: '/Portal2',
-        component: () => import('../components/Portal2/index.vue'),
-    },
-
-    {
         path: '/Preview',
         component: () => import('../components/PageDebug/index.vue'),
     },{

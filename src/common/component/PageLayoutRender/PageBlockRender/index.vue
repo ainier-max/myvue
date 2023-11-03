@@ -2,7 +2,7 @@
   <div style="height: 100%; width: 100%">
     <template v-for="(pageLayout, index) in pageBlockRenderData.children">
       <PageLayoutRender
-        v-if="true"
+        v-if="pageLayout.config.attr.show"
         :pageLayoutData="pageLayout"
       ></PageLayoutRender>
     </template>

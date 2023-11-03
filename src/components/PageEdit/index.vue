@@ -1,7 +1,9 @@
 <template>
   <div class="mainClass" style="display: flex; flex-direction: row">
-    <div style="flex-basis: 17%; border-right: 1px solid gray">
-      <div style="height: 60%">
+    <div style="flex-basis: 17%">
+      <div class="titleClass" align="center">页面渲染树</div>
+
+      <div style="height: 40%">
         <el-tree
           ref="pageRenderTreeRef"
           :data="pageRenderTreeData"
@@ -44,9 +46,44 @@
       <div align="center">
         <el-button
           @click="showPageBlockDidlog"
-          style="margin-top: 15px"
+          style="margin-top: 15px; margin-bottom: 15px"
           type="primary"
           >添加页面块</el-button
+        >
+      </div>
+      <div class="titleClass" align="center">外部页面</div>
+
+      <div style="height: 35%">
+        <el-table
+            :data="ralativePageRenderTreeData"
+            style="width: 100%;height: 100%">
+          <el-table-column
+              prop="label"
+              label="页面块名称"
+              width="250">
+          </el-table-column>
+          <el-table-column
+              fixed="right"
+              label="操作"
+              width="200">
+            <template #default="scope">
+              {{scope.row.label}}
+              <el-icon size="20" color="red" style="cursor:pointer;padding-left: 10px">
+                <Delete @click="deleteRalativePageRenderTreeData(scope)"/>
+              </el-icon>
+            </template>
+          </el-table-column>
+        </el-table>
+
+      
+      </div>
+
+      <div align="center">
+        <el-button
+          @click="showPageDidlog"
+          style="margin-top: 15px; margin-bottom: 15px"
+          type="primary"
+          >添加外部页面</el-button
         >
       </div>
 
@@ -89,7 +126,7 @@
         </el-row>
       </div>
 
-      <div style="width: 100%; height: 100%; position: relative">
+      <div style="width: calc(100% - 2px); height: 100%; position: relative">
         <LayoutDesign
           v-if="currentPageRenderTreeNodeData && layoutDesignShowFlag"
         ></LayoutDesign>
@@ -97,78 +134,32 @@
     </div>
 
     <div style="flex-basis: 18%">
-      <!--基础配置（前端组件，内置组件，打包组件）-->
-      <CommonSetting
-        v-if="
-          currentPageRenderTreeNodeData?.type == 'frontEndComponent' ||
-          currentPageRenderTreeNodeData?.type == 'buildInComponent'||
-          currentPageRenderTreeNodeData?.type == 'implantBlock' ||
-          currentPageRenderTreeNodeData?.type == 'flex-column' ||
-          currentPageRenderTreeNodeData?.type == 'flex-row'
-        "
-      ></CommonSetting>
-      
-      <!--页面块配置-->
-      <BlockSetting
-        v-if="
-          currentPageRenderTreeNodeData?.type == 'mainBlock' ||
-          currentPageRenderTreeNodeData?.type == 'childBlock'
-        "
-        @refreshLayouDesign="refreshLayouDesign"
-      ></BlockSetting>
+      <!--基础配置-->
+      <CommonSetting @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
     </div>
   </div>
 
   <el-dialog
     title="新增页面块"
-    v-model="addPageBlockDialogVisible"
+    v-model="dialogFlag"
     :close-on-click-modal="false"
-    width="30%"
+    :width="dialogWidth"
   >
-    <el-form :model="pageBlockDataForm" label-width="100px">
-      <el-form-item label="页面名称" prop="pageName">
-        <el-input
-          v-model="pageBlockDataForm.pageName"
-          placeholder="页面名称"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="页面宽度" prop="pageWidth">
-        <el-input
-          v-model="pageBlockDataForm.pageWidth"
-          placeholder="页面宽度(单位px)"
-        ></el-input>
-      </el-form-item>
-
-      <el-form-item label="页面高度" prop="pageHeight">
-        <el-input
-          v-model="pageBlockDataForm.pageHeight"
-          placeholder="页面高度(单位px)"
-        ></el-input>
-      </el-form-item>
-    </el-form>
-
-    <template #footer>
-      <el-button @click="addPageBlockCancle">取 消</el-button>
-      <el-button type="primary" @click="addPageBlock">确 定</el-button>
-    </template>
+    <AddPageBlock v-if="dialogType == 'AddPageBlock'"></AddPageBlock>
+    <AddPageChoose v-if="dialogType == 'AddPageChoose'"></AddPageChoose>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-
-
-
 //import 'default-passive-events';
-import { ref, nextTick, onMounted,watchEffect  } from "vue";
+import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
-import BlockSetting from "@/components/PageEdit/PageDesign/Settings/BlockSetting/index.vue";
-
+import AddPageBlock from "@/components/PageEdit/PageDesign/DialogContent/AddPageBlock/index.vue";
+import AddPageChoose from "@/components/PageEdit/PageDesign/DialogContent/AddPageChoose/index.vue";
 import CommonSetting from "@/components/PageEdit/PageDesign/Settings/CommonSetting/index.vue";
-
-
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
 import {
@@ -183,7 +174,7 @@ import { getListData, deleteNode } from "@/common/js/tree.js";
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
+const { pageRenderTreeData,ralativePageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -211,7 +202,7 @@ const setNodeKey = () => {
   }
 };
 
-//
+//删除树节点
 const treeRemove = (nodeData) => {
   //删除节点
   pageRenderTreeDataStoreObj.deleteNodeByData(nodeData);
@@ -224,7 +215,7 @@ const treeRemove = (nodeData) => {
 };
 
 //布局设计页面刷新
-const refreshLayouDesign = () => {
+const refreshLayoutDesign = () => {
   console.log("布局设计页面刷新!");
   layoutDesignShowFlag.value = false;
   nextTick(() => {
@@ -232,45 +223,68 @@ const refreshLayouDesign = () => {
   });
 };
 
+//顶层节点页面块发生变化时刷新设计编辑区
 watchEffect(() => {
   //console.log("watchEffect--currentDealDataStoreObj.$state.currentTopPageBlockData",currentDealDataStoreObj.$state.currentTopPageBlockData);
-  if(currentDealDataStoreObj.$state.currentTopPageBlockData){
-    refreshLayouDesign();
+  if (currentDealDataStoreObj.$state.currentTopPageBlockData) {
+    refreshLayoutDesign();
   }
-})
-
+});
+//树节点点击事件
 const nodeClick = (data) => {
-  //console.log("树节点点击事件--data",data);
   currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
-  //点击的是子页面块，则切换编辑区
-  // if(data.type=="childBlock" || data.type=="mainBlock"){
-  //   console.log("点击的是子页面块，则切换编辑区");
-    
-  // }
 };
 
 //查询页面渲染树
 const findAllPageRenderTreeByPageID = () => {
   let param = {};
-  (param.sql = "page_render_tree.findAllPageRenderTreeByPageID"),
-    (param.page_id = page_id);
-  commonSelectRequest(axios, param, findAllPageRenderTreeByPageIDCallBack);
+  param.batchSql = [
+    {
+      sql: "page_render_tree.findAllPageRenderTreeByPageID",
+      page_id: page_id,
+      resultKey: "AllPageRenderTree",
+    },
+    {
+      sql: "page_render_tree.findRalativePageRenderTreeByPageID",
+      page_id: page_id,
+      resultKey: "RalativePageRenderTree",
+    },
+  ];
+  commonBatchSelectRequest(axios, param, findAllPageRenderTreeByPageIDCallBack);
 };
 const findAllPageRenderTreeByPageIDCallBack = (result) => {
-  for (let i = 0; i < result.objects.length; i++) {
-    result.objects[i].config = stringToObject(result.objects[i].config_str);
+  //页面渲染树
+  for (let i = 0; i < result["AllPageRenderTree"].length; i++) {
+    result["AllPageRenderTree"][i].config = stringToObject(result["AllPageRenderTree"][i].config_str);
     //result.objects[i].config = eval("(" + result.objects[i].config_str + ")");
   }
-  pageRenderTreeDataStoreObj.setData(
-    getListData(result.objects, [
+  pageRenderTreeDataStoreObj.setPageRenderTreeDataData(
+    getListData(result["AllPageRenderTree"], [
       "ref",
       "type",
       "config",
+      "page_id",
       "config_str",
       "related_value",
       "component_code",
     ])
   );
+  //关联页面渲染树
+  for (let i = 0; i < result["RalativePageRenderTree"].length; i++) {
+    result["RalativePageRenderTree"][i].config = stringToObject(result["RalativePageRenderTree"][i].config_str);
+  }
+  pageRenderTreeDataStoreObj.setRalativePageRenderTreeData(
+    getListData(result["RalativePageRenderTree"], [
+      "ref",
+      "type",
+      "config",
+      "page_id",
+      "config_str",
+      "related_value",
+      "component_code",
+    ])
+  );
+
   //找出type为mainBlock的数据
   let nodeTemp = pageRenderTreeDataStoreObj.getNodeForMainBlock();
   nextTick(() => {
@@ -307,62 +321,47 @@ const savePageRenderTree = () => {
 };
 const savePageRenderTreeCallBack = (result) => {
   if (result.state == "success") {
-    // 使用
     ElMessage.success("保存成功！");
   }
 };
 
-//添加页面块
-const pageBlockDataForm = ref({
-  pageName: "",
-  pageWidth: "",
-  pageHeight: "",
-});
-const addPageBlockDialogVisible = ref(false);
-const showPageBlockDidlog = () => {
-  pageBlockDataForm.value.pageName="";
-  pageBlockDataForm.value.pageWidth="";
-  pageBlockDataForm.value.pageHeight="";
-  addPageBlockDialogVisible.value = true;
+const dialogTitle = ref("");
+const dialogType = ref("");
+const dialogFlag = ref(false);
+const dialogWidth = ref("30%");
+//注入
+provide("dialogFlag", dialogFlag);
+//添加外部页面
+const showPageDidlog = () => {
+  dialogWidth.value = "50%";
+  dialogTitle.value = "添加外部页面";
+  dialogFlag.value = true;
+  dialogType.value = "AddPageChoose";
 };
-const addPageBlockCancle=()=>{
-  addPageBlockDialogVisible.value = false;
+const deleteRalativePageRenderTreeData=(scope)=>{
+  console.log("deleteRalativePageRenderTreeData--scope",scope);
+  let param={};
+  param.sql="page_centre_relative.delete";
+  param.page_id=page_id;
+  param.relative_page_id=scope.row.page_id;
+  commonExcuteRequestAndOtherParam(window.axios, param, deleteRalativePageRenderTreeDataCallBack,scope);
 }
-const addPageBlock = () => {
-  console.log("pageRenderTreeData12312",pageRenderTreeData);
-  if(pageBlockDataForm.value.pageName && pageBlockDataForm.value.pageWidth && pageBlockDataForm.value.pageHeight){
-    let obj = {};
-    obj.page_id=page_id;
-    obj.id="id-"+window.cbcuuid();
-    obj.label=pageBlockDataForm.value.pageName;
-    obj.ref='blockRef-'+window.cbcuuid();
-    obj.type="childBlock";
-    obj.index=pageRenderTreeData.value.length;
-    obj.config={
-        attr:{
-          h:pageBlockDataForm.value.pageHeight,
-          w:pageBlockDataForm.value.pageWidth,
-          unit:"px",
-          backgroundType:"color",
-          backgroundColorValue:"rgba(0,0,0,0.8)",
-          backgroundImgValue:"",
-        },
-        blueScriptAttr:{
-          x:0,
-          y:0,
-          w:3000,
-          h:2000
-        }
-      };
-      obj.pid=null;
-      pageRenderTreeData.value.push(obj);
-      addPageBlockDialogVisible.value = false;
-  }else{
-    ElMessage.error("有未输入项");
+const deleteRalativePageRenderTreeDataCallBack=(result,scope)=>{
+  console.log("deleteRalativePageRenderTreeDataCallBack--scope",scope);
+  if (result.state == "success") {
+    //删除节点
+    deleteNode(ralativePageRenderTreeData.value, scope.row.id);
+    ElMessage.success("删除成功！");
   }
-  
-};
+}
 
+//添加页面块弹窗
+const showPageBlockDidlog = () => {
+  dialogWidth.value = "30%";
+  dialogTitle.value = "添加页面块";
+  dialogFlag.value = true;
+  dialogType.value = "AddPageBlock";
+};
 
 // 生命周期钩子
 onMounted(() => {
@@ -371,6 +370,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.titleClass {
+  width: 100%;
+  height: 30px;
+  background: #fc74fd;
+  color: rgba(255, 255, 255, 1);
+  padding-top: 8px;
+  font-weight: bold;
+}
+
 .mainClass {
   height: 100%;
   overflow: hidden;

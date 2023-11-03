@@ -4,6 +4,12 @@
     <div v-if="currentPageRenderTreeNodeData">
       <div class="leftTitle" style="font-weight: bolder">
         类型：
+        <span v-if="currentPageRenderTreeNodeData.type == 'mainBlock'"
+          >主页面块</span
+        >
+        <span v-if="currentPageRenderTreeNodeData.type == 'childBlock'"
+          >子页面块</span
+        >
         <span v-if="currentPageRenderTreeNodeData.type == 'flex-row'"
           >水平布局</span
         >
@@ -17,10 +23,8 @@
           >内置组件</span
         >
         <span v-if="currentPageRenderTreeNodeData.type == 'implantBlock'"
-          >内嵌块</span
+          >内嵌页面块</span
         >
-
-        
       </div>
 
       <div class="leftTitle">ref：</div>
@@ -36,10 +40,41 @@
         class="rightValue"
         placeholder="名称"
       />
-      <div
-        v-if="currentPageRenderTreeNodeData.pid == currentTopPageBlockData.id"
+
+      
+
+      
+
+      <!--mainBlock/childBlock类型的高度，宽度-->
+      <template
+        v-if="
+          currentPageRenderTreeNodeData.type == 'mainBlock' ||
+          currentPageRenderTreeNodeData.type == 'childBlock'
+        "
       >
-        <div class="leftTitle">
+        <div class="leftTitle">页面块高度：</div>
+        <el-input
+          v-model="currentPageRenderTreeNodeData.config.attr.h"
+          class="rightValue"
+          @change="refreshLayoutDesign"
+          placeholder="页面块高度"
+        />
+        <div class="leftTitle">页面块宽度</div>
+        <el-input
+          v-model="currentPageRenderTreeNodeData.config.attr.w"
+          class="rightValue"
+          @change="refreshLayoutDesign"
+          placeholder="页面块宽度"
+        />
+      </template>
+
+      <!--非mainBlock/childBlock类型的高度，宽度-->
+      <template
+        v-if="currentPageRenderTreeNodeData.type != 'mainBlock' &&
+          currentPageRenderTreeNodeData.type != 'childBlock' &&
+          currentPageRenderTreeNodeData.config.attr.labelType == 'flex'"
+      >
+      <div class="leftTitle">
           X坐标：<span
             >{{ currentPageRenderTreeNodeData.config.attr.xPer }}%</span
           >
@@ -50,6 +85,7 @@
           class="rightValue"
           placeholder="X坐标"
         />
+      
         <div class="leftTitle">
           Y坐标：<span
             >{{ currentPageRenderTreeNodeData.config.attr.yPer }}%</span
@@ -83,18 +119,18 @@
           class="rightValue"
           placeholder="宽度"
         />
+      </template>
 
+      <template v-if="currentPageRenderTreeNodeData.config.attr.unit">
         <div class="leftTitle">单位：</div>
         <el-input
           v-model="currentPageRenderTreeNodeData.config.attr.unit"
           class="rightValue"
           placeholder="单位"
         />
-      </div>
+      </template>
 
-      <div
-        v-if="currentPageRenderTreeNodeData.pid != currentTopPageBlockData.id"
-      >
+      <template v-if="currentPageRenderTreeNodeData.config.attr.flexBasis">
         <div class="leftTitle">
           占比
           <el-popover
@@ -116,90 +152,67 @@
           class="rightValue"
           @input="changeToRefresh"
         />
-        <el-collapse v-model="activeName" accordion style="margin: 20px">
-          <el-collapse-item title="内边距(padding)" name="1">
-            <div class="leftTitle">单位：</div>
-            <el-input
-              size="small"
-              v-model="currentPageRenderTreeNodeData.config.attr.padding.unit"
-              class="rightValue"
-            />
-            <div class="leftTitle">上边距：</div>
-            <el-input
-              size="small"
-              v-model="currentPageRenderTreeNodeData.config.attr.padding.top"
-              class="rightValue"
-              @input="changeToRefresh"
-            />
-            <div class="leftTitle">下边距：</div>
-            <el-input
-              size="small"
-              v-model="currentPageRenderTreeNodeData.config.attr.padding.bottom"
-              class="rightValue"
-              @input="changeToRefresh"
-            />
-            <div class="leftTitle">左边距：</div>
-            <el-input
-              size="small"
-              v-model="currentPageRenderTreeNodeData.config.attr.padding.left"
-              class="rightValue"
-              @input="changeToRefresh"
-            />
-            <div class="leftTitle">右边距：</div>
-            <el-input
-              size="small"
-              v-model="currentPageRenderTreeNodeData.config.attr.padding.right"
-              class="rightValue"
-              @input="changeToRefresh"
-            />
-          </el-collapse-item>
-          <!--外边距(margin)暂时隐藏
-            <el-collapse-item title="外边距(margin)" name="2">
-              <div class="leftTitle">单位：</div>
-              <el-input
-                size="small"
-                v-model="currentPageRenderTreeNodeData.config.attr.margin.unit"
-                class="rightValue"
-              />
-              <div class="leftTitle">上边距：</div>
-              <el-input
-                size="small"
-                v-model="currentPageRenderTreeNodeData.config.attr.margin.top"
-                class="rightValue"
-                @input="changeToRefresh"
-              />
-              <div class="leftTitle">下边距：</div>
-              <el-input
-                size="small"
-                v-model="currentPageRenderTreeNodeData.config.attr.margin.bottom"
-                class="rightValue"
-                @input="changeToRefresh"
-              />
-              <div class="leftTitle">左边距：</div>
-              <el-input
-                size="small"
-                v-model="currentPageRenderTreeNodeData.config.attr.margin.left"
-                class="rightValue"
-                @input="changeToRefresh"
-              />
-              <div class="leftTitle">右边距：</div>
-              <el-input
-                size="small"
-                v-model="currentPageRenderTreeNodeData.config.attr.margin.right"
-                class="rightValue"
-                @input="changeToRefresh"
-              />
-            </el-collapse-item>
-            -->
-        </el-collapse>
-      </div>
+      </template>
 
-      <div class="leftTitle">层级：</div>
-      <el-input
-        v-model="currentPageRenderTreeNodeData.config.attr.zIndex"
-        class="rightValue"
-        placeholder="层级"
-      />
+      <el-collapse
+        accordion
+        style="margin: 20px"
+        v-if="
+          currentPageRenderTreeNodeData.config.attr.padding ||
+          currentPageRenderTreeNodeData.config.attr.margin
+        "
+      >
+        <el-collapse-item
+          title="内边距(padding)"
+          name="1"
+          v-if="currentPageRenderTreeNodeData.config.attr.padding"
+        >
+          <div class="leftTitle">单位：</div>
+          <el-input
+            size="small"
+            v-model="currentPageRenderTreeNodeData.config.attr.padding.unit"
+            class="rightValue"
+          />
+          <div class="leftTitle">上边距：</div>
+          <el-input
+            size="small"
+            v-model="currentPageRenderTreeNodeData.config.attr.padding.top"
+            class="rightValue"
+            @input="changeToRefresh"
+          />
+          <div class="leftTitle">下边距：</div>
+          <el-input
+            size="small"
+            v-model="currentPageRenderTreeNodeData.config.attr.padding.bottom"
+            class="rightValue"
+            @input="changeToRefresh"
+          />
+          <div class="leftTitle">左边距：</div>
+          <el-input
+            size="small"
+            v-model="currentPageRenderTreeNodeData.config.attr.padding.left"
+            class="rightValue"
+            @input="changeToRefresh"
+          />
+          <div class="leftTitle">右边距：</div>
+          <el-input
+            size="small"
+            v-model="currentPageRenderTreeNodeData.config.attr.padding.right"
+            class="rightValue"
+            @input="changeToRefresh"
+          />
+        </el-collapse-item>
+
+      </el-collapse>
+
+      <template v-if="currentPageRenderTreeNodeData.config.attr.zIndex">
+        <div class="leftTitle">层级：</div>
+        <el-input
+          v-model="currentPageRenderTreeNodeData.config.attr.zIndex"
+          class="rightValue"
+          placeholder="层级"
+        />
+      </template>
 
       <div class="leftTitle">背景：</div>
 
@@ -249,15 +262,21 @@
         >
         <span v-else>替换内容</span>
       </div>
-      <div align="center">
+      <div
+        align="center"
+        v-if="
+          currentPageRenderTreeNodeData.type != 'mainBlock' &&
+          currentPageRenderTreeNodeData.type != 'childBlock'
+        "
+      >
         <el-button
-          @click="addFlex('flex-row')"
+          @click="addFlexInder('flex-row')"
           style="margin-top: 15px"
           type="success"
           >内部水平布局</el-button
         >
         <el-button
-          @click="addFlex('flex-column')"
+          @click="addFlexInder('flex-column')"
           style="margin-top: 15px"
           type="success"
           >内部垂直布局</el-button
@@ -285,6 +304,27 @@
           >页面块</el-button
         >
       </div>
+
+      <div
+        align="center"
+        v-if="
+          currentPageRenderTreeNodeData.type == 'mainBlock' ||
+          currentPageRenderTreeNodeData.type == 'childBlock'
+        "
+      >
+        <el-button
+          style="margin-top: 15px"
+          @click="addFlex('flex-row')"
+          type="success"
+          >水平布局</el-button
+        >
+        <el-button
+          style="margin-top: 15px"
+          @click="addFlex('flex-column')"
+          type="success"
+          >垂直布局</el-button
+        >
+      </div>
     </div>
     <div style="height: 50px"></div>
   </div>
@@ -299,21 +339,22 @@
     style="height: 550px"
   >
     <FrontEndComponentChoose
-    v-if="chooseDialogType=='frontEndComponent'"
+      v-if="chooseDialogType == 'frontEndComponent'"
       ref="frontEndComponentChooseRef"
       @getChooseData="getChooseData"
     ></FrontEndComponentChoose>
 
     <BuiltInComponentChoose
-    v-if="chooseDialogType=='builtInComponent'"
+      v-if="chooseDialogType == 'builtInComponent'"
       ref="BuiltInComponentChooseRef"
       @getChooseData="getChooseData"
     ></BuiltInComponentChoose>
 
-    <PageBlockChoose v-if="chooseDialogType=='pageBlock'"
+    <PageBlockChoose
+      v-if="chooseDialogType == 'pageBlock'"
       ref="PageBlockChooseRef"
-      @getChooseData="getChooseData"></PageBlockChoose>
-
+      @getChooseData="getChooseData"
+    ></PageBlockChoose>
   </el-dialog>
 </template>
 
@@ -345,6 +386,10 @@ const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
   currentPageRenderTreeNodeData.value.config.attr.backgroundImgValue = imgUUID;
 };
 
+const emit = defineEmits(["refreshLayoutDesign"]);
+const refreshLayoutDesign = (event) => {
+  emit("refreshLayoutDesign");
+};
 
 const customContent = ref("");
 const showPopover = () => {
@@ -449,26 +494,22 @@ const changeToRefresh = () => {
   currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
 };
 
-//添加
-const addFlex = (type) => {
+//添加addFlexInder
+const addFlexInder = (type) => {
   let layoutTemp = {};
   layoutTemp.config = {};
+
   layoutTemp.config.attr = {};
   layoutTemp.config.attr.flexBasis = 100;
 
   layoutTemp.config.attr.padding = {};
+  //是否需要计算
+  layoutTemp.config.attr.labelType = "flexInner";
   layoutTemp.config.attr.padding.unit = "px";
   layoutTemp.config.attr.padding.top = "0";
   layoutTemp.config.attr.padding.bottom = "0";
   layoutTemp.config.attr.padding.left = "0";
   layoutTemp.config.attr.padding.right = "0";
-
-  layoutTemp.config.attr.margin = {};
-  layoutTemp.config.attr.margin.unit = "px";
-  layoutTemp.config.attr.margin.top = "0";
-  layoutTemp.config.attr.margin.bottom = "0";
-  layoutTemp.config.attr.margin.left = "0";
-  layoutTemp.config.attr.margin.right = "0";
 
   layoutTemp.config.attr.zIndex = 100;
   layoutTemp.config.attr.show = true;
@@ -477,7 +518,6 @@ const addFlex = (type) => {
   layoutTemp.config.attr.backgroundImgValue = "";
 
   layoutTemp.id = "id-" + uuid();
-  layoutTemp.pid = currentPageRenderTreeNodeData.value.id;
   layoutTemp.children = [];
   if (type == "flex-row") {
     layoutTemp.label = "内部水平布局";
@@ -486,10 +526,72 @@ const addFlex = (type) => {
   }
   layoutTemp.ref = "layoutRef-" + uuid();
   layoutTemp.type = type;
-  pageRenderTreeDataStoreObj.addNodeByPID(layoutTemp.pid, layoutTemp);
+  
+  if (
+    currentPageRenderTreeNodeData.value.type == "flex-row" ||
+    currentPageRenderTreeNodeData.value.type == "flex-column"
+  ) {
+    //插入内容
+    layoutTemp.pid = currentPageRenderTreeNodeData.value.id;
+    pageRenderTreeDataStoreObj.addNodeByPID(
+      currentPageRenderTreeNodeData.value.id,
+      layoutTemp
+    );
+  } else {
+    //替换内容
+    layoutTemp.pid = currentPageRenderTreeNodeData.value.pid;
+    pageRenderTreeDataStoreObj.replaceNodeByData(
+      currentPageRenderTreeNodeData,
+      layoutTemp
+    );
+  }
 
   //布局个数发生变化，重新渲染
   currentDealDataStoreObj.refreshCurrentTopPageLayoutData();
+};
+
+const addFlex = (type) => {
+  let layoutTemp = {};
+  layoutTemp.config = {};
+
+  layoutTemp.config.attr = {};
+
+  layoutTemp.config.attr.padding = {};
+  //是否需要计算
+  layoutTemp.config.attr.labelType = "flex";
+  layoutTemp.config.attr.padding.unit = "px";
+  layoutTemp.config.attr.padding.top = "0";
+  layoutTemp.config.attr.padding.bottom = "0";
+  layoutTemp.config.attr.padding.left = "0";
+  layoutTemp.config.attr.padding.right = "0";
+
+  layoutTemp.config.attr.x = 10;
+  layoutTemp.config.attr.y = 10;
+  layoutTemp.config.attr.w = 200;
+  layoutTemp.config.attr.h = 200;
+  layoutTemp.config.attr.unit = "px";
+  layoutTemp.config.attr.zIndex = 100;
+  layoutTemp.config.attr.show = true;
+  layoutTemp.config.attr.backgroundType = "color";
+  layoutTemp.config.attr.backgroundColorValue = "rgba(24, 166, 54, 0.8)";
+  layoutTemp.config.attr.backgroundImgValue = "";
+  let blockWidthTemp = currentPageRenderTreeNodeData.value.config.attr.w;
+  let blockHeightTemp = currentPageRenderTreeNodeData.value.config.attr.h;
+  layoutTemp.config.attr.xPer = toDecimal((10 / blockWidthTemp) * 100);
+  layoutTemp.config.attr.yPer = toDecimal((10 / blockHeightTemp) * 100);
+  layoutTemp.config.attr.wPer = toDecimal((200 / blockWidthTemp) * 100);
+  layoutTemp.config.attr.hPer = toDecimal((200 / blockHeightTemp) * 100);
+  layoutTemp.id = "id-" + uuid();
+  layoutTemp.pid = currentPageRenderTreeNodeData.value.id;
+  layoutTemp.children = [];
+  if (type == "flex-row") {
+    layoutTemp.label = "水平布局";
+  } else if (type == "flex-column") {
+    layoutTemp.label = "垂直布局";
+  }
+  layoutTemp.ref = "layoutRef-" + uuid();
+  layoutTemp.type = type;
+  pageRenderTreeDataStoreObj.addNodeByPID(layoutTemp.pid, layoutTemp);
 };
 
 const handleInput = (type) => {

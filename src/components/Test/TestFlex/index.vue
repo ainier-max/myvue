@@ -13,7 +13,7 @@
   </div>
   -->
 
-  <div style="display: flex;flex-direction: row;">
+  <div style="display: flex;flex-direction: row;padding-top:50px;">
     <div style="flex-basis:40%">
       <div style="border: 1px solid yellowgreen;">
         <el-table :data="tableData" style="width: 100%">
@@ -23,7 +23,7 @@
         </el-table>
       </div>
     </div>
-    <div style="flex-basis:40%;background-image: url('http://10.11.0.87:8087/cbc/getFile.cbc?uuid=f76c6dee83da42348572f95a7486ca2d&type=photo')">22</div>
+    <div style="box-sizing: border-box;flex-basis:40%;background-image: url('http://10.11.0.87:8087/cbc/getFile.cbc?uuid=f76c6dee83da42348572f95a7486ca2d&type=photo')">22</div>
     <div style="flex-basis:20%;background: yellow;"></div>
   </div>
 
@@ -50,6 +50,11 @@ export default {
         },
         {
           date: '2016-05-04',
+          name: 'Tom',
+          address: 'No. 189, Grove St, Los Angeles',
+        },
+        {
+          date: '2016-05-01',
           name: 'Tom',
           address: 'No. 189, Grove St, Los Angeles',
         },

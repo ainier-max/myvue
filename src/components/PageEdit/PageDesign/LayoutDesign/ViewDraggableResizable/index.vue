@@ -59,6 +59,7 @@ const setPageLayoutStyle = computed(() => {
   return function (pageLayout) {
     console.log("pageLayoutStyle--pageLayout", pageLayout);
     let styleObj = {};
+    styleObj.cursor = "move";
     styleObj.border="1px solid #1987cf"
     styleObj.zIndex = pageLayout.config.attr.zIndex;
     return styleObj;
@@ -181,5 +182,6 @@ const onDragstop = (component) => {};
 </script>
 
 <style scoped>
+.mb{background-color: #000;width:100%;height:100%;opacity: 0;z-index:999;left:0;top:0;position:fixed;}
 
 </style>

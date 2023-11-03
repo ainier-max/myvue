@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%;height:100%;">
+  <div style="width:100%;height:100%;" class="ttt">
     <component
       :id="'id_' + props.frontEndComponentData.ref"
       :ref="props.frontEndComponentData.ref"

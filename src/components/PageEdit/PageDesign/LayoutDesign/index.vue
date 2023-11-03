@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="wrapper">
+    <div id="wrapper" >
       <SketchRule
         v-if="sketchRuleWidth && sketchRuleHeight"
         :thick="thick"
