@@ -20,7 +20,7 @@ export const currentDealDataStore = defineStore("currentDealDataID", {
       this.setCurrentPageRenderTreeNodeData(nodeDataTemp);
     },
     setCurrentPageRenderTreeNodeData(data) {
-      //console.log("setCurrentPageRenderTreeNodeData--data",data);
+      console.log("当前选中渲染树节点数据：",data);
       //设置当前渲染树节点
       this.currentPageRenderTreeNodeData = data;
       if (data.type=="mainBlock" || data.type=="childBlock") {

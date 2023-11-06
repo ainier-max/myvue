@@ -3,7 +3,7 @@
     <div style="flex-basis: 17%">
       <div class="titleClass" align="center">页面渲染树</div>
 
-      <div style="height: 40%">
+      <div style="height: 60%">
         <el-tree
           ref="pageRenderTreeRef"
           :data="pageRenderTreeData"
@@ -51,40 +51,7 @@
           >添加页面块</el-button
         >
       </div>
-      <div class="titleClass" align="center">外部页面</div>
-
-      <div style="height: 35%">
-        <el-table
-          :data="relativePageRenderTreeData"
-          style="width: 100%; height: 100%"
-        >
-          <el-table-column prop="label" label="页面块名称" width="250">
-          </el-table-column>
-          <el-table-column fixed="right" label="操作" width="200">
-            <template #default="scope">
-              {{ scope.row.label }}
-              <el-icon
-                size="20"
-                color="red"
-                style="cursor: pointer; padding-left: 10px"
-              >
-                <Delete @click="deleteRelativePageRenderTreeData(scope)" />
-              </el-icon>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-
-      <div align="center">
-        <el-button
-          @click="showPageOutDidlog"
-          style="margin-top: 15px; margin-bottom: 15px"
-          type="primary"
-          >添加外部页面</el-button
-        >
-      </div>
-
-      <!-- <div style="border-top: 1px solid gray">子页面</div> -->
+     
     </div>
     <div style="flex-basis: 65%">
       <div
@@ -132,7 +99,7 @@
 
     <div style="flex-basis: 18%">
       <!--基础配置-->
-      <CommonSetting @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
+      <CommonSetting  @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
     </div>
   </div>
 
@@ -143,9 +110,7 @@
     :width="dialogWidth"
   >
     <AddPageBlock v-if="dialogType == 'AddPageBlock'"></AddPageBlock>
-    <AddPageOutChoose
-      v-if="dialogType == 'AddPageOutChoose' && dialogFlag"
-    ></AddPageOutChoose>
+
   </el-dialog>
 </template>
 
@@ -157,7 +122,6 @@ import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
 import AddPageBlock from "@/components/PageEdit/PageDesign/DialogContent/AddPageBlock/index.vue";
-import AddPageOutChoose from "@/components/PageEdit/PageDesign/DialogContent/AddPageOutChoose/index.vue";
 import CommonSetting from "@/components/PageEdit/PageDesign/Settings/CommonSetting/index.vue";
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
@@ -336,62 +300,6 @@ const dialogFlag = ref(false);
 const dialogWidth = ref("30%");
 //注入
 provide("dialogFlag", dialogFlag);
-//添加外部页面
-const showPageOutDidlog = () => {
-  dialogWidth.value = "50%";
-  dialogTitle.value = "添加外部页面";
-  dialogFlag.value = true;
-  dialogType.value = "AddPageOutChoose";
-};
-const deleteRelativePageRenderTreeData = (scope) => {
-  console.log("deleteRelativePageRenderTreeData--scope", scope);
-
-  //是否被渲染树调用，如果没有调用，则删除。
-  console.log("isUsedPage--pageRenderTreeData.value",pageRenderTreeData.value);
-  console.log("isUsedPage--scope.row",scope.row);
-  let isUsedNode = isUsedPage(pageRenderTreeData.value, scope.row);
-  console.log("isUsedNode",isUsedNode);
-  if(isUsedNode==null){
-    let param = {};
-    param.sql = "page_centre_relative.delete";
-    param.page_id = page_id;
-    param.relative_page_id = scope.row.page_id;
-    commonExcuteRequestAndOtherParam(
-      window.axios,
-      param,
-      deleteRelativePageRenderTreeDataCallBack,
-      scope
-    );
-  }else{
-    ElMessage.info("该页面已经被使用，请先把页面渲染树使用到的页面删除，再执行该操作！");
-    pageRenderTreeRef.value.setCurrentKey(isUsedNode.id);
-    nodeClick(isUsedNode);
-  }
-};
-
-//如果有使用，则返回该节点，如果没有使用，则返回null
-const isUsedPage = (nodes, element) => {
-  for (const node of nodes) {
-    if (node.related_value == element.id) {
-      console.log("返回true");
-      return node;
-    }
-    if (node.children) {
-      return isUsedPage(node.children, element);
-    }
-  }
-  console.log("返回false");
-  return null;
-};
-
-const deleteRelativePageRenderTreeDataCallBack = (result, scope) => {
-  console.log("deleteRelativePageRenderTreeDataCallBack--scope", scope);
-  if (result.state == "success") {
-    //删除节点
-    deleteNode(relativePageRenderTreeData.value, scope.row.id);
-    ElMessage.success("删除成功！");
-  }
-};
 
 //添加页面块弹窗
 const showPageBlockDidlog = () => {

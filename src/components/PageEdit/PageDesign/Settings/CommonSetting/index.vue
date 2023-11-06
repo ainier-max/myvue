@@ -1,7 +1,11 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: auto">
     <div class="titleClass" align="center">基础配置</div>
-    <div v-if="currentPageRenderTreeNodeData">
+    <div align="center" v-if="currentPageRenderTreeNodeData && currentPageRenderTreeNodeData.type=='pageOut'">
+      <div  style="margin-top:10px;">属于《外部页面》类型</div>
+      <el-button type="success" style="margin-top:10px;" @click="toPageEdit">打开配置地址</el-button>
+    </div>
+    <div v-if="currentPageRenderTreeNodeData && currentPageRenderTreeNodeData.type!='pageOut'" >
       <div class="leftTitle" style="font-weight: bolder">
         类型：
         <span v-if="currentPageRenderTreeNodeData.type == 'mainBlock'"
@@ -385,7 +389,7 @@ const dialogTitle = ref("");
 
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
+const { pageRenderTreeData,relativePageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -401,6 +405,18 @@ const emit = defineEmits(["refreshLayoutDesign"]);
 const refreshLayoutDesign = (event) => {
   emit("refreshLayoutDesign");
 };
+
+const toPageEdit=()=>{
+  //console.log("toPageEdit--relativePageRenderTreeData",relativePageRenderTreeData);
+  //console.log("toPageEdit--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData);
+
+  let indexTemp=_.findIndex(relativePageRenderTreeData.value,function (o) {
+    return o.id == currentPageRenderTreeNodeData.value.related_value;
+  });
+  let page_id_Temp=relativePageRenderTreeData.value[indexTemp].page_id;
+  //console.log("toPageEdit--page_id_Temp",page_id_Temp);
+  window.open("/PageEdit?page_id="+page_id_Temp+"&page_debug_flag=true");
+}
 
 const customContent = ref("");
 const showPopover = () => {

@@ -235,7 +235,8 @@ export default {
             onClick: () => {
               console.log("删除");
               the.currentPage=item;
-              the.showDeletePage();
+              the.findPageIsRelatived();
+              // the.showDeletePage();
             }
           },
         ]
@@ -243,8 +244,32 @@ export default {
     },
 
     showDeletePage(){
+      
       this.deletePageDialogVisible=true;
     },
+    findPageIsRelatived(){
+      console.log("findPageIsRelatived--this.currentPage",this.currentPage);
+      let param = {};
+      param.sql = "page_centre.findPageIsRelatived";
+      param.page_id = this.currentPage.page_id;
+      commonSelectRequest(axios, param, this.findPageIsRelativedCallBack);
+    },
+
+    findPageIsRelativedCallBack(result){
+      if (result.objects.length>0) {
+        let msgTemp="";
+        msgTemp=msgTemp+"该页面被";
+        for(let i=0;i<result.objects.length;i++){
+          msgTemp=msgTemp+"《"+result.objects[i].page_name+"》";
+        }
+        msgTemp=msgTemp+"等页面使用，无法删除！";
+        this.$message.error(msgTemp);
+      }else{
+        this.showDeletePage();
+      }
+    },
+
+
     deletePageCancle(){
       this.deletePageDialogVisible=false;
     },

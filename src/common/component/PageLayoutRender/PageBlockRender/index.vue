@@ -1,11 +1,12 @@
 <template>
-  <div style="height: 100%; width: 100%">
-    <template v-for="(pageLayout, index) in pageBlockRenderData.children">
+  <div style="height: 100%; width: 100%;position: relative" v-if="pageBlockRenderData">
+    <div v-for="(pageLayout, index) in pageBlockRenderData.children"
+    :style="setPageLayoutStyle(pageLayout)">
       <PageLayoutRender
         v-if="pageLayout.config.attr.show"
         :pageLayoutData="pageLayout"
       ></PageLayoutRender>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -34,6 +35,19 @@ pageBlockRenderData.value = findNodeById(
 );
 
 console.log("要渲染的页面块数据", pageBlockRenderData);
+//页面布局样式
+const setPageLayoutStyle = computed(() => {
+  return function (pageLayout) {
+    console.log("pageLayoutStyle--pageLayout", pageLayout);
+    let styleObj = {};
+    styleObj.position="absolute";
+    styleObj.left=pageLayout.config.attr.xPer+"%";
+    styleObj.top=pageLayout.config.attr.yPer+"%";
+    styleObj.height=pageLayout.config.attr.hPer+"%";
+    styleObj.width=pageLayout.config.attr.wPer+"%";
+    return styleObj;
+  };
+});
 </script>
 
 <style scoped></style>
