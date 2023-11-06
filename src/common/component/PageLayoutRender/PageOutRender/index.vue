@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%; width: 100%">
+  <div style="height: 100%; width: 100%" v-if="pageBlockRenderData">
     <template v-for="(pageLayout, index) in pageBlockRenderData.children">
       <PageLayoutRender
         v-if="pageLayout.config.attr.show"
@@ -17,21 +17,20 @@ import { findNodeById } from "@/common/js/tree.js";
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
+const { relativePageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 const props = defineProps({
   pageBlockData: null,
 });
 
-console.log("页面块--props.pageBlockData", props.pageBlockData);
-console.log("页面渲染树数据--pageRenderTreeData.value", pageRenderTreeData.value);
+console.log("当前外部页面数据--props.pageBlockData", props.pageBlockData);
 
 const pageBlockRenderData = ref(null);
 
-pageBlockRenderData.value = findNodeById(
-  pageRenderTreeData.value,
-  props.pageBlockData.related_value
-);
+let indexTemp = _.findIndex(relativePageRenderTreeData.value, function (o) {
+  return o.id == props.pageBlockData.related_value;
+});
+pageBlockRenderData.value = relativePageRenderTreeData.value[indexTemp];
 
 console.log("要渲染的页面块数据", pageBlockRenderData);
 </script>

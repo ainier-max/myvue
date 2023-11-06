@@ -34,6 +34,15 @@
         :pageBlockData="item"
       >
       </PageBlockRender>
+
+      <!--外部页面渲染-->
+      <PageOutRender
+        v-if="item.type == 'pageOut'"
+        :style="setStyle(item)"
+        :pageBlockData="item"
+      >
+      </PageOutRender>
+      
     </div>
   </div>
 </template>
@@ -48,6 +57,7 @@ export default {
 import FrontEndComponentRender from "./FrontEndComponentRender/index.vue";
 import BuildInComponentRender from "./BuildInComponentRender/index.vue";
 import PageBlockRender from "./PageBlockRender/index.vue";
+import PageOutRender from "./PageOutRender/index.vue";
 
 import { ref, nextTick, onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";

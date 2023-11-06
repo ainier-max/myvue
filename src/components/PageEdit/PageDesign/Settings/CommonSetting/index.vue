@@ -303,6 +303,9 @@
         <el-button @click="addPageBlock" style="margin-top: 15px" type="info"
           >页面块</el-button
         >
+        <el-button @click="addPageOut" style="margin-top: 15px" type="info"
+          >外部页面</el-button
+        >
       </div>
 
       <div
@@ -355,6 +358,14 @@
       ref="PageBlockChooseRef"
       @getChooseData="getChooseData"
     ></PageBlockChoose>
+
+    <PageOutChoose
+      v-if="chooseDialogType == 'pageOut'"
+      ref="PageOutChooseRef"
+      @getChooseData="getChooseData"
+    ></PageOutChoose>
+
+
   </el-dialog>
 </template>
 
@@ -485,7 +496,16 @@ import PageBlockChoose from "@/components/PageEdit/PageDesign/Settings/CommonSet
 const addPageBlock = () => {
   chooseDialogType.value = "pageBlock";
   chooseDialogFlag.value = true;
-  dialogTitle.value = "页面块(双击选择页面块)";
+  dialogTitle.value = "页面块";
+};
+
+import PageOutChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/PageOutChoose/index.vue";
+
+//添加外部页面
+const addPageOut = () => {
+  chooseDialogType.value = "pageOut";
+  chooseDialogFlag.value = true;
+  dialogTitle.value = "外部页面";
 };
 
 //刷新布局

@@ -6,21 +6,37 @@ import { nextTick } from "vue";
 export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
   state: () => ({
     pageRenderTreeData: null,
-    ralativePageRenderTreeData:null,
+    relativePageRenderTreeData:null,
   }),
   getters: {
 
   },
   actions: {
-    //设置数据
-    setRalativePageRenderTreeData(data) {
+    //设置关联页面数据
+    setRelativePageRenderTreeData(data) {
       data = this.newSortForChildren(data);
       this.sortTree(data);
-      this.ralativePageRenderTreeData = data;
-      console.log("关联页面渲染树数据--ralativePageRenderTreeData",this.ralativePageRenderTreeData);
+      this.relativePageRenderTreeData = data;
+      console.log("关联页面渲染树数据--setRelativePageRenderTreeData", this.relativePageRenderTreeData);
     },
-    //设置数据
-    setPageRenderTreeDataData(data) {
+    
+    // setPageRenderTreeDataByReLativePageID(nodes, element) {
+    //   for (const node of nodes) {
+    //     if (node.related_value === element.id) {
+    //       node.children.push(element);
+    //       return;
+    //     }
+    //     if (node.children) {
+    //       this.setPageRenderTreeDataByReLativePageID(node.children,element);
+    //     }
+    //   }
+    // },
+
+    
+
+
+    //设置页面渲染树数据
+    setPageRenderTreeData(data) {
       data = this.newSortForChildren(data);
       this.sortTree(data);
       this.pageRenderTreeData = data;
