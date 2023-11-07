@@ -34,12 +34,13 @@ window.cbcApp.use(ElementPlus).use(router).use(pinia).use(contextmenu).use(VueGr
 //ElementPlusIcons(按需注册)
 //import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import {
-    Upload, Delete, Edit, EditPen, CirclePlus, CircleClose, Compass, Folder, Plus, CreditCard, Search, ArrowDown, Minus,
+    Upload,Download, Delete, Edit, EditPen, CirclePlus, CircleClose, Compass, Folder, Plus, CreditCard, Search, ArrowDown, Minus,
     InfoFilled,WarningFilled
 } from '@element-plus/icons-vue'
 
 
 window.cbcApp.component("Minus", Minus)
+window.cbcApp.component("Download", Download)
 window.cbcApp.component("Upload", Upload)
 window.cbcApp.component("Delete", Delete)
 window.cbcApp.component("Edit", Edit)

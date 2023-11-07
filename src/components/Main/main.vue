@@ -29,6 +29,11 @@
                 <span slot="title" style="font-size: 16px">前端组件</span>
               </el-menu-item>
 
+              <el-menu-item index="4">
+                <i class="el-icon-location"></i>
+                <span slot="title" style="font-size: 16px">打包组件</span>
+              </el-menu-item>
+
 
               <el-menu-item index="3">
                 <i class="el-icon-location"></i>
@@ -112,8 +117,8 @@ export default {
         this.$router.push('/Main/BlueScript')
       }
       if (key == "4") {
-        console.log("门户中心");
-        this.$router.push('/Main/Portal')
+        console.log("打包组件维护");
+        this.$router.push('/Main/PackComponent')
       }
       if (key == "5") {
         console.log("平台手册");

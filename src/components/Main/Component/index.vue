@@ -65,7 +65,7 @@
       </div>
 
       <div style="flex-basis:45%;">
-        <el-divider content-position="left" style="margin-left:50px"><span style="font-size: 18px">组件树</span>
+        <el-divider content-position="left" style="margin-left:50px"><span style="font-size: 18px">前端组件树</span>
         </el-divider>
         <!--:default-expanded-keys="[1]"-->
         <el-tree ref="componentInfoTreeRef" :data="componentInfoTreeData" node-key="id" :default-expand-all="false"

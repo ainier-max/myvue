@@ -46,7 +46,7 @@ export default {
       }
     },
     getClientIP() {
-      axios.get(window.cbcConfig.serverUrl + '/cbc/getClientIP.cbc', {}
+      axios.get('/cbc/getClientIP.cbc', {}
       ).then(function (response) {
         console.log("登陆IP地址", response.data[0].ip);
         window.localStorage.setItem('clientIP', response.data[0].ip);

@@ -10,20 +10,16 @@ export default defineConfig({
         }
     },
     server:{
-        //host:"192.168.0.10",
         host:"127.0.0.1",
         port:"4000",
         hmr:true,
         usePolling:true,
         proxy: {
-            "/bigscreen": {
-                target: "http://10.254.10.17:37078",
-                //target: "http://10.254.11.225:37078",
+            "/cbc": {
+                target: "http://10.11.0.87:8087",
                 changeOrigin: true,
             },
         },
-
-
     }
 
 })

@@ -8,7 +8,7 @@ let headers_config = {
 };
 export function commonSelectRequest(param) {
   return axios
-    .post(window.cbcConfig.serverUrl + "/cbc/select.cbc", param, headers_config)
+    .post("/cbc/select.cbc", param, headers_config)
     .then((response) => {
       //console.log(param.sql + "对应结果集为：", response);
       if (response.data[0].state == "success") {

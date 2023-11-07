@@ -127,6 +127,11 @@ const routes = [
                 component: () => import('../components/Main/BlueScript/index.vue'),
             },
             {
+                path: 'PackComponent',
+                component: () => import('../components/Main/PackComponent/index.vue'),
+            },
+        
+            {
                 path: 'Md',
                 component: () => import('../components/Main/Md/index.vue'),
             },

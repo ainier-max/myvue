@@ -6,7 +6,7 @@ export function commonSelectRequest(axios, param, callback) {
             "dataType":"json"
         }
     }
-    axios.post(window.cbcConfig.serverUrl + '/cbc/select.cbc', param, headers_config)
+    axios.post('/cbc/select.cbc', param, headers_config)
         .then(response => {
             //console.log(param.sql + "对应结果集为：", response);
             if (response.data[0].state == "success") {
@@ -27,7 +27,7 @@ export function commonBatchSelectRequest(axios, param, callback) {
             "dataType":"json"
         }
     }
-    axios.post(window.cbcConfig.serverUrl + '/cbc/selectByBatch.cbc', param, headers_config)
+    axios.post('/cbc/selectByBatch.cbc', param, headers_config)
         .then(response => {
             console.log("commonBatchSelectRequest--对应结果集为：", response);
             if (response.data[0].state == "success") {
@@ -49,7 +49,7 @@ export function commonSelectRequestAndOtherParam(axios, param, callback, otherPa
             "dataType":"json"
         }
     }
-    axios.post(window.cbcConfig.serverUrl + '/cbc/select.cbc', param, headers_config)
+    axios.post('/cbc/select.cbc', param, headers_config)
         .then(response => {
             //console.log(param.sql + "对应结果集为：", response);
             if (response.data[0].state == "success") {
@@ -70,7 +70,7 @@ export function commonExcuteRequest(axios, param, callback) {
         }
     }
     //console.log(param.sql + "对应参数：", param);
-    axios.post(window.cbcConfig.serverUrl + '/cbc/excute.cbc', param, headers_config)
+    axios.post('/cbc/excute.cbc', param, headers_config)
         .then(response => {
             if (response.data[0].state == "success") {
                 callback(response.data[0]);
@@ -90,7 +90,7 @@ export function commonExcuteByBatchRequest(axios, param, callback) {
         }
     }
     //console.log(param.sql + "对应参数：", param);
-    axios.post(window.cbcConfig.serverUrl + '/cbc/excuteByBatch.cbc', param, headers_config)
+    axios.post('/cbc/excuteByBatch.cbc', param, headers_config)
         .then(response => {
             if (response.data[0].state == "success") {
                 callback(response.data[0]);
@@ -112,7 +112,7 @@ export function commonExcuteRequestAndOtherParam(axios, param, callback,otherPar
         }
     }
     //console.log(param.sql + "对应参数：", param);
-    axios.post(window.cbcConfig.serverUrl + '/cbc/excute.cbc', param, headers_config)
+    axios.post('/cbc/excute.cbc', param, headers_config)
         .then(response => {
             //console.log(param.sql + "对应结果集为：", response);
             callback(response.data[0],otherParam);
