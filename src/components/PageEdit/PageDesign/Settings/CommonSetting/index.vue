@@ -1,11 +1,24 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: auto">
     <div class="titleClass" align="center">基础配置</div>
-    <div align="center" v-if="currentPageRenderTreeNodeData && currentPageRenderTreeNodeData.type=='pageOut'">
-      <div  style="margin-top:10px;">属于《外部页面》类型</div>
-      <el-button type="success" style="margin-top:10px;" @click="toPageEdit">打开配置地址</el-button>
+    <div
+      align="center"
+      v-if="
+        currentPageRenderTreeNodeData &&
+        currentPageRenderTreeNodeData.type == 'pageOut'
+      "
+    >
+      <div style="margin-top: 10px">属于《外部页面》类型</div>
+      <el-button type="success" style="margin-top: 10px" @click="toPageEdit"
+        >打开配置地址</el-button
+      >
     </div>
-    <div v-if="currentPageRenderTreeNodeData && currentPageRenderTreeNodeData.type!='pageOut'" >
+    <div
+      v-if="
+        currentPageRenderTreeNodeData &&
+        currentPageRenderTreeNodeData.type != 'pageOut'
+      "
+    >
       <div class="leftTitle" style="font-weight: bolder">
         类型：
         <span v-if="currentPageRenderTreeNodeData.type == 'mainBlock'"
@@ -45,10 +58,6 @@
         placeholder="名称"
       />
 
-      
-
-      
-
       <!--mainBlock/childBlock类型的高度，宽度-->
       <template
         v-if="
@@ -74,11 +83,13 @@
 
       <!--非mainBlock/childBlock类型的高度，宽度-->
       <template
-        v-if="currentPageRenderTreeNodeData.type != 'mainBlock' &&
+        v-if="
+          currentPageRenderTreeNodeData.type != 'mainBlock' &&
           currentPageRenderTreeNodeData.type != 'childBlock' &&
-          currentPageRenderTreeNodeData.config.attr.labelType == 'flex'"
+          currentPageRenderTreeNodeData.config.attr.labelType == 'flex'
+        "
       >
-      <div class="leftTitle">
+        <div class="leftTitle">
           X坐标：<span
             >{{ currentPageRenderTreeNodeData.config.attr.xPer }}%</span
           >
@@ -89,7 +100,7 @@
           class="rightValue"
           placeholder="X坐标"
         />
-      
+
         <div class="leftTitle">
           Y坐标：<span
             >{{ currentPageRenderTreeNodeData.config.attr.yPer }}%</span
@@ -206,7 +217,6 @@
             @input="changeToRefresh"
           />
         </el-collapse-item>
-
       </el-collapse>
 
       <template v-if="currentPageRenderTreeNodeData.config.attr.zIndex">
@@ -369,7 +379,11 @@
       @getChooseData="getChooseData"
     ></PageOutChoose>
 
-
+    <PackComponentChoose
+      v-if="chooseDialogType == 'packComponent'"
+      ref="PackComponentChooseRef"
+      @getChooseData="getChooseData"
+    ></PackComponentChoose>
   </el-dialog>
 </template>
 
@@ -389,7 +403,9 @@ const dialogTitle = ref("");
 
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData,relativePageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
+const { pageRenderTreeData, relativePageRenderTreeData } = storeToRefs(
+  pageRenderTreeDataStoreObj
+);
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -406,17 +422,17 @@ const refreshLayoutDesign = (event) => {
   emit("refreshLayoutDesign");
 };
 
-const toPageEdit=()=>{
+const toPageEdit = () => {
   //console.log("toPageEdit--relativePageRenderTreeData",relativePageRenderTreeData);
   //console.log("toPageEdit--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData);
 
-  let indexTemp=_.findIndex(relativePageRenderTreeData.value,function (o) {
+  let indexTemp = _.findIndex(relativePageRenderTreeData.value, function (o) {
     return o.id == currentPageRenderTreeNodeData.value.related_value;
   });
-  let page_id_Temp=relativePageRenderTreeData.value[indexTemp].page_id;
+  let page_id_Temp = relativePageRenderTreeData.value[indexTemp].page_id;
   //console.log("toPageEdit--page_id_Temp",page_id_Temp);
-  window.open("/PageEdit?page_id="+page_id_Temp+"&page_debug_flag=true");
-}
+  window.open("/PageEdit?page_id=" + page_id_Temp + "&page_debug_flag=true");
+};
 
 const customContent = ref("");
 const showPopover = () => {
@@ -496,7 +512,12 @@ const addFrontEndComponent = () => {
   dialogTitle.value = "前端组件(双击选择组件)";
 };
 //添加打包组件
-const addPackComponent = () => {};
+import PackComponentChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/PackComponentChoose/index.vue";
+const addPackComponent = () => {
+  chooseDialogType.value = "packComponent";
+  chooseDialogFlag.value = true;
+  dialogTitle.value = "打包组件(双击选择组件)";
+};
 
 //添加内置组件
 import BuiltInComponentChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/BuiltInComponentChoose/index.vue";
@@ -562,7 +583,7 @@ const addFlexInder = (type) => {
   }
   layoutTemp.ref = "layoutRef-" + uuid();
   layoutTemp.type = type;
-  
+
   if (
     currentPageRenderTreeNodeData.value.type == "flex-row" ||
     currentPageRenderTreeNodeData.value.type == "flex-column"

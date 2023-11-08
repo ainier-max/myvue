@@ -1,8 +1,22 @@
 <template>
-  <div style="height: calc(100% - 60px); margin: 20px">
+  
+  <div style="height: calc(100% - 60px); margin: 20px" >
     <div class="titleClass">打包组件</div>
+    <div v-if="isView==true">
+      <div><el-button @click="closeIsView">返回</el-button></div>
 
+      <!--外部页面渲染-->
+      <PackComponentRender
+        style="width:500px;height:500px"
+        :packComponentData="showPackComponentData"
+      >
+      </PackComponentRender>
+
+      
+
+    </div>
     <div
+      v-if="isView==false"
       style="
         display: flex;
         flex-direction: row;
@@ -37,6 +51,10 @@
                 style="cursor: pointer; padding-left: 10px"
               >
                 <Download @click="packComponentDownload(scope.row)" />
+              </el-icon>
+
+              <el-icon size="20" color="cornflowerblue" style="cursor:pointer;padding-left: 10px">
+                <Edit @click="toShowPackComponent(scope.row)"/>
               </el-icon>
 
               <el-icon
@@ -153,12 +171,31 @@
       </span>
     </template>
   </el-dialog>
+
+  <el-dialog
+    title="确认框"
+    v-model="deletePackComponentDialogVisible"
+    :close-on-click-modal="false"
+    width="30%"
+  >
+    将要删除<span style="color: red; font-weight: bold"
+      >({{ currentPackComponent.component_name }})</span
+    >
+    <br />该操作也会把组件树中的对应组件删除，数据不可恢复，请小心操作。
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="deletePackComponentCancle">取 消</el-button>
+        <el-button type="primary" @click="deletePackComponent">确 定</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { provide, ref, nextTick, onMounted } from "vue";
 import { getListData } from "@/common/js/tree.js";
 import { ElMessage } from "element-plus";
+import { objectToString, stringToObject } from "@/common/js/objStr.js";
 
 import {
   commonExcuteRequest,
@@ -173,6 +210,8 @@ let defaultProps = {
   children: "children",
   label: "label",
 };
+
+const isView=ref(false);
 
 const packComponentDeploy = (row) => {
   //获取当前选中树菜单
@@ -210,11 +249,48 @@ const packComponentDeployCallBack = (result) => {
     findPackComponentTree();
   }
 };
-//显示删除对话框
+//删除打包数据
+const currentPackComponent = ref(null);
+const deletePackComponentDialogVisible = ref(false);
 const showDeletePackComponentWin = (row) => {
-  console.log("showDeletePackComponentWin--row", row);
+  currentPackComponent.value = row;
+  deletePackComponentDialogVisible.value = true;
+};
+const deletePackComponentCancle = () => {
+  deletePackComponentDialogVisible.value = false;
+};
+const deletePackComponent = () => {
+  let param = {};
+  param.sql = "page_component_pack.delete";
+  param.component_id = currentPackComponent.value.component_id;
+  commonExcuteByBatchRequest(window.axios, param, deletePackComponentCallBack);
 };
 
+const deletePackComponentCallBack = (result) => {
+  if (result.state == "success") {
+    ElMessage.success("删除成功！");
+    deletePackComponentDialogVisible.value = false;
+    findPackComponentTree();
+    findAllPackComponent();
+  }
+};
+
+const showPackComponentData=ref(null);
+import PackComponentRender from "@/common/component/PageLayoutRender/PackComponentRender/index.vue";
+const toShowPackComponent=(row)=>{
+  console.log("toShowPackComponent--row",row);
+  row.config=stringToObject(row.component_config_str);
+  row.ref="viewPackComponentRef";
+  row.related_value=row.component_id;
+  showPackComponentData.value=row;
+  isView.value=true;
+}
+const closeIsView=()=>{
+  isView.value=false;
+}
+
+
+//下载示例工程代码
 const downloadProject = () => {
   window.open("/project/project.zip");
 };

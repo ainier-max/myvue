@@ -16,7 +16,7 @@ import {commonSelectRequest} from "@/common/js/request";
 import axios from "axios";
 import {stringToObject} from "@/common/js/objStr";
 export default {
-  name: 'TestPackUmdComponent2',
+  name: 'packComponent',
   props: {
   },
   //供动态注册组件使用,不可删除
@@ -65,7 +65,7 @@ export default {
     },
     findComponentConfig(){
       let param = {};
-      param.sql = "page_component_packumd.findComponentConfig";
+      param.sql = "page_component_pack.findComponentConfig";
       param.component_id = this.component_id;
       commonSelectRequest(axios, param, this.findComponentConfigCallBack);
     },

@@ -18,7 +18,14 @@
         v-if="item.type == 'frontEndComponent'"
       >
       </FrontEndComponentRender>
-
+      <!--打包组件渲染-->
+      <PackComponentRender
+        :style="setStyle(item)"
+        :packComponentData="item"
+        v-if="item.type == 'packComponent'"
+      >
+      </PackComponentRender>
+      
       <!--内置组件渲染-->
       <BuildInComponentRender
         :style="setStyle(item)"
@@ -58,6 +65,9 @@ import FrontEndComponentRender from "./FrontEndComponentRender/index.vue";
 import BuildInComponentRender from "./BuildInComponentRender/index.vue";
 import PageBlockRender from "./PageBlockRender/index.vue";
 import PageOutRender from "./PageOutRender/index.vue";
+import PackComponentRender from "./PackComponentRender/index.vue";
+
+
 
 import { ref, nextTick, onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";
@@ -178,6 +188,7 @@ const setStyle = computed(() => {
     ) {
       styleObj.background = item.config.attr.backgroundColorValue;
     }
+    console.log("setStyle--styleObj",styleObj);
 
     return styleObj;
   };

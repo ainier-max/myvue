@@ -16,7 +16,7 @@ import {commonSelectRequest} from "@/common/js/request";
 import axios from "axios";
 import {stringToObject} from "@/common/js/objStr";
 export default {
-  name: 'TestPackUmdComponent',
+  name: 'TestPackComponent',
   props: {
   },
   //供动态注册组件使用,不可删除
