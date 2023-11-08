@@ -87,7 +87,7 @@ export default {
       var param = {};
       param.sql = "page_component_frontend.updateComponentConfigAndCode";
       param.component_id = this.componentInfo.component_id;
-      param.component_config_str = objectToString(this.componentInfo.component_config);
+      param.component_config_str = objectToString(this.componentInfo.config);
       param.component_code = this.componentInfo.component_code;
       param.component_visualize_str = this.component_visualize_str;
       commonExcuteRequest(axios, param, this.saveCallBack);
@@ -110,7 +110,7 @@ export default {
       this.componentInfo.component_id = result.objects[0].component_id;
       this.componentInfo.component_code = result.objects[0].component_code;
       this.component_visualize_str=result.objects[0].component_visualize_str;
-      this.componentInfo.component_config = stringToObject(result.objects[0].component_config_str);
+      this.componentInfo.config = stringToObject(result.objects[0].component_config_str);
       this.setVisualizeOptions(this.component_visualize_str);
       //更新效果图
       this.sendMeaage();
@@ -118,7 +118,7 @@ export default {
     setVisualizeOptions(component_visualize_str){
       this.visualizeOptionsTemp=eval("(" + component_visualize_str + ")").visualizeOptions;
       for(let i=0;i<this.visualizeOptionsTemp.length;i++){
-        const strTemp="this.componentInfo.component_config."+this.visualizeOptionsTemp[i].name;
+        const strTemp="this.componentInfo.config."+this.visualizeOptionsTemp[i].name;
         if(this.visualizeOptionsTemp[i].type=="string"){
           this.visualizeOptionsTemp[i].value=eval("(" + strTemp + ")")+"";
         }else{
@@ -133,9 +133,9 @@ export default {
     updateConfigParam(item){
       let strTemp="";
       if(item.type=="color" || item.type=="string" || item.type=="photo"){
-        strTemp="this.componentInfo.component_config."+item.name+"='"+item.value+"'";
+        strTemp="this.componentInfo.config."+item.name+"='"+item.value+"'";
       }else{
-        strTemp="this.componentInfo.component_config."+item.name+"="+item.value;
+        strTemp="this.componentInfo.config."+item.name+"="+item.value;
       }
       console.log("strTemp",strTemp);
       eval( strTemp );
@@ -146,7 +146,7 @@ export default {
     changeTypeFun(val) {
       console.log("this.componentInfo11", this.componentInfo);
       if(val == "config") {
-        this.component_config_str = js_beautify(objectToString(this.componentInfo.component_config));
+        this.component_config_str = js_beautify(objectToString(this.componentInfo.config));
       }
       if(val=="visualize"){
         this.setVisualizeOptions(this.component_visualize_str);
@@ -172,7 +172,7 @@ export default {
         this.sendMeaage();
       }else if(this.changeType=="config"){
         this.component_config_str = code;
-        this.componentInfo.component_config = eval("(" + code + ")");
+        this.componentInfo.config = eval("(" + code + ")");
         this.sendMeaage();
       }else if(this.changeType=="visualize"){
         this.component_visualize_str=code;

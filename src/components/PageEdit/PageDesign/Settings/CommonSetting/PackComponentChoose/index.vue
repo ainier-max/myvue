@@ -68,7 +68,7 @@ const findPackComponentByIDCallBack=(result)=>{
   console.log("findPageComponentByIDCallBack--result", result);
   if (result.objects.length > 0) {
     let obj = {};
-    obj.id="id"+uuid();
+    obj.id="id-"+uuid();
     if(currentPageRenderTreeNodeData.value.type=="flex-row" || currentPageRenderTreeNodeData.value.type=="flex-column"){
       //当前节点为flex-row或者flex-column
       obj.pid=currentPageRenderTreeNodeData.value.id;

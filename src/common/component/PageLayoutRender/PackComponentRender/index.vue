@@ -45,21 +45,6 @@ const eventFun = (eventType, obj, component) => {
   console.log("eventFun--当前组件信息：", component);
 };
 
-const findComponentConfig = () => {
-  let param = {};
-  param.sql = "page_component_pack.findComponentConfig";
-  param.component_id = props.packComponentData.component_id;
-  commonSelectRequest(axios, param, findComponentConfigCallBack);
-};
-const findComponentConfigCallBack = (result) => {
-  console.log("findComponentConfigCallBack--result", result);
-  if (result.objects.length > 0) {
-    props.packComponentData.component_config = stringToObject(
-      result.objects[0].component_config_str
-    );
-    showFlag.value = true;
-  }
-};
 
 // 生命周期钩子
 onMounted(() => {
@@ -72,7 +57,8 @@ onMounted(() => {
       //局部动态注册组件
       currentInstance.components[props.packComponentData.related_value] =
         module.default;
-      findComponentConfig();
+        showFlag.value = true;
+      //findComponentConfig();
     })
     .catch((error) => {
       // 捕获错误

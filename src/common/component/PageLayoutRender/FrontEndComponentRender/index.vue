@@ -31,8 +31,8 @@ const props = defineProps({
 
 const showFlag = ref(false);
 console.log("frontEndComponentData", props.frontEndComponentData);
-props.frontEndComponentData.component_config =
-  props.frontEndComponentData.config;
+// props.frontEndComponentData.component_config =
+//   props.frontEndComponentData.config;
 
 const eventFun = (eventType, obj, component) => {
   //界面设计页面无需执行事件逻辑

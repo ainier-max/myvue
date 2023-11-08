@@ -40,10 +40,10 @@ export default {
       console.log("当前事件所属组件信息：",component);
     },
     //组件样式设置
-    getStyle(component_config) {
+    getStyle(config) {
       //console.log("this.componentConfig", this.componentConfig);
       try {
-        let attr = component_config.attr;
+        let attr = config.attr;
         let style = {
           position: "absolute",
           left: attr.x + attr.unit,
@@ -73,10 +73,10 @@ export default {
       this.component=componentInfo;
       this.component_id=componentInfo.component_id;
       //如果组件的属性show为false,则不进行展示
-      if(typeof (componentInfo.component_config.attr)=="undefined"){
+      if(typeof (componentInfo.config.attr)=="undefined"){
         console.log("配置内容无attr属性！")
         return;
-      }else if(componentInfo.component_config.attr.show==false){
+      }else if(componentInfo.config.attr.show==false){
         console.log(componentInfo.component_id+"组件被隐藏")
         return;
       }
@@ -88,7 +88,7 @@ export default {
       }
       this.showFlag=false;
       //组件基础样式设置
-      this.getStyle(componentInfo.component_config);
+      this.getStyle(componentInfo.config);
 
     },
     //注册组件
