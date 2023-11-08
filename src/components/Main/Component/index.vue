@@ -253,7 +253,6 @@ export default {
     this.ComponentInfoDataForm.component_user= window.localStorage.getItem('loginUserid');
     this.findComponentInfo();
     this.findPageComponentTree();
-
     this.findDefaultComponent();
   },
 

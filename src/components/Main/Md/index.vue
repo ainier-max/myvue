@@ -23,6 +23,7 @@
 
           <el-collapse-item title="页面组件" name="2">
             <div>
+              <div @click="toPath('页面组件/打包组件开发流程.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">打包组件开发流程</div>
               <div @click="toPath('页面组件/组件依赖较多.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件依赖较多</div>
               <div @click="toPath('页面组件/组件交互.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件交互</div>
               <div @click="toPath('页面组件/组件可视化配置参数介绍.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件可视化配置参数介绍</div>

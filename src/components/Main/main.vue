@@ -84,6 +84,9 @@ export default {
     if(this.$route.fullPath.indexOf("/Main/BlueScript")>=0){
       this.activeIndex="3";
     }
+    if(this.$route.fullPath.indexOf("/Main/PackComponent")>=0){
+      this.activeIndex="4";
+    }
 
     if(this.$route.fullPath.indexOf("/Main/Md")>=0){
       this.activeIndex="5";
