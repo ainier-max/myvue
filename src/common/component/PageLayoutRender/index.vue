@@ -36,7 +36,7 @@
 
       <!--页面块渲染-->
       <PageBlockRender
-        v-if="item.type == 'implantBlock'"
+        v-if="item.type == 'childBlock'"
         :style="setStyle(item)"
         :pageBlockData="item"
       >

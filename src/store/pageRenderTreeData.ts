@@ -96,7 +96,7 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       let indexTemp = _.findIndex(nodeTemp.children, function (o) {
         return o.id == currentPageRenderTreeNodeData.value.id;
       });
-      data.index=currentPageRenderTreeNodeData.value.index;
+      data.config.attr.index = indexTemp;
       nodeTemp.children[indexTemp] = data;
       nextTick(() => {
         currentPageRenderTreeNodeData.value = nodeTemp.children[indexTemp];

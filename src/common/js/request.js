@@ -29,7 +29,7 @@ export function commonBatchSelectRequest(axios, param, callback) {
     }
     axios.post('/cbc/selectByBatch.cbc', param, headers_config)
         .then(response => {
-            console.log("commonBatchSelectRequest--对应结果集为：", response);
+            //console.log("commonBatchSelectRequest--对应结果集为：", response);
             if (response.data[0].state == "success") {
                 callback(response.data[0]);
             } else {

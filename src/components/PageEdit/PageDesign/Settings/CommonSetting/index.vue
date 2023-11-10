@@ -39,9 +39,6 @@
         <span v-if="currentPageRenderTreeNodeData.type == 'buildInComponent'"
           >内置组件</span
         >
-        <span v-if="currentPageRenderTreeNodeData.type == 'implantBlock'"
-          >内嵌页面块</span
-        >
       </div>
 
       <div class="leftTitle">ref：</div>
@@ -353,6 +350,7 @@
     :draggable="true"
     width="60%"
     top="10vh"
+    @close="chooseDialogClose"
     style="height: 550px"
   >
     <FrontEndComponentChoose
@@ -477,6 +475,12 @@ const showPopover = () => {
   strTemp = strTemp + "建议《布局占比总和》等于100！可以更好的计算<br/>";
   customContent.value = strTemp;
 };
+
+//弹出窗口关闭
+const chooseDialogClose=()=>{
+  chooseDialogType.value = "";
+}
+
 //获取选中的数据
 const getChooseData = (chooseData) => {
   console.log("getChooseData--chooseData", chooseData);
