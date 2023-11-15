@@ -44,14 +44,14 @@
 </template>
 
 <script>
-import MyMonacoEditor from '../../../../common/component/CodeEditor/MyMonacoEditor/index.vue'
+import MyMonacoEditor from '@/common/component/CodeEditor/MyMonacoEditor/index.vue'
 
 import DynamicsSetting from '../DynamicsSetting/index.vue'
 import axios from 'axios'
 
-import {commonSelectRequest, commonSelectRequestAndOtherParam, commonExcuteRequest} from "../../../../common/js/request.js"
+import {commonSelectRequest, commonSelectRequestAndOtherParam, commonExcuteRequest} from "@/common/js/request.js"
 
-import {objectToString, stringToObject} from "../../../../common/js/objStr.js";
+import {objectToString, stringToObject} from "@/common/js/objStr.js";
 import {js_beautify} from "js-beautify";
 
 import elementResizeDetectorMaker from "element-resize-detector";

@@ -130,7 +130,11 @@ const routes = [
                 path: 'PackComponent',
                 component: () => import('../components/Main/PackComponent/index.vue'),
             },
-        
+            {
+                path: 'DataModel',
+                component: () => import('../components/Main/DataModel/index.vue'),
+            },
+            
             {
                 path: 'Md',
                 component: () => import('../components/Main/Md/index.vue'),

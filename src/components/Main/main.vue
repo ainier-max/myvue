@@ -40,6 +40,11 @@
                 <span slot="title" style="font-size: 16px">蓝图工具</span>
               </el-menu-item>
 
+              <el-menu-item index="6">
+                <i class="el-icon-location"></i>
+                <span slot="title" style="font-size: 16px">数据模型</span>
+              </el-menu-item>
+
               <el-menu-item index="5">
                 <i class="el-icon-location"></i>
                 <span slot="title" style="font-size: 16px">平台手册</span>
@@ -87,12 +92,13 @@ export default {
     if(this.$route.fullPath.indexOf("/Main/PackComponent")>=0){
       this.activeIndex="4";
     }
+    if(this.$route.fullPath.indexOf("/Main/DataModel")>=0){
+      this.activeIndex="6";
+    }
 
     if(this.$route.fullPath.indexOf("/Main/Md")>=0){
       this.activeIndex="5";
     }
-
-
 
   },
   methods: {
@@ -122,6 +128,10 @@ export default {
       if (key == "4") {
         console.log("打包组件维护");
         this.$router.push('/Main/PackComponent')
+      }
+      if (key == "6") {
+        console.log("数据模型维护");
+        this.$router.push('/Main/DataModel')
       }
       if (key == "5") {
         console.log("平台手册");
