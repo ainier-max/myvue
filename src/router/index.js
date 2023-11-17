@@ -23,6 +23,10 @@ const routes = [
         path: '/PageEdit',
         component: () => import('../components/PageEdit/index.vue'),
     },
+    {
+        path: '/PageBrowse',
+        component: () => import('../components/PageBrowse/index.vue'),
+    },
     
     {
         path: '/Preview',

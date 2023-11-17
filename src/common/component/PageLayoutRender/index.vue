@@ -25,7 +25,7 @@
         v-if="item.type == 'packComponent'"
       >
       </PackComponentRender>
-      
+
       <!--内置组件渲染-->
       <BuildInComponentRender
         :style="setStyle(item)"
@@ -49,7 +49,6 @@
         :pageBlockData="item"
       >
       </PageOutRender>
-      
     </div>
   </div>
 </template>
@@ -66,8 +65,6 @@ import BuildInComponentRender from "./BuildInComponentRender/index.vue";
 import PageBlockRender from "./PageBlockRender/index.vue";
 import PageOutRender from "./PageOutRender/index.vue";
 import PackComponentRender from "./PackComponentRender/index.vue";
-
-
 
 import { ref, nextTick, onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";
@@ -94,17 +91,21 @@ const pageLayoutStyle = computed(() => {
   return function (pageLayout) {
     console.log("pageLayoutStyle--pageLayout", pageLayout);
     let styleObj = {};
-    if(pageLayout.config.attr.labelType == "flex"){
-      let widthTemp=Number(pageLayout.config.attr.padding.left)+Number(pageLayout.config.attr.padding.right);
-      let heightTemp=Number(pageLayout.config.attr.padding.top)+Number(pageLayout.config.attr.padding.bottom);
-      let uintTemp=pageLayout.config.attr.padding.unit;
-      styleObj.width = "calc(100% - "+widthTemp+uintTemp+")";
-      styleObj.height = "calc(100% - "+heightTemp+uintTemp+")";
-    } else{
+    if (pageLayout.config.attr.labelType == "flex") {
+      let widthTemp =
+        Number(pageLayout.config.attr.padding.left) +
+        Number(pageLayout.config.attr.padding.right);
+      let heightTemp =
+        Number(pageLayout.config.attr.padding.top) +
+        Number(pageLayout.config.attr.padding.bottom);
+      let uintTemp = pageLayout.config.attr.padding.unit;
+      styleObj.width = "calc(100% - " + widthTemp + uintTemp + ")";
+      styleObj.height = "calc(100% - " + heightTemp + uintTemp + ")";
+    } else {
       styleObj.width = "100%";
       styleObj.height = "100%";
     }
-    
+
     styleObj.zIndex = pageLayout.config.attr.zIndex;
 
     //内边距
@@ -155,10 +156,10 @@ const setStyle = computed(() => {
     console.log("setStyle--item", item);
     let styleObj = {};
     styleObj.boxSizing = "border-box";
-    
+
     styleObj.minWidth = "0";
     styleObj.minHeight = "0";
-    styleObj.overflow="hidden";
+    styleObj.overflow = "hidden";
     //内边距
     styleObj.paddingTop =
       item.config.attr.padding.top + item.config.attr.padding.unit;
@@ -188,25 +189,31 @@ const setStyle = computed(() => {
     ) {
       styleObj.background = item.config.attr.backgroundColorValue;
     }
-    console.log("setStyle--styleObj",styleObj);
+    console.log("setStyle--styleObj", styleObj);
 
     return styleObj;
   };
 });
 
 //页面Flex样式
+import { useRoute } from "vue-router";
+const route = useRoute();
+const page_type = route.query.page_type;
 const setFlexStyle = computed(() => {
   return function (item) {
     //console.log("setFlexStyle--item", item);
     let styleObj = {};
     //内部布局组件样式
     styleObj.flexBasis = item.config.attr.flexBasis + "%";
-    if (currentPageRenderTreeNodeData.value.ref == item.ref) {
-      //选中边框样式
-      styleObj.border = "2px solid blue";
-    } else {
-      styleObj.border = "1px dashed yellow";
+    if (page_type == "edit") {
+      if (currentPageRenderTreeNodeData.value.ref == item.ref) {
+        //选中边框样式
+        styleObj.border = "2px solid blue";
+      } else {
+        styleObj.border = "1px dashed yellow";
+      }
     }
+
     return styleObj;
   };
 });

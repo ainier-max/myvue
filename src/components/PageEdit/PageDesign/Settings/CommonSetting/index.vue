@@ -76,6 +76,14 @@
           @change="refreshLayoutDesign"
           placeholder="页面块宽度"
         />
+
+        <div class="leftTitle">页面模式</div>
+        <el-radio-group class="rightValue" v-model="currentPageRenderTreeNodeData.config.attr.pageModel">
+          <el-radio label="adaptation" size="small">自适应</el-radio>
+          <el-radio label="reality" size="small">实际宽高</el-radio>
+          <el-radio label="adaptationW-realityH" size="small">宽度自适应，实际高度</el-radio>
+        </el-radio-group>
+
       </template>
 
       <!--非mainBlock/childBlock类型的高度，宽度-->
@@ -429,7 +437,7 @@ const toPageEdit = () => {
   });
   let page_id_Temp = relativePageRenderTreeData.value[indexTemp].page_id;
   //console.log("toPageEdit--page_id_Temp",page_id_Temp);
-  window.open("/PageEdit?page_id=" + page_id_Temp + "&page_debug_flag=true");
+  window.open("/PageEdit?page_id=" + page_id_Temp + "&page_type=edit");
 };
 
 const customContent = ref("");
@@ -706,5 +714,13 @@ onMounted(() => {});
   padding-top: 5px;
   padding-left: 15px;
   padding-right: 15px;
+}
+
+:deep(.el-radio-group) {
+  display: block;
+}
+
+:deep(.el-radio) {
+ display: block;
 }
 </style>

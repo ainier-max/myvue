@@ -147,13 +147,12 @@ export default {
       this.pagesArr=result.objects;
       console.log("this.pagesArrttt",this.pagesArr);
     },
-
     goPage(item){
       const { href } = this.$router.resolve({
         path: '/PageEdit',
         query: {
           page_id: item.page_id,
-          page_debug_flag:true
+          page_type:'edit'
         }
       });
       window.open(href, '_blank');
@@ -190,6 +189,7 @@ export default {
           h:this.pageInfoDataForm.pageHeight,
           w:this.pageInfoDataForm.pageWidth,
           unit:"px",
+          pageModel:"adaptation",
           backgroundType:"color",
           backgroundColorValue:"rgba(0,0,0,0.8)",
           backgroundImgValue:"",

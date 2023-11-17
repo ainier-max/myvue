@@ -148,7 +148,8 @@
 
           <div>
             <div class="leftTitle" style="padding-bottom: 10px">
-              模型SQL（参考MyBatis用法）：
+              模型SQL（参考：<a href="javascript:window.open('https://mybatis.net.cn/dynamic-sql.html')">MyBatis用法</a>）<br>
+              
             </div>
             <MyMonacoEditor
               v-if="codeEditorFlag"

@@ -51,7 +51,6 @@
           >添加页面块</el-button
         >
       </div>
-     
     </div>
     <div style="flex-basis: 65%">
       <div
@@ -85,6 +84,9 @@
               <el-button type="success" size="small" @click="savePageRenderTree"
                 >保存</el-button
               >
+              <el-button type="success" size="small" @click="toBrowse"
+                >浏览</el-button
+              >
             </div>
           </el-col>
         </el-row>
@@ -99,7 +101,7 @@
 
     <div style="flex-basis: 18%">
       <!--基础配置-->
-      <CommonSetting  @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
+      <CommonSetting @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
     </div>
   </div>
 
@@ -110,14 +112,13 @@
     :width="dialogWidth"
   >
     <AddPageBlock v-if="dialogType == 'AddPageBlock'"></AddPageBlock>
-
   </el-dialog>
 </template>
 
 <script setup lang="ts">
 //import 'default-passive-events';
 import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute,useRouter } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
@@ -157,6 +158,18 @@ const layoutDesignShowFlag = ref(true);
 
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
+const router = useRouter()
+
+const toBrowse = () => {
+  const { href } = router.resolve({
+    path: "/PageBrowse",
+    query: {
+      page_id: page_id,
+      page_type: "browse",
+    },
+  });
+  window.open(href, "_blank");
+};
 
 const setNodeKey = () => {
   //console.log("currentPageRenderTreeNodeData11",currentPageRenderTreeNodeData);
