@@ -60,21 +60,15 @@
           <el-col :span="12">
             <div>
               <span
-                style="
-                  color: rgba(255, 255, 255, 1);
-                  font-weight: bold;
-                  padding-left: 8px;
-                  cursor: pointer;
-                "
+                class="designButton"
+                :style="designType=='layoutDesign'?{color: 'rgba(255, 255, 255, 1)'}:{color: 'gray'}"
+                @click="toDesign('layoutDesign')"
                 >界面设计</span
               >
               <span
-                style="
-                  color: gray;
-                  font-weight: bold;
-                  padding-left: 8px;
-                  cursor: pointer;
-                "
+                class="designButton"
+                :style="designType=='blueScriptDesign'?{color: 'rgba(255, 255, 255, 1)'}:{color: 'gray'}"
+                @click="toDesign('blueScriptDesign')"
                 >蓝图设计</span
               >
             </div>
@@ -94,8 +88,12 @@
 
       <div style="width: calc(100% - 2px); height: 100%; position: relative">
         <LayoutDesign
-          v-if="currentPageRenderTreeNodeData && layoutDesignShowFlag"
+          v-if="currentPageRenderTreeNodeData && designType=='layoutDesign'"
         ></LayoutDesign>
+        
+        <BlueScriptDesign v-if="designType=='blueScriptDesign'"></BlueScriptDesign>
+        
+
       </div>
     </div>
 
@@ -123,8 +121,11 @@ import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
 import AddPageBlock from "@/components/PageEdit/PageDesign/DialogContent/AddPageBlock/index.vue";
-import CommonSetting from "@/components/PageEdit/PageDesign/Settings/CommonSetting/index.vue";
+import CommonSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/CommonSetting/index.vue";
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
+
+import BlueScriptDesign from "@/components/PageEdit/PageDesign/BlueScriptDesign/index.vue";
+
 
 import {
   commonExcuteRequest,
@@ -154,7 +155,8 @@ const route = useRoute();
 const page_id = route.query.page_id;
 //const page_debug_flag = route.query.page_debug_flag;
 const pageRenderTreeRef = ref(null);
-const layoutDesignShowFlag = ref(true);
+
+const designType=ref("layoutDesign");
 
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
@@ -195,9 +197,9 @@ const treeRemove = (nodeData) => {
 //布局设计页面刷新
 const refreshLayoutDesign = () => {
   console.log("布局设计页面刷新!");
-  layoutDesignShowFlag.value = false;
+  designType.value = "";
   nextTick(() => {
-    layoutDesignShowFlag.value = true;
+    designType.value = "layoutDesign";
   });
 };
 
@@ -322,6 +324,11 @@ const showPageBlockDidlog = () => {
   dialogType.value = "AddPageBlock";
 };
 
+const toDesign=(type)=>{
+  designType.value=type;
+}
+
+
 // 生命周期钩子
 onMounted(() => {
   findAllPageRenderTreeByPageID();
@@ -351,4 +358,11 @@ onMounted(() => {
   font-size: 14px;
   padding-right: 8px;
 }
+.designButton{
+  font-weight: bold;
+  padding-left: 8px;
+  cursor: pointer;
+}
+
+
 </style>

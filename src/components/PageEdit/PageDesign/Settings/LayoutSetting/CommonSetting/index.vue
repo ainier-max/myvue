@@ -512,7 +512,7 @@ const getChooseData = (chooseData) => {
 };
 
 //添加前端组件
-import FrontEndComponentChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/FrontEndComponentChoose/index.vue";
+import FrontEndComponentChoose from "./FrontEndComponentChoose/index.vue";
 const frontEndComponentChooseRef = ref(null);
 const frontEndComponentChooseCloseHandle = () => {
   console.log("frontEndComponentChooseRef", frontEndComponentChooseRef);
@@ -524,7 +524,7 @@ const addFrontEndComponent = () => {
   dialogTitle.value = "前端组件(双击选择组件)";
 };
 //添加打包组件
-import PackComponentChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/PackComponentChoose/index.vue";
+import PackComponentChoose from "./PackComponentChoose/index.vue";
 const addPackComponent = () => {
   chooseDialogType.value = "packComponent";
   chooseDialogFlag.value = true;
@@ -532,7 +532,7 @@ const addPackComponent = () => {
 };
 
 //添加内置组件
-import BuiltInComponentChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/BuiltInComponentChoose/index.vue";
+import BuiltInComponentChoose from "./BuiltInComponentChoose/index.vue";
 const addBuiltInComponent = () => {
   chooseDialogType.value = "builtInComponent";
   chooseDialogFlag.value = true;
@@ -540,7 +540,7 @@ const addBuiltInComponent = () => {
 };
 
 //添加页面块
-import PageBlockChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/PageBlockChoose/index.vue";
+import PageBlockChoose from "./PageBlockChoose/index.vue";
 
 const addPageBlock = () => {
   chooseDialogType.value = "pageBlock";
@@ -548,7 +548,7 @@ const addPageBlock = () => {
   dialogTitle.value = "页面块";
 };
 
-import PageOutChoose from "@/components/PageEdit/PageDesign/Settings/CommonSetting/PageOutChoose/index.vue";
+import PageOutChoose from "./index.vue";
 
 //添加外部页面
 const addPageOut = () => {
