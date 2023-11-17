@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 350px; overflow: auto">
+  <div style="width: 100%; height: 450px; overflow: auto">
     <el-tree
       :data="componentChooseTreeData"
       node-key="id"
@@ -27,8 +27,19 @@ const defaultProps = {
   children: "children",
   label: "label",
 };
-const componentChooseTreeData = ref([]);
 
+const emit = defineEmits(["getChooseData"]);
+import { storeToRefs } from "pinia";
+import { currentDealDataStore } from "@/store/currentDealData.ts";
+const currentDealDataStoreObj = currentDealDataStore();
+const { currentTopPageBlockData, currentPageRenderTreeNodeData } = storeToRefs(
+  currentDealDataStoreObj
+);
+import { useRoute } from "vue-router";
+const route = useRoute();
+const page_id = route.query.page_id;
+
+const componentChooseTreeData = ref([]);
 
 const findPageComponentByID = (component_id) => {
   if (component_id == null || component_id == "") {
@@ -41,17 +52,6 @@ const findPageComponentByID = (component_id) => {
   console.log("findPageComponentByID--param", param);
   commonSelectRequest(axios, param, findPageComponentByIDCallBack);
 };
-
-const emit = defineEmits(["getChooseData"]);
-import { storeToRefs } from "pinia";
-import { currentDealDataStore } from "@/store/currentDealData.ts";
-const currentDealDataStoreObj = currentDealDataStore();
-const { currentTopPageBlockData, currentPageRenderTreeNodeData } = storeToRefs(
-  currentDealDataStoreObj
-);
-import { useRoute } from "vue-router";
-const route = useRoute();
-const page_id = route.query.page_id;
 
 const findPageComponentByIDCallBack = (result) => {
   console.log("findPageComponentByIDCallBack--result", result);

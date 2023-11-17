@@ -45,10 +45,18 @@
 
       <div align="center">
         <el-button
-          @click="showPageBlockDidlog"
+          v-if="designType=='layoutDesign'"
+          @click="showDidlog('AddPageBlock')"
           style="margin-top: 15px; margin-bottom: 15px"
           type="primary"
           >添加页面块</el-button
+        >
+        <el-button
+          v-if="designType=='blueScriptDesign'"
+          @click="showDidlog('AddBlueScriptTool')"
+          style="margin-top: 15px; margin-bottom: 15px"
+          type="primary"
+          >添加蓝图节点</el-button
         >
       </div>
     </div>
@@ -99,17 +107,19 @@
 
     <div style="flex-basis: 18%">
       <!--基础配置-->
-      <CommonSetting @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
+      <CommonSetting v-if="designType=='layoutDesign'" @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
+      
     </div>
   </div>
 
   <el-dialog
-    title="新增页面块"
+    :title="dialogTitle"
     v-model="dialogFlag"
     :close-on-click-modal="false"
     :width="dialogWidth"
   >
     <AddPageBlock v-if="dialogType == 'AddPageBlock'"></AddPageBlock>
+    <AddBlueScriptTool v-if="dialogType == 'AddBlueScriptTool'" @getChooseBlueScriptTool="getChooseBlueScriptTool"></AddBlueScriptTool>
   </el-dialog>
 </template>
 
@@ -120,11 +130,13 @@ import { useRoute,useRouter } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
-import AddPageBlock from "@/components/PageEdit/PageDesign/DialogContent/AddPageBlock/index.vue";
+import AddBlueScriptTool from "@/components/PageEdit/DialogContent/AddBlueScriptTool/index.vue";
+import AddPageBlock from "@/components/PageEdit/DialogContent/AddPageBlock/index.vue";
+
 import CommonSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/CommonSetting/index.vue";
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
-import BlueScriptDesign from "@/components/PageEdit/PageDesign/BlueScriptDesign/index.vue";
+import BlueScriptDesign from "@/components/PageEdit/BlueScriptDesign/index.vue";
 
 
 import {
@@ -147,6 +159,12 @@ import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
 const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
   currentDealDataStoreObj
+);
+
+import { blueScriptDataStore } from "@/store/blueScriptData.ts";
+const blueScriptDataStoreObj = blueScriptDataStore();
+const { blueScriptData } = storeToRefs(
+  blueScriptDataStoreObj
 );
 
 const defaultProps = { children: "children", label: "label" };
@@ -317,17 +335,31 @@ const dialogWidth = ref("30%");
 provide("dialogFlag", dialogFlag);
 
 //添加页面块弹窗
-const showPageBlockDidlog = () => {
-  dialogWidth.value = "30%";
-  dialogTitle.value = "添加页面块";
-  dialogFlag.value = true;
-  dialogType.value = "AddPageBlock";
+const showDidlog = (type) => {
+  if(type=="AddPageBlock"){
+    dialogWidth.value = "30%";
+    dialogTitle.value = "添加页面块";
+    dialogFlag.value = true;
+    dialogType.value = type;
+  }
+  if(type=="AddBlueScriptTool"){
+    dialogWidth.value = "30%";
+    dialogTitle.value = "添加蓝图（双击选择）";
+    dialogFlag.value = true;
+    dialogType.value = type;
+  }
+  
 };
 
 const toDesign=(type)=>{
   designType.value=type;
 }
 
+const getChooseBlueScriptTool=(obj)=>{
+  console.log("getChooseBlueScriptTool--obj",obj);
+  blueScriptDataStoreObj.add(obj);
+  dialogFlag.value = false;
+}
 
 // 生命周期钩子
 onMounted(() => {
