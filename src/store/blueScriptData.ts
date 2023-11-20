@@ -1,169 +1,84 @@
 
 import { defineStore, storeToRefs } from "pinia";
+import { addPort } from "@/components/PageEdit/BlueScriptDesign/AntV/AntV.js";
+
+
+
 export const blueScriptDataStore = defineStore("blueScriptDataID", {
     state: () => ({
-        blueScriptData: [],
+      blueScriptData: [],
+      currentBlueScriptNode:null,
     }),
     getters: {
   
     },
     actions: {
-        setBlueScriptData(data) {
-            this.blueScriptData = data;
-        },
-        //添加蓝图节点
-        add(obj) {
-            console.log("blueScriptData.ts--this.blueScriptData", this.blueScriptData);
-            obj.blue_script_ref="blueScriptRef-" + window.cbcuuid();
-            obj.blue_script_node_config.id = obj.blue_script_ref;
-            obj.blue_script_node_config.x = window.antVGraph.getGraphArea().x + 20;
-            obj.blue_script_node_config.y = window.antVGraph.getGraphArea().y + 20;
-            obj.blue_script_node_config.label = obj.blue_script_name;
-            //编辑区添加蓝图节点
-            let nodeTemp = window.antVGraph.addNode(obj.blue_script_node_config);
-            nodeTemp.blue_script_ref = obj.blue_script_ref;
-            //添加蓝图节点的端口
-            nodeTemp = this.addPort(nodeTemp, obj.blue_script_in_out_config);
-            this.blueScriptData.push(obj);
-        },
-
-
-
-        addPort(node, blue_script_in_out_config) {
-            let param = blue_script_in_out_config;
-            let inParams = param.in;
-            if (typeof (inParams) != "undefined") {
-              for (let i = 0; i < inParams.length; i++) {
-                if (inParams[i].show == true) {
-                  if (inParams[i].type == "event") {
-                    node.addPort({
-                      key: inParams[i].key,
-                      id: inParams[i].portID,
-                      group: 'in',
-                      markup: [
-                        {
-                          tagName: 'rect',
-                          selector: 'rect',
-                        },
-                      ],
-                      attrs: {
-                        rect: {
-                          magnet: true,
-                          stroke: '#31d0c6',
-                          fill: '#ffffff',
-                          strokeWidth: 2,
-                          width: 10,
-                          height: 10,
-                          x: -5,
-                          y: -5,
-                        },
-                        text: {
-                          text: inParams[i].label, // 标签文本
-                          fill: 'rgba(255,255,255,0.8)',
-                          fontSize: 12,    // 文字大小
-                        },
-                      },
-                    })
-                  } else if(inParams[i].type == "function"){
-                    node.addPort({
-                      key: inParams[i].key,
-                      id: inParams[i].portID,
-                      group: 'in',
-                      args: { angle: -90 },
-                      markup: [
-                        {
-                          tagName: 'path',
-                          selector: 'path',
-                        },
-                      ],
-                      attrs: {
-                        text: {
-                          text: inParams[i].label, // 标签文本
-                          fill: 'rgba(255,255,255,0.8)',
-                          fontSize: 12,    // 文字大小
-                        },
-                        path: {
-                          d: 'M -6 -8 L 0 8 L 6 -8 Z',
-                          magnet: true,
-                          fill: 'white',
-                        },
-                      },
-                    })
-                  }else {
-                    //console.log("111：",inParams[i].label);
-                    node.addPort({
-                      key: inParams[i].key,
-                      id: inParams[i].portID,
-                      group: 'in',
-                      attrs: {
-                        text: {
-                          text: inParams[i].label, // 标签文本
-                          fill: 'rgba(255,255,255,0.8)',
-                          fontSize: 12,    // 文字大小
-                        },
-                      },
-                    })
-                  }
-      
-                }
-              }
-            }
-      
-            //输出端口
-            let outParams = param.out;
-            if (typeof (outParams) != "undefined") {
-              for (let i = 0; i < outParams.length; i++) {
-                //console.log("outParams", outParams[i]);
-                if (outParams[i].show == true) {
-                  if (outParams[i].type == "event") {
-                    node.addPort({
-                      key: outParams[i].key,
-                      id: outParams[i].portID,
-                      group: 'out',
-                      markup: [
-                        {
-                          tagName: 'rect',
-                          selector: 'rect',
-                        },
-                      ],
-                      attrs: {
-                        rect: {
-                          magnet: true,
-                          stroke: '#31d0c6',
-                          fill: '#ffffff',
-                          strokeWidth: 2,
-                          width: 10,
-                          height: 10,
-                          x: -5,
-                          y: -5,
-                        },
-                        text: {
-                          text: outParams[i].label, // 标签文本
-                          fill: 'rgba(255,255,255,0.8)',
-                          fontSize: 12,    // 文字大小
-                        },
-                      },
-                    })
-      
-                  } else {
-                    node.addPort({
-                      key: outParams[i].key,
-                      id: outParams[i].portID,
-                      group: 'out',
-                      attrs: {
-                        text: {
-                          text: outParams[i].label, // 标签文本
-                          fill: 'rgba(255,255,255,0.8)',
-                          fontSize: 12,    // 文字大小
-                        },
-                      },
-                    })
-                  }
-      
-                }
-              }
-            }
-            return node;
+      setBlueScriptData(data) {
+        data.forEach(element => {
+          element.config = eval("(" + element.config_str + ")");
+        });
+        this.blueScriptData = data;
+        console.log("所有蓝图数据：",this.blueScriptData);
+      },
+      //删除蓝图节点
+      delete(node) {
+        console.log("delete--node",node);
+        window.antVGraph.removeNode(node);
+        // this.blueScriptData = _.remove(this.blueScriptData, function(n) {
+        //   return n.blue_script_ref=node.blue_script_ref
+        // });
+        for (let i = 0; i < this.blueScriptData.length; i++){
+          if (this.blueScriptData[i].blue_script_ref=node.blue_script_ref) {
+            this.blueScriptData.splice(i, 1);
+            i = i - 1;
           }
+        }
+      },
+      //添加蓝图节点
+      add(obj) {
+        let item = {};
+
+        if (obj.type=="blueScriptTool") {
+          item.blue_script_name = obj.blue_script_name;
+          item.blue_script_id = obj.blue_script_id;
+          item.type = obj.type;
+          item.related_ref = obj.related_ref;
+        } else if (obj.type=="frontEndComponent") {
+          item.blue_script_name = obj.component_name;
+          item.blue_script_id = obj.component_id;
+          item.type = obj.type;
+          item.related_ref = obj.related_ref;
+        } 
+
+
+        item.blue_script_ref = "blueScriptRef-" + window.cbcuuid();
+        item.config={};
+        item.config.blue_script_in_out_config=eval("(" + obj.blue_script_in_out_config_str + ")");
+        item.config.blue_script_logic_config=eval("(" + obj.blue_script_logic_config_str + ")");
+        item.config.blue_script_visualize_config = eval("(" + obj.blue_script_visualize_config_str + ")");  
+
+        item.config.blue_script_node_config=eval("(" + obj.blue_script_node_config_str + ")");
+        item.config.blue_script_node_config.id = item.blue_script_ref;
+        item.config.blue_script_node_config.x = window.antVGraph.getGraphArea().x + 20;
+        item.config.blue_script_node_config.y = window.antVGraph.getGraphArea().y + 20;
+        item.config.blue_script_node_config.label = item.blue_script_name;
+        this.addAntVGraphNode(item);
+        this.blueScriptData.push(item);
+        console.log("blueScriptData.ts--this.blueScriptData", this.blueScriptData);
+      },
+      //编辑区添加蓝图节点
+      addAntVGraphNode(item) {
+        console.log("addAntVGraphNode--item",item);
+            //编辑区添加蓝图节点
+            let nodeTemp = window.antVGraph.addNode(item.config.blue_script_node_config);
+            nodeTemp.blue_script_ref = item.blue_script_ref;
+            //添加蓝图节点的端口
+            nodeTemp = addPort(nodeTemp, item.config.blue_script_in_out_config);
+            item.graphNode = nodeTemp;
+            //console.log("初始化后的画布上的元素", this.blueScriptData);
+
+
+        },
+        
     }
 });

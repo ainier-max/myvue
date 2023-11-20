@@ -6,7 +6,8 @@ import { nextTick } from "vue";
 export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
   state: () => ({
     pageRenderTreeData: null,
-    relativePageRenderTreeData:null,
+    relativePageRenderTreeData: null,
+    topPageRenderTreeData:null,
   }),
   getters: {
 
@@ -20,6 +21,7 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       console.log("关联页面渲染树数据--setRelativePageRenderTreeData", this.relativePageRenderTreeData);
     },
     
+    
     // setPageRenderTreeDataByReLativePageID(nodes, element) {
     //   for (const node of nodes) {
     //     if (node.related_value === element.id) {
@@ -32,15 +34,23 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
     //   }
     // },
 
-    
-
+  
 
     //设置页面渲染树数据
     setPageRenderTreeData(data) {
       data = this.newSortForChildren(data);
       this.sortTree(data);
       this.pageRenderTreeData = data;
-      console.log("页面渲染树数据--pageRenderTreeData",this.pageRenderTreeData);
+      this.topPageRenderTreeData = this.pageRenderTreeData[0];
+      console.log("页面渲染树数据--pageRenderTreeData", this.pageRenderTreeData);
+      this.getTopPageRenderTreeData();
+    },
+    getTopPageRenderTreeData() {
+      this.pageRenderTreeData.forEach(element => {
+        if (element.type == "mainBlock") {
+          this.topPageRenderTreeData = element;
+        }
+      });
     },
     //根据index重新排序所有父节点的children数据
     sortTree(treeNode) {
@@ -73,7 +83,6 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       nodeTemp.children=this.newSortForChildren(nodeTemp.children);
       node.config.attr.index = nodeTemp.children.length;
       nodeTemp.children.push(node);
-
     },
     newSortForChildren(childrenArr) {
       //排序

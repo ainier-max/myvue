@@ -76,14 +76,10 @@ const findBlueScriptToolByID=(blue_script_id)=>{
 }
 
 const emit = defineEmits(["getChooseBlueScriptTool"]);
+
 const findBlueScriptToolByIDCallBack = (result) => {
-    console.log("findBlueScriptToolByIDCallBack--result",result);
-    let obj=result.objects[0];
-    obj.blue_script_in_out_config=eval("(" + obj.blue_script_in_out_config_str + ")");
-    obj.blue_script_logic_config=eval("(" + obj.blue_script_logic_config_str + ")");
-    obj.blue_script_node_config=eval("(" + obj.blue_script_node_config_str + ")");
-    obj.blue_script_visualize_config=eval("(" + obj.blue_script_visualize_config_str + ")");
-    emit("getChooseBlueScriptTool",obj);
+    //console.log("findBlueScriptToolByIDCallBack--result",result);
+    emit("getChooseBlueScriptTool",result.objects[0]);
 }
 
 </script>

@@ -10,8 +10,8 @@ import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
 import axios from "axios";
 import { objectToString } from "@/common/js/objStr.js";
 import AntV from "./AntV/index.vue";
-const antvFlag = ref(true);
 
+const antvFlag = ref(true);
 let timer = null;
 
 onMounted(() => {

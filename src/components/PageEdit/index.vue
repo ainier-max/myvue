@@ -28,9 +28,23 @@
                 <span v-else>({{data.config.attr.flexBasis}})</span> -->
               </span>
               <span>
+                <Plus
+                  v-if="
+                    data.type != 'mainBlock' &&
+                    data.type != 'flex-column' &&
+                    data.type != 'flex-row' &&
+                    designType == 'blueScriptDesign' &&
+                    currentPageRenderTreeNodeData &&
+                    currentPageRenderTreeNodeData.id == data.id
+                  "
+                  style="width: 1em; height: 1em; color: red; margin-left: 8px"
+                  @click.stop="() => addBlueSciptNode(data)"
+                ></Plus>
+
                 <Delete
                   v-if="
                     data.type != 'mainBlock' &&
+                    designType == 'layoutDesign' &&
                     currentPageRenderTreeNodeData &&
                     currentPageRenderTreeNodeData.id == data.id
                   "
@@ -45,14 +59,14 @@
 
       <div align="center">
         <el-button
-          v-if="designType=='layoutDesign'"
+          v-if="designType == 'layoutDesign'"
           @click="showDidlog('AddPageBlock')"
           style="margin-top: 15px; margin-bottom: 15px"
           type="primary"
           >添加页面块</el-button
         >
         <el-button
-          v-if="designType=='blueScriptDesign'"
+          v-if="designType == 'blueScriptDesign'"
           @click="showDidlog('AddBlueScriptTool')"
           style="margin-top: 15px; margin-bottom: 15px"
           type="primary"
@@ -69,13 +83,21 @@
             <div>
               <span
                 class="designButton"
-                :style="designType=='layoutDesign'?{color: 'rgba(255, 255, 255, 1)'}:{color: 'gray'}"
+                :style="
+                  designType == 'layoutDesign'
+                    ? { color: 'rgba(255, 255, 255, 1)' }
+                    : { color: 'gray' }
+                "
                 @click="toDesign('layoutDesign')"
                 >界面设计</span
               >
               <span
                 class="designButton"
-                :style="designType=='blueScriptDesign'?{color: 'rgba(255, 255, 255, 1)'}:{color: 'gray'}"
+                :style="
+                  designType == 'blueScriptDesign'
+                    ? { color: 'rgba(255, 255, 255, 1)' }
+                    : { color: 'gray' }
+                "
                 @click="toDesign('blueScriptDesign')"
                 >蓝图设计</span
               >
@@ -83,7 +105,7 @@
           </el-col>
           <el-col :span="12">
             <div align="right" style="margin-right: 20px">
-              <el-button type="success" size="small" @click="savePageRenderTree"
+              <el-button type="success" size="small" @click="toSave"
                 >保存</el-button
               >
               <el-button type="success" size="small" @click="toBrowse"
@@ -96,19 +118,21 @@
 
       <div style="width: calc(100% - 2px); height: 100%; position: relative">
         <LayoutDesign
-          v-if="currentPageRenderTreeNodeData && designType=='layoutDesign'"
+          v-if="currentPageRenderTreeNodeData && designType == 'layoutDesign'"
         ></LayoutDesign>
-        
-        <BlueScriptDesign v-if="designType=='blueScriptDesign'"></BlueScriptDesign>
-        
 
+        <BlueScriptDesign
+          v-if="designType == 'blueScriptDesign'"
+        ></BlueScriptDesign>
       </div>
     </div>
 
     <div style="flex-basis: 18%">
       <!--基础配置-->
-      <CommonSetting v-if="designType=='layoutDesign'" @refreshLayoutDesign="refreshLayoutDesign"></CommonSetting>
-      
+      <CommonSetting
+        v-if="designType == 'layoutDesign'"
+        @refreshLayoutDesign="refreshLayoutDesign"
+      ></CommonSetting>
     </div>
   </div>
 
@@ -119,14 +143,17 @@
     :width="dialogWidth"
   >
     <AddPageBlock v-if="dialogType == 'AddPageBlock'"></AddPageBlock>
-    <AddBlueScriptTool v-if="dialogType == 'AddBlueScriptTool'" @getChooseBlueScriptTool="getChooseBlueScriptTool"></AddBlueScriptTool>
+    <AddBlueScriptTool
+      v-if="dialogType == 'AddBlueScriptTool'"
+      @getChooseBlueScriptTool="getChooseBlueScriptTool"
+    ></AddBlueScriptTool>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
 //import 'default-passive-events';
 import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
-import { useRoute,useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
 
@@ -138,10 +165,10 @@ import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vu
 
 import BlueScriptDesign from "@/components/PageEdit/BlueScriptDesign/index.vue";
 
-
 import {
   commonExcuteRequest,
   commonSelectRequest,
+  commonSelectRequestAndOtherParam,
   commonExcuteByBatchRequest,
   commonBatchSelectRequest,
   commonExcuteRequestAndOtherParam,
@@ -163,9 +190,7 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 
 import { blueScriptDataStore } from "@/store/blueScriptData.ts";
 const blueScriptDataStoreObj = blueScriptDataStore();
-const { blueScriptData } = storeToRefs(
-  blueScriptDataStoreObj
-);
+const { blueScriptData } = storeToRefs(blueScriptDataStoreObj);
 
 const defaultProps = { children: "children", label: "label" };
 
@@ -174,12 +199,51 @@ const page_id = route.query.page_id;
 //const page_debug_flag = route.query.page_debug_flag;
 const pageRenderTreeRef = ref(null);
 
-const designType=ref("layoutDesign");
+const designType = ref("layoutDesign");
 
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
-const router = useRouter()
+const toSave = () => {
+  if (designType.value == "layoutDesign") {
+    savePageRenderTree();
+  }
+  if (designType.value == "blueScriptDesign") {
+    saveBlueScript();
+  }
+};
+const saveBlueScript = () => {
+  console.log("saveBlueScript--pageRenderTreeData", pageRenderTreeData);
+  pageRenderTreeData.value[0].config.blueScriptAttr.x =
+    window.antVGraph.getGraphArea().x;
+  pageRenderTreeData.value[0].config.blueScriptAttr.y =
+    window.antVGraph.getGraphArea().y;
+  pageRenderTreeData.value[0].config.blueScriptAttr.h =
+    window.antVGraph.getGraphArea().height;
+  pageRenderTreeData.value[0].config.blueScriptAttr.w =
+    window.antVGraph.getGraphArea().width;
+  let main_block_config_str = objectToString(
+    pageRenderTreeData.value[0].config
+  );
+  let param = {};
+  param.sql = "page_blue_script.saveAllPageBlueScript";
+  param.page_id = page_id;
+  param.main_block_config_str = main_block_config_str;
+  blueScriptData.value.forEach((element) => {
+    element.page_id = page_id;
+    element.config_str = objectToString(element.config);
+  });
+  param.blueScriptData = blueScriptData.value;
+  console.log("saveBlueScript--param", param);
+  commonExcuteByBatchRequest(window.axios, param, saveBlueScriptCallBack);
+};
 
+const saveBlueScriptCallBack = (result) => {
+  if ((result.state = "success")) {
+    ElMessage.success("保存成功！");
+  }
+};
+
+const router = useRouter();
 const toBrowse = () => {
   const { href } = router.resolve({
     path: "/PageBrowse",
@@ -200,6 +264,37 @@ const setNodeKey = () => {
   }
 };
 
+//添加蓝图节点
+const addBlueSciptNode = (nodeData) => {
+  console.log("addBlueSciptNode--nodeData", nodeData);
+  if (nodeData.type == "frontEndComponent") {
+    findFrontEndComponent(nodeData);
+  } else {
+    ElMessage.error("暂时不支持该类型！");
+    return;
+  }
+};
+
+const findFrontEndComponent = (nodeData) => {
+  let param = {};
+  param.sql = "page_component_frontend.find";
+  param.component_id = nodeData.related_value;
+  commonSelectRequestAndOtherParam(
+    window.axios,
+    param,
+    findFrontEndComponentCallBack,
+    nodeData
+  );
+};
+const findFrontEndComponentCallBack = (result, nodeData) => {
+  if (result.objects.length > 0) {
+    console.log("findFrontEndComponentCallBack--result", result);
+    let obj = result.objects[0];
+    obj.related_ref = nodeData.ref;
+    blueScriptDataStoreObj.add(obj);
+  }
+};
+
 //删除树节点
 const treeRemove = (nodeData) => {
   //删除节点
@@ -215,10 +310,13 @@ const treeRemove = (nodeData) => {
 //布局设计页面刷新
 const refreshLayoutDesign = () => {
   console.log("布局设计页面刷新!");
-  designType.value = "";
-  nextTick(() => {
-    designType.value = "layoutDesign";
-  });
+  if(designType.value=="layoutDesign"){
+    designType.value = "";
+    nextTick(() => {
+      designType.value = "layoutDesign";
+      //designType.value = "blueScriptDesign";
+    });
+  }
 };
 
 //顶层节点页面块发生变化时刷新设计编辑区
@@ -246,6 +344,11 @@ const findAllPageRenderTreeByPageID = () => {
       sql: "page_render_tree.findRalativePageRenderTreeByPageID",
       page_id: page_id,
       resultKey: "RalativePageRenderTree",
+    },
+    {
+      sql: "page_blue_script.find",
+      page_id: page_id,
+      resultKey: "AllBlueScript",
     },
   ];
   commonBatchSelectRequest(axios, param, findAllPageRenderTreeByPageIDCallBack);
@@ -293,6 +396,8 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
     pageRenderTreeRef.value.setCurrentKey(nodeTemp.id);
     nodeClick(nodeTemp);
   });
+  //蓝图数据
+  blueScriptDataStoreObj.setBlueScriptData(result["AllBlueScript"]);
 };
 //保存页面渲染树
 const savePageRenderTree = () => {
@@ -336,30 +441,29 @@ provide("dialogFlag", dialogFlag);
 
 //添加页面块弹窗
 const showDidlog = (type) => {
-  if(type=="AddPageBlock"){
+  if (type == "AddPageBlock") {
     dialogWidth.value = "30%";
     dialogTitle.value = "添加页面块";
     dialogFlag.value = true;
     dialogType.value = type;
   }
-  if(type=="AddBlueScriptTool"){
+  if (type == "AddBlueScriptTool") {
     dialogWidth.value = "30%";
     dialogTitle.value = "添加蓝图（双击选择）";
     dialogFlag.value = true;
     dialogType.value = type;
   }
-  
 };
 
-const toDesign=(type)=>{
-  designType.value=type;
-}
+const toDesign = (type) => {
+  designType.value = type;
+};
 
-const getChooseBlueScriptTool=(obj)=>{
-  console.log("getChooseBlueScriptTool--obj",obj);
+const getChooseBlueScriptTool = (obj) => {
+  console.log("getChooseBlueScriptTool--obj", obj);
   blueScriptDataStoreObj.add(obj);
   dialogFlag.value = false;
-}
+};
 
 // 生命周期钩子
 onMounted(() => {
@@ -390,11 +494,9 @@ onMounted(() => {
   font-size: 14px;
   padding-right: 8px;
 }
-.designButton{
+.designButton {
   font-weight: bold;
   padding-left: 8px;
   cursor: pointer;
 }
-
-
 </style>
