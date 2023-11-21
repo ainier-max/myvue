@@ -2,7 +2,7 @@ import { defineStore, storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageEditStoreObj = pageRenderTreeDataStore();
 const { pageRenderTreeData } = storeToRefs(pageEditStoreObj);
-import { findParent,findNodeById } from "@/common/js/tree.js";
+import { findParent,findNodeById,findNodeByRef } from "@/common/js/tree.js";
 
 export const currentDealDataStore = defineStore("currentDealDataID", {
   state: () => ({
@@ -15,6 +15,11 @@ export const currentDealDataStore = defineStore("currentDealDataID", {
 
   },
   actions: {
+    setCurrentPageRenderTreeNodeDataByRef(ref) {
+      console.log("setCurrentPageRenderTreeNodeDataByRef--ref",ref);
+      this.currentPageRenderTreeNodeData = findNodeByRef(pageRenderTreeData.value, ref);
+      console.log("setCurrentPageRenderTreeNodeDataByRef--this.currentPageRenderTreeNodeData",this.currentPageRenderTreeNodeData);
+    },
     setCurrentPageRenderTreeNodeDataByID(id) {
       let nodeDataTemp = findNodeById(pageRenderTreeData.value, id);
       this.setCurrentPageRenderTreeNodeData(nodeDataTemp);

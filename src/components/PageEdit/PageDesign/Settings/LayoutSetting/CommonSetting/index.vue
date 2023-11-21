@@ -50,6 +50,7 @@
       />
       <div class="leftTitle">名称：</div>
       <el-input
+        @input="changeBlueScriptNodeLabel"
         v-model="currentPageRenderTreeNodeData.label"
         class="rightValue"
         placeholder="名称"
@@ -419,6 +420,12 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
   currentDealDataStoreObj
 );
 
+import { blueScriptDataStore } from "@/store/blueScriptData.ts";
+const blueScriptDataStoreObj = blueScriptDataStore();
+const { blueScriptData } = storeToRefs(
+  blueScriptDataStoreObj
+);
+
 const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
   currentPageRenderTreeNodeData.value.config.attr.backgroundImgValue = imgUUID;
 };
@@ -691,6 +698,18 @@ const handleInput = (type) => {
   }
 };
 
+
+const changeBlueScriptNodeLabel=()=>{
+  //console.log("changeBlueScriptNodeLabel--blueScriptData",blueScriptData.value);
+  //console.log("changeBlueScriptNodeLabel--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData.value);
+  blueScriptData.value.forEach(element => {
+    if(element.related_ref==currentPageRenderTreeNodeData.value.ref){
+      element.blue_script_name=currentPageRenderTreeNodeData.value.label;
+      element.config.blue_script_node_config.label=currentPageRenderTreeNodeData.value.label;
+    }
+  });
+  //console.log("changeBlueScriptNodeLabel--blueScriptData",blueScriptData.value);
+}
 // 生命周期钩子
 onMounted(() => {});
 </script>

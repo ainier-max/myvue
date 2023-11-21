@@ -747,13 +747,7 @@ export default {
       }
       the.menuStyle="position:fixed;left:"+e.clientX +"px;top:"+e.clientY +"px;background: #FFFFF0;width: 100px;";
       the.menuFlag=true;
-
-
-
-
-
     });
-
 
 
     this.graph.on('node:click', ({e, x, y, node, view}) => {

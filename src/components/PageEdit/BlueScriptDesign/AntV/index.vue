@@ -15,6 +15,7 @@ import { Graph, Shape, Edge } from "@antv/x6";
 import axios from "axios";
 import { objectToString } from "@/common/js/objStr.js";
 import insertCss from "insert-css";
+import { addEdge } from "@/components/PageEdit/BlueScriptDesign/AntV/AntV.js";
 
 import { storeToRefs } from "pinia";
 
@@ -29,6 +30,9 @@ const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
 const { topPageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 onMounted(() => {
+  //蓝图节点的名称
+  
+
   //初始化画布区域
   initGraph();
   //定位并且上node节点
@@ -41,8 +45,11 @@ onMounted(() => {
   });
 
   blueScriptData.value.forEach((element) => {
+    //添加节点
     blueScriptDataStoreObj.addAntVGraphNode(element);
+    addEdge(element.config.blue_script_in_out_config);
   });
+  
 });
 
 //右击菜单
@@ -99,7 +106,7 @@ const initGraph = () => {
           zIndex: 10,
           attrs: {
             line: {
-              stroke: "#ffffff",
+              stroke: "#ff00ff",
               strokeWidth: 1,
               targetMarker: {
                 name: "classic",
@@ -133,7 +140,7 @@ const initGraph = () => {
   });
   window.antVGraph.on("node:contextmenu", ({ e, x, y, node, view }) => {
     //console.log("node右击e", e);
-    currentBlueScriptNode.value = node;
+    blueScriptDataStoreObj.setCurrentBlueScriptNode(node);
     if (menuFlag.value == true) {
       menuFlag.value = false;
     }
@@ -145,6 +152,149 @@ const initGraph = () => {
       "px;background: #FFFFF0;width: 100px;";
     //console.log("menuStyle", menuStyle);
     menuFlag.value = true;
+
+    window.antVGraph.getNodes().forEach((element) => {
+      if (element.data && element.data.parent == true) {
+        element.getAttrs().body.fill = "rgb(255,251,230,0.8)";
+        element.setAttrs(element.getAttrs().body.fill);
+      } else {
+        element.getAttrs().body.fill = "rgba(40, 44, 52,0.9)";
+        element.setAttrs(element.getAttrs().body.fill);
+      }
+    });
+    //点击节点高亮
+    node.getAttrs().body.fill = "rgba(95, 149, 255, 0.80)";
+    node.setAttrs(node.getAttrs().body.fill);
+  });
+
+  insertCss(`
+      @keyframes ant-line {
+        to {
+            stroke-dashoffset: -1000
+        }
+      }
+    `);
+
+  window.antVGraph.on("edge:connected", ({ isNew, edge }) => {
+    console.log("edge:connected--isNew", isNew, edge);
+    if (isNew) {
+      let valueTemp = null;
+      //赋值out状态
+      blueScriptData.value.forEach((element) => {
+        console.log("edge:connected--element", element);
+        if (element.graphNode.id == edge.source.cell) {
+          element.config.blue_script_in_out_config.out.forEach((item) => {
+            if (item.portID == edge.source.port) {
+              item.connected = true;
+              item.connectedSource = edge.source;
+              valueTemp = item.value;
+              item.connectedTargetArr.push(edge.target);
+            }
+          });
+        }
+      });
+      //赋值in状态
+      blueScriptData.value.forEach((element) => {
+        console.log("edge:connected--element", element);
+        if (element.graphNode.id == edge.target.cell) {
+          element.config.blue_script_in_out_config.in.forEach((item) => {
+            if (item.portID == edge.target.port) {
+              item.connected = true;
+              item.value = valueTemp;
+            }
+          });
+        }
+      });
+    }
+  });
+
+  window.antVGraph.on("edge:removed", ({ edge, options }) => {
+    console.log("要删除连接线的起点：", edge.animation.cell.source);
+    console.log("要删除连接线的终点：", edge.animation.cell.target);
+    blueScriptData.value.forEach((element) => {
+      if (element.blue_script_ref == edge.animation.cell.source.cell) {
+        element.config.blue_script_in_out_config.out.forEach((outItem) => {
+          for (let n = 0; n < outItem.connectedTargetArr.length; n++) {
+            if (
+              outItem.connectedTargetArr[n].cell ==
+                edge.animation.cell.target.cell &&
+              outItem.connectedTargetArr[n].port ==
+                edge.animation.cell.target.port
+            ) {
+              outItem.connectedTargetArr.splice(n, 1);
+              n = n - 1;
+            }
+          }
+          //如果连接的端口都没有，则设置connected为false
+          if (outItem.connectedTargetArr.length == 0) {
+            outItem.connected = false;
+            outItem.connectedSource = {};
+          }
+        });
+      }
+
+      if (element.blue_script_ref == edge.animation.cell.target.cell) {
+        element.config.blue_script_in_out_config.in.forEach((inItem) => {
+          if (inItem.portID == edge.animation.cell.target.port) {
+            inItem.connected = false;
+          }
+        });
+      }
+    });
+  });
+
+  window.antVGraph.on("node:mouseenter", ({ node }) => {
+    node.addTools({
+      name: "boundary",
+      args: {
+        padding: 5,
+        attrs: {
+          fill: "#7c68fc",
+          stroke: "#9254de",
+          strokeWidth: 1,
+          fillOpacity: 0.2,
+        },
+      },
+    });
+  });
+
+  window.antVGraph.on("node:click", ({ e, x, y, node, view }) => {
+    console.log("当前选中的node:", node);
+    blueScriptDataStoreObj.setCurrentBlueScriptNode(node);
+
+    window.antVGraph.getNodes().forEach((element) => {
+      if (element.data && element.data.parent == true) {
+        element.getAttrs().body.fill = "rgb(255,251,230,0.8)";
+        element.setAttrs(element.getAttrs().body.fill);
+      } else {
+        element.getAttrs().body.fill = "rgba(40, 44, 52,0.9)";
+        element.setAttrs(element.getAttrs().body.fill);
+      }
+    });
+    //点击节点高亮
+    node.getAttrs().body.fill = "rgba(95, 149, 255, 0.80)";
+    node.setAttrs(node.getAttrs().body.fill);
+    //window.cbcBlueScriptSettingsInstance.ctx.setCurrentBlueScript(node);
+  });
+
+  window.antVGraph.on("node:mouseleave", ({ node }) => {
+    node.removeTool("boundary");
+  });
+
+  window.antVGraph.on("edge:mouseenter", ({ edge }) => {
+    edge.addTools([
+      "source-arrowhead",
+      "target-arrowhead",
+      {
+        name: "button-remove",
+        args: {
+          distance: -30,
+        },
+      },
+    ]);
+  });
+  window.antVGraph.on("edge:mouseleave", ({ edge }) => {
+    edge.removeTools();
   });
 };
 </script>

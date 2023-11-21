@@ -88,6 +88,22 @@ export function translateDataToTree(datas) {
   return parents;
 }
 
+// 根据ref查找节点
+export function findNodeByRef(nodes, ref) {
+  for (const node of nodes) {
+    if (node.ref === ref) {
+      return node;
+    }
+    if (node.children) {
+      const foundNode = findNodeByRef(node.children, ref);
+      if (foundNode) {
+        return foundNode;
+      }
+    }
+  }
+  return null;
+}
+
 // 根据id查找节点
 export function findNodeById(nodes, id) {
   for (const node of nodes) {

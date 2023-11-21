@@ -12,20 +12,23 @@
           :expand-on-click-node="false"
           :props="defaultProps"
           :highlight-current="true"
-          :current-node-key="setNodeKey()"
+          :current-node-key="currentPageRenderTreeNodeData?.id"
           @node-click="nodeClick"
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
-              <span v-if="data.type == 'mainBlock'">
+              <span
+                v-if="
+                  data.type == 'mainBlock' ||
+                  data.type == 'flex-column' ||
+                  data.type == 'flex-row'
+                "
+              >
                 <Folder style="width: 1em; height: 1em" />
                 {{ node.label }}
               </span>
               <span v-else>
-                <Folder style="width: 1em; height: 1em" />
                 {{ node.label }}
-                <!-- <span v-if="data.sumFlexBasis">({{data.sumFlexBasis}})</span>
-                <span v-else>({{data.config.attr.flexBasis}})</span> -->
               </span>
               <span>
                 <Plus
@@ -35,7 +38,8 @@
                     data.type != 'flex-row' &&
                     designType == 'blueScriptDesign' &&
                     currentPageRenderTreeNodeData &&
-                    currentPageRenderTreeNodeData.id == data.id
+                    currentPageRenderTreeNodeData.id == data.id &&
+                    isUsed()
                   "
                   style="width: 1em; height: 1em; color: red; margin-left: 8px"
                   @click.stop="() => addBlueSciptNode(data)"
@@ -203,6 +207,19 @@ const designType = ref("layoutDesign");
 
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
+
+const isUsed = () => {
+  //console.log("isUsed--blueScriptData",blueScriptData);
+  //console.log("isUsed--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData);
+  let flagTemp = true;
+  blueScriptData.value.forEach((element) => {
+    if (element.related_ref == currentPageRenderTreeNodeData.value.ref) {
+      flagTemp = false;
+    }
+  });
+  return flagTemp;
+};
+
 const toSave = () => {
   if (designType.value == "layoutDesign") {
     savePageRenderTree();
@@ -255,14 +272,14 @@ const toBrowse = () => {
   window.open(href, "_blank");
 };
 
-const setNodeKey = () => {
-  //console.log("currentPageRenderTreeNodeData11",currentPageRenderTreeNodeData);
-  if (currentPageRenderTreeNodeData.value) {
-    return currentPageRenderTreeNodeData.value.id;
-  } else {
-    return "";
-  }
-};
+// const setNodeKey = () => {
+//   //console.log("currentPageRenderTreeNodeData11",currentPageRenderTreeNodeData);
+//   if (currentPageRenderTreeNodeData.value) {
+//     return currentPageRenderTreeNodeData.value.id;
+//   } else {
+//     return "";
+//   }
+// };
 
 //添加蓝图节点
 const addBlueSciptNode = (nodeData) => {
@@ -310,13 +327,11 @@ const treeRemove = (nodeData) => {
 //布局设计页面刷新
 const refreshLayoutDesign = () => {
   console.log("布局设计页面刷新!");
-  if(designType.value=="layoutDesign"){
-    designType.value = "";
-    nextTick(() => {
-      designType.value = "layoutDesign";
-      //designType.value = "blueScriptDesign";
-    });
-  }
+  designType.value = "";
+  nextTick(() => {
+    //designType.value = "layoutDesign";
+    designType.value = "blueScriptDesign";
+  });
 };
 
 //顶层节点页面块发生变化时刷新设计编辑区
@@ -328,7 +343,28 @@ watchEffect(() => {
 });
 //树节点点击事件
 const nodeClick = (data) => {
-  currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
+  //界面设计才设置当前页面树
+  if (designType.value == "layoutDesign") {
+    //设置当前树节点的值，并这是当前所处的顶层页面块Block
+    currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
+  } else if (designType.value == "blueScriptDesign") {
+    //仅设置当前树节点的值
+    currentPageRenderTreeNodeData.value = data;
+
+    //定位
+    let blueScriptRefTemp = "";
+    blueScriptData.value.forEach((element) => {
+      if (element.related_ref == data.ref) {
+        blueScriptRefTemp = element.blue_script_ref;
+      }
+    });
+    window.antVGraph.getNodes().forEach((node) => {
+      if (node.id == blueScriptRefTemp) {
+        //console.log("开始定位");
+        window.antVGraph.centerCell(node, { padding: { top: 0 } });
+      }
+    });
+  }
 };
 
 //查询页面渲染树
@@ -396,8 +432,19 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
     pageRenderTreeRef.value.setCurrentKey(nodeTemp.id);
     nodeClick(nodeTemp);
   });
+
   //蓝图数据
   blueScriptDataStoreObj.setBlueScriptData(result["AllBlueScript"]);
+  //页面渲染树与蓝图节点的名称首次同步
+  blueScriptData.value.forEach((element) => {
+    result["AllPageRenderTree"].forEach((item) => {
+      if (element.related_ref == item.ref) {
+        console.log("item1232",item);
+        element.blue_script_name = item.name;
+        element.config.blue_script_node_config.label = item.name;
+      }
+    });
+  });
 };
 //保存页面渲染树
 const savePageRenderTree = () => {
