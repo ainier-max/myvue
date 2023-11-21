@@ -137,6 +137,11 @@
         v-if="designType == 'layoutDesign'"
         @refreshLayoutDesign="refreshLayoutDesign"
       ></CommonSetting>
+
+      <!--蓝图配置-->
+      <BlueScriptSettings
+        v-if="designType == 'blueScriptDesign'"
+      ></BlueScriptSettings>
     </div>
   </div>
 
@@ -167,7 +172,8 @@ import AddPageBlock from "@/components/PageEdit/DialogContent/AddPageBlock/index
 import CommonSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/CommonSetting/index.vue";
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
-import BlueScriptDesign from "@/components/PageEdit/BlueScriptDesign/index.vue";
+import BlueScriptSettings from "@/components/PageEdit/PageDesign/Settings/BlueScriptSetting/index.vue";
+import BlueScriptDesign from "@/components/PageEdit/PageDesign/BlueScriptDesign/index.vue";
 
 import {
   commonExcuteRequest,

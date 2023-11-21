@@ -15,7 +15,7 @@ import { Graph, Shape, Edge } from "@antv/x6";
 import axios from "axios";
 import { objectToString } from "@/common/js/objStr.js";
 import insertCss from "insert-css";
-import { addEdge } from "@/components/PageEdit/BlueScriptDesign/AntV/AntV.js";
+import { addEdge } from "./AntV.js";
 
 import { storeToRefs } from "pinia";
 

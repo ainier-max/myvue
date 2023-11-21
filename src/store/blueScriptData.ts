@@ -5,10 +5,9 @@ const currentDealDataStoreObj = currentDealDataStore();
 const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
   currentDealDataStoreObj
 );
-
 import {
   addPort
-} from "@/components/PageEdit/BlueScriptDesign/AntV/AntV.js";
+} from "@/components/PageEdit/PageDesign/BlueScriptDesign/AntV/AntV.js";
 
 export const blueScriptDataStore = defineStore("blueScriptDataID", {
   state: () => ({
