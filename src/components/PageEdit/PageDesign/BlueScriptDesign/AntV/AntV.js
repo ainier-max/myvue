@@ -1,23 +1,156 @@
+
+import { Graph, Shape, Edge } from "@antv/x6";
+import insertCss from "insert-css";
+
+export function highLightNode(node){
+  //全部不高亮
+  window.antVGraph.getNodes().forEach((element) => {
+    if (element.data && element.data.parent == true) {
+      element.getAttrs().body.fill = "rgb(255,251,230,0.8)";
+      element.setAttrs(element.getAttrs().body.fill);
+    } else {
+      element.getAttrs().body.fill = "rgba(40, 44, 52,0.9)";
+      element.setAttrs(element.getAttrs().body.fill);
+    }
+  });
+  //选中节点高亮
+  node.getAttrs().body.fill = "rgba(95, 149, 255, 0.80)";
+  node.setAttrs(node.getAttrs().body.fill);
+}
+export function initGraph(divID) {
+  const containerDom = document.getElementById(divID);
+  let containerDomStyle = window.getComputedStyle(containerDom);
+  let widthTemp = parseFloat(containerDomStyle.width);
+  let heightTemp = parseFloat(containerDomStyle.height);
+
+  let antVGraphTemp = new Graph({
+    container: document.getElementById("container"),
+    grid: true,
+    autoResize: false,
+    width: widthTemp,
+    height: heightTemp,
+    embedding: {
+      enabled: true,
+      findParent({ node }) {
+        const bbox = node.getBBox();
+        return this.getNodes().filter((node) => {
+          const data = node.getData();
+          if (data && data.parent) {
+            const targetBBox = node.getBBox();
+            return bbox.isIntersectWithRect(targetBBox);
+          }
+          return false;
+        });
+      },
+    },
+    connecting: {
+      snap: true,
+      allowBlank: false,
+      allowLoop: false,
+      highlight: true,
+      connector: "rounded",
+      connectionPoint: "boundary",
+      createEdge() {
+        return new Shape.Edge({
+          router: {
+            name: "metro",
+          },
+          zIndex: 10,
+          attrs: {
+            line: {
+              stroke: "#ff00ff",
+              strokeWidth: 1,
+              targetMarker: {
+                name: "classic",
+                size: 7,
+              },
+            },
+          },
+        });
+      },
+    },
+    mousewheel: {
+      enabled: true,
+      modifiers: ["ctrl"],
+    },
+    panning: {
+      enabled: true,
+      modifiers: "ctrl",
+    },
+  });
+
+  insertCss(`
+      @keyframes ant-line {
+        to {
+            stroke-dashoffset: -1000
+        }
+      }
+    `);
+
+  return antVGraphTemp;
+}
+export function removeStartPointFlag(node) {
+  node.removeTool("button");
+}
+export function addStartPointFlag(node) {
+  console.log("addStartPointFlag--node", node);
+  node.addTools({
+    name: "button",
+    args: {
+      markup: [
+        {
+          tagName: "circle",
+          selector: "button",
+          attrs: {
+            r: 12,
+            stroke: "#fe854f",
+            strokeWidth: 2,
+            fill: "white",
+            cursor: "pointer",
+          },
+        },
+        {
+          tagName: "text",
+          textContent: "起",
+          selector: "icon",
+          attrs: {
+            fill: "#fe854f",
+            fontSize: 10,
+            textAnchor: "middle",
+            pointerEvents: "none",
+            y: "0.3em",
+          },
+        },
+      ],
+      x: "100%",
+      y: "100%",
+      offset: { x: -30, y: -20 },
+    },
+  });
+  return node;
+}
+
+
+
 //添加连线
 export function addEdge(blue_script_in_out_config) {
-  console.log("添加连线--blue_script_in_out_config", blue_script_in_out_config);
-  
+  //console.log("添加连线--blue_script_in_out_config", blue_script_in_out_config);
+
   if (typeof blue_script_in_out_config.out != "undefined") {
-    blue_script_in_out_config.out.forEach(element => {
+    blue_script_in_out_config.out.forEach((element) => {
       //console.log("element3333",element);
-      element.connectedTargetArr.forEach(item => {
-        //console.log("item3333",item);
+      element.connectedTargetArr.forEach((item) => {
+        //console.log("添加连线--item",item);
         let flagTemp = 0;
-        //console.log("window.antVGraph.getNodes()3333",window.antVGraph.getNodes());
-        window.antVGraph.getNodes().forEach(node => {
-          //console.log("node3333",node);
+        //console.log("添加连线--window.antVGraph.getNodes()",window.antVGraph.getNodes());
+        window.antVGraph.getNodes().forEach((node) => {
+          //console.log("添加连线--node",node);
           if (node.id == item.cell) {
             flagTemp = 1;
           }
         });
-        //console.log("flagTemp3333",flagTemp);
+        //console.log("添加连线--flagTemp",flagTemp);
         if (flagTemp == 1) {
-          
           window.antVGraph.addEdge({
             zIndex: 10,
             source: element.connectedSource,
@@ -45,15 +178,10 @@ export function addEdge(blue_script_in_out_config) {
               },
             },
           });
-
         }
       });
     });
   }
-
-
-  
-  
 }
 
 //添加node节点上的端口

@@ -6,7 +6,7 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
   currentDealDataStoreObj
 );
 import {
-  addPort
+  addPort,addStartPointFlag
 } from "@/components/PageEdit/PageDesign/BlueScriptDesign/AntV/AntV.js";
 
 export const blueScriptDataStore = defineStore("blueScriptDataID", {
@@ -40,15 +40,18 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
     delete(node) {
       console.log("delete--node", node);
       window.antVGraph.removeNode(node);
+      console.log("delete--this.blueScriptData", this.blueScriptData);
+    
       // this.blueScriptData = _.remove(this.blueScriptData, function(n) {
       //   return n.blue_script_ref=node.blue_script_ref
       // });
       for (let i = 0; i < this.blueScriptData.length; i++) {
-        if ((this.blueScriptData[i].blue_script_ref = node.blue_script_ref)) {
+        if ((this.blueScriptData[i].blue_script_ref == node.blue_script_ref)) {
           this.blueScriptData.splice(i, 1);
           i = i - 1;
         }
       }
+      console.log("delete--this.blueScriptData", this.blueScriptData);
     },
     //添加蓝图节点
     add(obj) {
@@ -118,13 +121,17 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
     //编辑区添加蓝图节点与端口
     addAntVGraphNode(item) {
       console.log("addAntVGraphNode--item", item);
-      //编辑区添加蓝图节点
+      //添加蓝图节点
       let nodeTemp = window.antVGraph.addNode(
         item.config.blue_script_node_config
       );
       nodeTemp.blue_script_ref = item.blue_script_ref;
-      //添加蓝图节点的端口
-      nodeTemp = addPort(nodeTemp, item.config.blue_script_in_out_config);
+      //添加蓝图节点端口
+      addPort(nodeTemp, item.config.blue_script_in_out_config);
+      //添加启动点
+      if (item.config.startPointFlag) {
+        addStartPointFlag(nodeTemp);
+      }
       item.graphNode = nodeTemp;
       //console.log("初始化后的画布上的元素", this.blueScriptData);
     },

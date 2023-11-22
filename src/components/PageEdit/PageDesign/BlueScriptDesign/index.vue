@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import "default-passive-events";
+//import "default-passive-events";
 import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
 import axios from "axios";
 import { objectToString } from "@/common/js/objStr.js";

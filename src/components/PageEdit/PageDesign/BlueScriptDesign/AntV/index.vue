@@ -11,11 +11,9 @@
 
 <script setup lang="ts">
 import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
-import { Graph, Shape, Edge } from "@antv/x6";
 import axios from "axios";
 import { objectToString } from "@/common/js/objStr.js";
-import insertCss from "insert-css";
-import { addEdge } from "./AntV.js";
+import { addEdge,initGraph,highLightNode } from "./AntV.js";
 
 import { storeToRefs } from "pinia";
 
@@ -30,11 +28,10 @@ const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
 const { topPageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 onMounted(() => {
-  //蓝图节点的名称
-  
-
   //初始化画布区域
-  initGraph();
+  window.antVGraph = initGraph("container");
+  //添加事件
+  addGraphEvent();
   //定位并且上node节点
   console.log("topPageRenderTreeData", topPageRenderTreeData);
   window.antVGraph.zoomToRect({
@@ -44,9 +41,12 @@ onMounted(() => {
     height: topPageRenderTreeData.value.config.blueScriptAttr.h,
   });
 
+  //添加节点
   blueScriptData.value.forEach((element) => {
-    //添加节点
     blueScriptDataStoreObj.addAntVGraphNode(element);
+  });
+  //节点添加完成后，添加连线
+  blueScriptData.value.forEach((element) => {
     addEdge(element.config.blue_script_in_out_config);
   });
   
@@ -65,67 +65,7 @@ const menuClose = () => {
   menuFlag.value = false;
 };
 
-const initGraph = () => {
-  const containerDom = document.getElementById("container");
-  let containerDomStyle = window.getComputedStyle(containerDom);
-  let widthTemp = parseFloat(containerDomStyle.width);
-  let heightTemp = parseFloat(containerDomStyle.height);
-
-  window.antVGraph = new Graph({
-    container: document.getElementById("container"),
-    grid: true,
-    autoResize: false,
-    width: widthTemp,
-    height: heightTemp,
-    embedding: {
-      enabled: true,
-      findParent({ node }) {
-        const bbox = node.getBBox();
-        return this.getNodes().filter((node) => {
-          const data = node.getData();
-          if (data && data.parent) {
-            const targetBBox = node.getBBox();
-            return bbox.isIntersectWithRect(targetBBox);
-          }
-          return false;
-        });
-      },
-    },
-    connecting: {
-      snap: true,
-      allowBlank: false,
-      allowLoop: false,
-      highlight: true,
-      connector: "rounded",
-      connectionPoint: "boundary",
-      createEdge() {
-        return new Shape.Edge({
-          router: {
-            name: "metro",
-          },
-          zIndex: 10,
-          attrs: {
-            line: {
-              stroke: "#ff00ff",
-              strokeWidth: 1,
-              targetMarker: {
-                name: "classic",
-                size: 7,
-              },
-            },
-          },
-        });
-      },
-    },
-    mousewheel: {
-      enabled: true,
-      modifiers: ["ctrl"],
-    },
-    panning: {
-      enabled: true,
-      modifiers: "ctrl",
-    },
-  });
+const addGraphEvent = () => {
   window.antVGraph.on("node:moved", ({ e, x, y, node, view }) => {
     //console.log(x,y);
     console.log("node:moved--node", node);
@@ -153,27 +93,9 @@ const initGraph = () => {
     //console.log("menuStyle", menuStyle);
     menuFlag.value = true;
 
-    window.antVGraph.getNodes().forEach((element) => {
-      if (element.data && element.data.parent == true) {
-        element.getAttrs().body.fill = "rgb(255,251,230,0.8)";
-        element.setAttrs(element.getAttrs().body.fill);
-      } else {
-        element.getAttrs().body.fill = "rgba(40, 44, 52,0.9)";
-        element.setAttrs(element.getAttrs().body.fill);
-      }
-    });
-    //点击节点高亮
-    node.getAttrs().body.fill = "rgba(95, 149, 255, 0.80)";
-    node.setAttrs(node.getAttrs().body.fill);
+    //节点高亮
+    highLightNode(node);
   });
-
-  insertCss(`
-      @keyframes ant-line {
-        to {
-            stroke-dashoffset: -1000
-        }
-      }
-    `);
 
   window.antVGraph.on("edge:connected", ({ isNew, edge }) => {
     console.log("edge:connected--isNew", isNew, edge);
@@ -261,20 +183,8 @@ const initGraph = () => {
   window.antVGraph.on("node:click", ({ e, x, y, node, view }) => {
     console.log("当前选中的node:", node);
     blueScriptDataStoreObj.setCurrentBlueScriptNode(node);
-
-    window.antVGraph.getNodes().forEach((element) => {
-      if (element.data && element.data.parent == true) {
-        element.getAttrs().body.fill = "rgb(255,251,230,0.8)";
-        element.setAttrs(element.getAttrs().body.fill);
-      } else {
-        element.getAttrs().body.fill = "rgba(40, 44, 52,0.9)";
-        element.setAttrs(element.getAttrs().body.fill);
-      }
-    });
-    //点击节点高亮
-    node.getAttrs().body.fill = "rgba(95, 149, 255, 0.80)";
-    node.setAttrs(node.getAttrs().body.fill);
-    //window.cbcBlueScriptSettingsInstance.ctx.setCurrentBlueScript(node);
+    //节点高亮
+    highLightNode(node);
   });
 
   window.antVGraph.on("node:mouseleave", ({ node }) => {

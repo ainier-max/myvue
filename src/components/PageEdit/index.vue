@@ -39,7 +39,7 @@
                     designType == 'blueScriptDesign' &&
                     currentPageRenderTreeNodeData &&
                     currentPageRenderTreeNodeData.id == data.id &&
-                    isUsed()
+                    !isUsed()
                   "
                   style="width: 1em; height: 1em; color: red; margin-left: 8px"
                   @click.stop="() => addBlueSciptNode(data)"
@@ -165,6 +165,7 @@ import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
+import { highLightNode } from "@/components/PageEdit/PageDesign/BlueScriptDesign/AntV/AntV.js";
 
 import AddBlueScriptTool from "@/components/PageEdit/DialogContent/AddBlueScriptTool/index.vue";
 import AddPageBlock from "@/components/PageEdit/DialogContent/AddPageBlock/index.vue";
@@ -200,7 +201,7 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 
 import { blueScriptDataStore } from "@/store/blueScriptData.ts";
 const blueScriptDataStoreObj = blueScriptDataStore();
-const { blueScriptData } = storeToRefs(blueScriptDataStoreObj);
+const { blueScriptData,currentBlueScript } = storeToRefs(blueScriptDataStoreObj);
 
 const defaultProps = { children: "children", label: "label" };
 
@@ -217,10 +218,10 @@ const designType = ref("layoutDesign");
 const isUsed = () => {
   //console.log("isUsed--blueScriptData",blueScriptData);
   //console.log("isUsed--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData);
-  let flagTemp = true;
+  let flagTemp = false;
   blueScriptData.value.forEach((element) => {
     if (element.related_ref == currentPageRenderTreeNodeData.value.ref) {
-      flagTemp = false;
+      flagTemp = true;
     }
   });
   return flagTemp;
@@ -353,23 +354,31 @@ const nodeClick = (data) => {
   if (designType.value == "layoutDesign") {
     //设置当前树节点的值，并这是当前所处的顶层页面块Block
     currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
+
   } else if (designType.value == "blueScriptDesign") {
     //仅设置当前树节点的值
     currentPageRenderTreeNodeData.value = data;
-
-    //定位
-    let blueScriptRefTemp = "";
-    blueScriptData.value.forEach((element) => {
-      if (element.related_ref == data.ref) {
-        blueScriptRefTemp = element.blue_script_ref;
-      }
-    });
-    window.antVGraph.getNodes().forEach((node) => {
-      if (node.id == blueScriptRefTemp) {
-        //console.log("开始定位");
-        window.antVGraph.centerCell(node, { padding: { top: 0 } });
-      }
-    });
+    //被使用才定位
+    if(isUsed()){
+      //定位
+      //let blueScriptRefTemp = "";
+      blueScriptData.value.forEach((element) => {
+        if (element.related_ref == data.ref) {
+          currentBlueScript.value = element;
+        }
+      });
+      //console.log("currentBlueScript",currentBlueScript);
+      window.antVGraph.getNodes().forEach((node) => {
+        if (node.blue_script_ref == currentBlueScript.value.blue_script_ref) {
+          //console.log("开始定位");
+          window.antVGraph.centerCell(node, { padding: { top: 0 } });
+          //节点高亮
+          highLightNode(node);
+        }
+      });
+    }
+    
+    
   }
 };
 
