@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import "default-passive-events";
+//import "default-passive-events";
 import { provide, ref, nextTick, onMounted, computed } from "vue";
 import PageLayoutRender from "@/common/component/PageLayoutRender/index.vue";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
@@ -33,6 +33,8 @@ const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
 const { pageRenderTreeData, relativePageRenderTreeData } = storeToRefs(
   pageRenderTreeDataStoreObj
 );
+
+console.log("pageRenderTreeData44",pageRenderTreeData);
 
 const showFlag = ref(true);
 const route = useRoute();
@@ -95,31 +97,35 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
     ])
   );
 
-  console.log("pageRenderTreeData12", pageRenderTreeData);
+  //console.log("pageRenderTreeData12", pageRenderTreeData);
   pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
 };
-findAllPageRenderTreeByPageID();
+const page_type = route.query.page_type;
+if(page_type=="edit"){
+  pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
+}else if(page_type=="browse"){
+  findAllPageRenderTreeByPageID();
+}
 
 //页面块样式
 const pageBlockStyle = computed(() => {
   let blockData = pageRenderTreeData.value[0];
-  
+
   let styleObj = {};
   if (pageModel == "reality") {
     //实际宽高
-    styleObj.height = pageRenderTreeData.value[0].config.attr.h+"px";
-    styleObj.width = pageRenderTreeData.value[0].config.attr.w+"px";
+    styleObj.height = pageRenderTreeData.value[0].config.attr.h + "px";
+    styleObj.width = pageRenderTreeData.value[0].config.attr.w + "px";
   } else if (pageModel == "adaptation") {
     //自适应(百分比)
     styleObj.height = "100%";
     styleObj.width = "100%";
-  } else if(pageModel == "adaptationW-realityH"){
+  } else if (pageModel == "adaptationW-realityH") {
     //宽度自适应，实际高度
-    styleObj.height =  pageRenderTreeData.value[0].config.attr.h+"px";
+    styleObj.height = pageRenderTreeData.value[0].config.attr.h + "px";
     styleObj.width = "100%";
   }
 
-  
   styleObj.position = "relative";
   if (
     blockData.config.attr.backgroundType == "img" &&
@@ -162,8 +168,8 @@ const setPageLayoutStyle = computed(() => {
       styleObj.top = pageLayout.config.attr.yPer + "%";
       styleObj.width = pageLayout.config.attr.wPer + "%";
       styleObj.height = pageLayout.config.attr.hPer + "%";
-    }else if(pageModel == "adaptationW-realityH"){
-        //宽度自适应，实际高度
+    } else if (pageModel == "adaptationW-realityH") {
+      //宽度自适应，实际高度
       styleObj.left = pageLayout.config.attr.xPer + "%";
       styleObj.top = pageLayout.config.attr.y + "px";
       styleObj.width = pageLayout.config.attr.wPer + "%";

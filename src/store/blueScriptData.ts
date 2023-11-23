@@ -8,6 +8,8 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 import {
   addPort,addStartPointFlag
 } from "@/components/PageEdit/PageDesign/BlueScriptDesign/AntV/AntV.js";
+import { objectToString, stringToObject } from "@/common/js/objStr.js";
+
 
 export const blueScriptDataStore = defineStore("blueScriptDataID", {
   state: () => ({
@@ -31,7 +33,8 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
     },
     setBlueScriptData(data) {
       data.forEach((element) => {
-        element.config = eval("(" + element.config_str + ")");
+        //element.config = eval("(" + element.config_str + ")");
+        element.config = stringToObject(element.config_str);
       });
       this.blueScriptData = data;
       console.log("所有蓝图数据：", this.blueScriptData);
@@ -55,8 +58,9 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
     },
     //添加蓝图节点
     add(obj) {
+      console.log("blueScriptData-add(obj)",obj);
       let item = {};
-
+      item.config = {};
       if (obj.type == "blueScriptTool") {
         item.blue_script_name = obj.blue_script_name;
         item.blue_script_id = obj.blue_script_id;
@@ -67,10 +71,13 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
         item.blue_script_id = obj.component_id;
         item.type = obj.type;
         item.related_ref = obj.related_ref;
+        if (obj.nodeData.config.dataset) {
+          item.config.dataset = obj.nodeData.config.dataset;
+        }
       }
 
       item.blue_script_ref = "blueScriptRef-" + window.cbcuuid();
-      item.config = {};
+
       item.config.blue_script_in_out_config = eval(
         "(" + obj.blue_script_in_out_config_str + ")"
       );

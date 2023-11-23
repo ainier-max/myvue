@@ -63,6 +63,9 @@
       <AddInPortAndParam v-if="item == 'AddInPortAndParam'"></AddInPortAndParam>
       <ShowInParam v-if="item == 'ShowInParam'"></ShowInParam>
       <ShowOutParam v-if="item == 'ShowOutParam'"></ShowOutParam>
+      <SetDimensionsAndMetrics v-if="item == 'SetDimensionsAndMetrics'"></SetDimensionsAndMetrics>
+
+      
     </div>
 
     <div style="height: 20px"></div>
@@ -90,7 +93,7 @@
     <template #footer>
       <span class="dialog-footer" style="padding-bottom: 200px">
         <el-button
-          v-if="debugDisabledFlag"
+          v-if="!currentBlueScript?.debugParamObj"
           type="primary"
           @click="showDebugProcessWin"
         >
@@ -98,7 +101,7 @@
         </el-button>
         <el-button
           type="success"
-          :disabled="debugDisabledFlag"
+          :disabled="!currentBlueScript?.debugParamObj"
           @click="debugBlueScriptLogic"
         >
           调 试
@@ -109,7 +112,7 @@
         <el-button @click="blueScriptLogicDialogVisible = false">
           关 闭
         </el-button>
-        <div v-if="debugDisabledFlag" style="color: red">
+        <div v-if="!currentBlueScript?.debugParamObj" style="color: red">
           需先打开调试界面，并走一次执行流程，方可进行调试
         </div>
       </span>
@@ -134,6 +137,9 @@ import DataModelChoose from "./DataModelChoose/index.vue";
 import AddInPortAndParam from "./AddInPortAndParam/index.vue";
 import ShowInParam from "./ShowInParam/index.vue";
 import ShowOutParam from "./ShowOutParam/index.vue";
+import SetDimensionsAndMetrics from "./SetDimensionsAndMetrics/index.vue";
+
+
 import { ElMessage } from "element-plus";
 
 import {
@@ -147,7 +153,6 @@ import {
 
 const blueScriptLogicDialogVisible = ref(false);
 const blueScriptLogicFlag = ref(false);
-const debugDisabledFlag = ref(true);
 const blue_script_logic_config_str=ref("");
 
 console.log("当前节点的蓝图配置：", currentBlueScript.value);
@@ -203,7 +208,7 @@ const debugBlueScriptLogic = () => {
   }
   currentBlueScript.value.debugParamObj.blueScript = currentBlueScript.value;
   currentBlueScript.value.debugParamObj.debugFlag = true;
-  currentBlueScript.value.logic_config.logicFun(
+  currentBlueScript.value.config.blue_script_logic_config.logicFun(
     currentBlueScript.value.debugParamObj
   );
 };
@@ -226,16 +231,15 @@ const findPageBlueScriptCallBack=(result)=>{
   blue_script_logic_config_str.value=result.objects[0].blue_script_logic_config_str;
   blueScriptLogicDialogVisible.value = true;
   blueScriptLogicFlag.value = false;
-  if (currentBlueScript.value.debugParamObj) {
-    debugDisabledFlag.value = true;
-  } else {
-    debugDisabledFlag.value = false;
-  }
 }
 
 const openedHandle = () => {
   blueScriptLogicFlag.value = true;
 };
+
+const showDebugProcessWin=()=>{
+
+}
 </script>
 
 <style scoped>

@@ -113,7 +113,7 @@ export default {
     },
     findBlueScriptInfoByComponentType(){
       let param = {};
-      param.sql = "page_component.find";
+      param.sql = "page_component_frontend.find";
       param.component_id = this.GetQueryString("blue_script_id");
       commonSelectRequest(axios, param, this.findBlueScriptInfoByComponentTypeCallBack);
     },

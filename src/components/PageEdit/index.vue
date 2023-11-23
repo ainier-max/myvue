@@ -1,4 +1,6 @@
 <template>
+  <PageDebug v-if="debugProcessFlag"></PageDebug>
+
   <div class="mainClass" style="display: flex; flex-direction: row">
     <div style="flex-basis: 17%">
       <div class="titleClass" align="center">页面渲染树</div>
@@ -109,6 +111,9 @@
           </el-col>
           <el-col :span="12">
             <div align="right" style="margin-right: 20px">
+              <el-button type="success" size="small" @click="showDebugProcessWin(true)"
+                >调试界面</el-button
+              >
               <el-button type="success" size="small" @click="toSave"
                 >保存</el-button
               >
@@ -175,6 +180,7 @@ import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vu
 
 import BlueScriptSettings from "@/components/PageEdit/PageDesign/Settings/BlueScriptSetting/index.vue";
 import BlueScriptDesign from "@/components/PageEdit/PageDesign/BlueScriptDesign/index.vue";
+import PageDebug from "@/components/PageEdit/PageDesign/PageDebug/index.vue"
 
 import {
   commonExcuteRequest,
@@ -211,7 +217,8 @@ const page_id = route.query.page_id;
 const pageRenderTreeRef = ref(null);
 
 const designType = ref("layoutDesign");
-
+const debugProcessFlag=ref(false);
+provide('debugProcessFlag', debugProcessFlag);
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
 
@@ -233,6 +240,7 @@ const toSave = () => {
   }
   if (designType.value == "blueScriptDesign") {
     saveBlueScript();
+    savePageRenderTree();
   }
 };
 const saveBlueScript = () => {
@@ -252,18 +260,29 @@ const saveBlueScript = () => {
   param.sql = "page_blue_script.saveAllPageBlueScript";
   param.page_id = page_id;
   param.main_block_config_str = main_block_config_str;
+
+  let newBlueScriptData=[];
   blueScriptData.value.forEach((element) => {
     element.page_id = page_id;
     element.config_str = objectToString(element.config);
+    //创建新对象（去除不必要的对象属性，如：graphNode,debugParamObj）
+    let objTemp=window._.cloneDeep(element);
+    if(objTemp.graphNode){
+      delete objTemp.graphNode;
+    }
+    if(objTemp.debugParamObj){
+      delete objTemp.debugParamObj;
+    }
+    newBlueScriptData.push(objTemp);
   });
-  param.blueScriptData = blueScriptData.value;
+  param.blueScriptData = newBlueScriptData;
   console.log("saveBlueScript--param", param);
   commonExcuteByBatchRequest(window.axios, param, saveBlueScriptCallBack);
 };
 
 const saveBlueScriptCallBack = (result) => {
   if ((result.state = "success")) {
-    ElMessage.success("保存成功！");
+    ElMessage.success("蓝图保存成功！");
   }
 };
 
@@ -315,6 +334,7 @@ const findFrontEndComponentCallBack = (result, nodeData) => {
     console.log("findFrontEndComponentCallBack--result", result);
     let obj = result.objects[0];
     obj.related_ref = nodeData.ref;
+    obj.nodeData=nodeData;
     blueScriptDataStoreObj.add(obj);
   }
 };
@@ -490,7 +510,7 @@ const savePageRenderTree = () => {
 };
 const savePageRenderTreeCallBack = (result) => {
   if (result.state == "success") {
-    ElMessage.success("保存成功！");
+    ElMessage.success("页面渲染树保存成功！");
   }
 };
 
@@ -526,6 +546,20 @@ const getChooseBlueScriptTool = (obj) => {
   blueScriptDataStoreObj.add(obj);
   dialogFlag.value = false;
 };
+
+
+const showDebugProcessWin=(closeFlag)=>{
+  debugProcessFlag.value=true;
+  if(closeFlag==true){
+    //关闭节点配置页面
+    currentBlueScript.value=null;
+    //取消节点高亮选择
+    window.antVGraph.getNodes().forEach(element => {
+      element.getAttrs().body.fill = 'rgba(40, 44, 52,0.9)';
+      element.setAttrs(element.getAttrs().body.fill);
+    });
+  } 
+}
 
 // 生命周期钩子
 onMounted(() => {
