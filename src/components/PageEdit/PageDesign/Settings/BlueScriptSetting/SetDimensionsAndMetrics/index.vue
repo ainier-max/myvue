@@ -3,81 +3,83 @@
     <el-divider content-position="left"
       ><span style="font-size: 18px">字段设置</span></el-divider
     >
-    <div style="padding-top: 5px">结果字段：</div>
-    <div style="padding-top: 10px">
-      <el-tag
-        style="margin-left: 10px"
-        v-for="field in currentBlueScript.config.dataset?.fields"
-      >
-        {{ field }}
-      </el-tag>
-    </div>
+    <div style="margin-left: 18px">
+      <div style="padding-top: 5px">结果字段：</div>
+      <div style="padding-top: 10px">
+        <el-tag
+          style="margin-left: 10px"
+          v-for="field in currentBlueScript.config.dataset?.fields"
+        >
+          {{ field }}
+        </el-tag>
+      </div>
 
-    <div style="padding-top: 5px">维度字段设置：</div>
-    <div style="padding-top: 10px">
-      <el-tag
-        style="margin-left: 10px"
-        v-for="dimension in currentBlueScript.config.dataset?.dimensions"
-        :key="dimension"
-        class="mx-1"
-        closable
-        :disable-transitions="false"
-        @close="handleDimensionTagClose(dimension)"
-        type="success"
-      >
-        {{ dimension }}
-      </el-tag>
-      <el-input
-        v-if="dimensionInputVisible"
-        ref="dimensionInputRef"
-        v-model="dimensionInputValue"
-        class="ml-1 w-20"
-        size="small"
-        style="margin-left: 10px; width: 60px"
-        @keyup.enter="handleDimensionInputConfirm"
-      />
-      <el-button
-        v-else
-        class="button-new-tag ml-1"
-        size="small"
-        style="margin-left: 10px"
-        @click="showDimensionInput"
-      >
-        + New Tag
-      </el-button>
-    </div>
-    <div style="padding-top: 5px">指标字段设置：</div>
-    <div style="padding-top: 10px">
-      <el-tag
-        style="margin-left: 10px"
-        v-for="metric in currentBlueScript.config.dataset?.metrics"
-        :key="metric"
-        class="mx-1"
-        closable
-        :disable-transitions="false"
-        @close="handleMetricsTagClose(metric)"
-        type="success"
-      >
-        {{ metric }}
-      </el-tag>
-      <el-input
-        v-if="metricsInputVisible"
-        ref="metricsInputRef"
-        v-model="metricsInputValue"
-        class="ml-1 w-20"
-        size="small"
-        style="margin-left: 10px; width: 60px"
-        @keyup.enter="handleMetricsInputConfirm"
-      />
-      <el-button
-        v-else
-        class="button-new-tag ml-1"
-        size="small"
-        style="margin-left: 10px"
-        @click="showMetricsInput"
-      >
-        + New Tag
-      </el-button>
+      <div style="padding-top: 5px">维度字段设置：</div>
+      <div style="padding-top: 10px">
+        <el-tag
+          style="margin-left: 10px"
+          v-for="dimension in currentBlueScript.config.dataset?.dimensions"
+          :key="dimension"
+          class="mx-1"
+          closable
+          :disable-transitions="false"
+          @close="handleDimensionTagClose(dimension)"
+          type="success"
+        >
+          {{ dimension }}
+        </el-tag>
+        <el-input
+          v-if="dimensionInputVisible"
+          ref="dimensionInputRef"
+          v-model="dimensionInputValue"
+          class="ml-1 w-20"
+          size="small"
+          style="margin-left: 10px; width: 60px"
+          @keyup.enter="handleDimensionInputConfirm"
+        />
+        <el-button
+          v-else
+          class="button-new-tag ml-1"
+          size="small"
+          style="margin-left: 10px"
+          @click="showDimensionInput"
+        >
+          + New Tag
+        </el-button>
+      </div>
+      <div style="padding-top: 5px">指标字段设置：</div>
+      <div style="padding-top: 10px">
+        <el-tag
+          style="margin-left: 10px"
+          v-for="metric in currentBlueScript.config.dataset?.metrics"
+          :key="metric"
+          class="mx-1"
+          closable
+          :disable-transitions="false"
+          @close="handleMetricsTagClose(metric)"
+          type="success"
+        >
+          {{ metric }}
+        </el-tag>
+        <el-input
+          v-if="metricsInputVisible"
+          ref="metricsInputRef"
+          v-model="metricsInputValue"
+          class="ml-1 w-20"
+          size="small"
+          style="margin-left: 10px; width: 60px"
+          @keyup.enter="handleMetricsInputConfirm"
+        />
+        <el-button
+          v-else
+          class="button-new-tag ml-1"
+          size="small"
+          style="margin-left: 10px"
+          @click="showMetricsInput"
+        >
+          + New Tag
+        </el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -101,24 +103,26 @@ const dimensionInputRef = ref(null);
 const showDimensionInput = () => {
   dimensionInputVisible.value = true;
   nextTick(() => {
-    console.log("dimensionInputRef",dimensionInputRef)
+    console.log("dimensionInputRef", dimensionInputRef);
     dimensionInputRef.value.input.focus();
   });
 };
 
-const metricsInputRef= ref(null);
-const showMetricsInput=()=>{
-  metricsInputVisible.value=true;
+const metricsInputRef = ref(null);
+const showMetricsInput = () => {
+  metricsInputVisible.value = true;
   nextTick(() => {
-    console.log("metricsInputRef",metricsInputRef)
+    console.log("metricsInputRef", metricsInputRef);
     metricsInputRef.value.input.focus();
   });
-}
-
-
+};
 
 const handleDimensionTagClose = (tab) => {
-  for (let i = 0; i < currentBlueScript.value.config.dataset.dimensions.length; i++) {
+  for (
+    let i = 0;
+    i < currentBlueScript.value.config.dataset.dimensions.length;
+    i++
+  ) {
     if (currentBlueScript.value.config.dataset.dimensions[i] == tab) {
       currentBlueScript.value.config.dataset.dimensions.splice(i, 1);
       i = i - 1;
@@ -126,7 +130,38 @@ const handleDimensionTagClose = (tab) => {
   }
 };
 
+const handleDimensionInputConfirm = () => {
+  if (dimensionInputValue.value) {
+    currentBlueScript.value.config.dataset.dimensions.push(
+      dimensionInputValue.value
+    );
+  }
+  dimensionInputVisible.value = false;
+  dimensionInputValue.value = "";
+};
 
+const handleMetricsTagClose = (tab) => {
+  for (
+    let i = 0;
+    i < currentBlueScript.value.config.dataset.metrics.length;
+    i++
+  ) {
+    if (currentBlueScript.value.config.dataset.metrics[i] == tab) {
+      currentBlueScript.value.config.dataset.metrics.splice(i, 1);
+      i = i - 1;
+    }
+  }
+};
+
+const handleMetricsInputConfirm = () => {
+  if (metricsInputValue.value) {
+    currentBlueScript.value.config.dataset.metrics.push(
+      metricsInputValue.value
+    );
+  }
+  metricsInputVisible.value = false;
+  metricsInputValue.value = "";
+};
 </script>
 
 <style></style>

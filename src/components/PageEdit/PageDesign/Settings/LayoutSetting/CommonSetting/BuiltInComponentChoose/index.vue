@@ -35,11 +35,9 @@ const getBuildInComponent = (type) => {
     if (pathConfigArr[i].type == type) {
       param = pathConfigArr[i];
       let optionPath =
-        "../../../../../../buildin/" + pathConfigArr[i].optionPath;
+        "../../../../../../../buildin/" + pathConfigArr[i].optionPath;
       import(/* @vite-ignore */ optionPath).then((option) => {
         param.option = option;
-
-        console.log("param111",param);
 
         let obj = {};
         obj.id = "id" + uuid();

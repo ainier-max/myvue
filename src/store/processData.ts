@@ -266,9 +266,10 @@ export const processDataStore = defineStore("processDataID", {
           element.config.blue_script_in_out_config.in.forEach((item) => {
             console.log("setNodeInValueAndRunProcessFun--item", item);
             if (item.portID == param.toPort) {
+              console.log("111", item);
               item.value = param.value;
               item.ifProcessFlag = true;
-
+              console.log("222", element);
               if (element.config.dataset) {
                 if (
                   param.value &&
