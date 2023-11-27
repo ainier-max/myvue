@@ -552,12 +552,12 @@ const showDebugProcessWin=(closeFlag)=>{
   debugProcessFlag.value=true;
   if(closeFlag==true){
     //关闭节点配置页面
-    currentBlueScript.value=null;
+    //currentBlueScript.value=null;
     //取消节点高亮选择
-    window.antVGraph.getNodes().forEach(element => {
-      element.getAttrs().body.fill = 'rgba(40, 44, 52,0.9)';
-      element.setAttrs(element.getAttrs().body.fill);
-    });
+    // window.antVGraph.getNodes().forEach(element => {
+    //   element.getAttrs().body.fill = 'rgba(40, 44, 52,0.9)';
+    //   element.setAttrs(element.getAttrs().body.fill);
+    // });
   } 
 }
 

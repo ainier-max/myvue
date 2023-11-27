@@ -20,6 +20,9 @@
 import { ref, nextTick, onMounted, computed, getCurrentInstance } from "vue";
 import * as Vue from "vue";
 
+import { processDataStore } from "@/store/processData.ts";
+const processDataStoreObj = processDataStore();
+
 let currentInstance = getCurrentInstance();
 if (currentInstance.components == null) {
   currentInstance.components = [];
@@ -30,7 +33,7 @@ const props = defineProps({
 });
 
 const showFlag = ref(false);
-console.log("frontEndComponentData", props.frontEndComponentData);
+//console.log("frontEndComponentData", props.frontEndComponentData);
 // props.frontEndComponentData.component_config =
 //   props.frontEndComponentData.config;
 
@@ -39,6 +42,8 @@ const eventFun = (eventType, obj, component) => {
   console.log("eventFun--事件类型：", eventType);
   console.log("eventFun--事件传递值：", obj);
   console.log("eventFun--当前组件信息：", component);
+  //console.log("eventFun--frontEndComponentData：", props.frontEndComponentData);
+  processDataStoreObj.eventProcess(eventType,obj,component);
 };
 
 

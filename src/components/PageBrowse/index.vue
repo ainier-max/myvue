@@ -1,5 +1,9 @@
 <template>
-  <div v-if="pageRenderTreeData && showFlag" :style="pageBlockStyle" id="pageViewID">
+  <div
+    v-if="pageRenderTreeData && showFlag"
+    :style="pageBlockStyle"
+    id="pageViewID"
+  >
     <div
       v-for="(pageLayout, index) in pageRenderTreeData[0].children"
       :style="setPageLayoutStyle(pageLayout)"
@@ -17,7 +21,7 @@
 import { provide, ref, nextTick, onMounted, computed } from "vue";
 import PageLayoutRender from "@/common/component/PageLayoutRender/index.vue";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
-import { useIntersectionObserver } from '@vueuse/core';
+import { useIntersectionObserver } from "@vueuse/core";
 
 import { useRoute } from "vue-router";
 import { getListData } from "@/common/js/tree.js";
@@ -35,7 +39,14 @@ const { pageRenderTreeData, relativePageRenderTreeData } = storeToRefs(
   pageRenderTreeDataStoreObj
 );
 
-console.log("pageRenderTreeData44",pageRenderTreeData);
+import { blueScriptDataStore } from "@/store/blueScriptData.ts";
+const blueScriptDataStoreObj = blueScriptDataStore();
+const { blueScriptData } = storeToRefs(blueScriptDataStoreObj);
+
+import { processDataStore } from "@/store/processData.ts";
+const processDataStoreObj = processDataStore();
+
+console.log("pageRenderTreeData44", pageRenderTreeData);
 
 const showFlag = ref(true);
 const route = useRoute();
@@ -55,10 +66,14 @@ const findAllPageRenderTreeByPageID = () => {
       page_id: page_id,
       resultKey: "RalativePageRenderTree",
     },
+    {
+      sql: "page_blue_script.find",
+      page_id: page_id,
+      resultKey: "AllBlueScript",
+    },
   ];
   commonBatchSelectRequest(axios, param, findAllPageRenderTreeByPageIDCallBack);
 };
-
 
 const findAllPageRenderTreeByPageIDCallBack = (result) => {
   //页面渲染树
@@ -99,39 +114,74 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
 
   //console.log("pageRenderTreeData12", pageRenderTreeData);
   pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
+  //蓝图数据
+  blueScriptDataStoreObj.setBlueScriptData(result["AllBlueScript"]);
   //执行逻辑
-  toEventStartRun();
+  toEventStartRun(false);
+};
+
+const toEventStartRun = (isDebug) => {
+  nextTick(() => {
+    const { stop } = useIntersectionObserver(
+      document.getElementById("pageViewID"),
+      ([{ isIntersecting }]) => {
+        console.log("cbc-检测元素可见性", isIntersecting);
+        // 需求：如果目标元素进入可视区，就发送请求，并停止检测
+        if (isIntersecting) {
+          // 当目标元素进入可视区域时，才发送请求
+          console.log("cbc-进入可视区，需要发送请求");
+          eventStartRun(isDebug);
+          // 请求已发送，主动停止检查
+          stop();
+        }
+      }
+    );
+  });
+};
+const eventStartRun = (isDebug) => {
+  console.log("eventStartRun");
+  let EventStartRunBlueScriptTemp = null;
+  blueScriptData.value.forEach((element) => {
+    //重置所有输入点的运行状态
+    if (element.config.blue_script_in_out_config.in) {
+      element.config.blue_script_in_out_config.in.forEach((inItem) => {
+        inItem.ifProcessFlag = false;
+      });
+    }
+    //重置所有输出点的运行状态
+    if (element.config.blue_script_in_out_config.out) {
+      element.config.blue_script_in_out_config.out.forEach((outItem) => {
+        outItem.ifProcessFlag = false;
+      });
+    }
+    if (element.blue_script_id == "EventStartRun") {
+      EventStartRunBlueScriptTemp = element;
+    }
+  });
+  //执行事件开始运行
+  console.log(
+    "eventStartRun--事件开始运行bluescript：",
+    EventStartRunBlueScriptTemp
+  );
+  if (EventStartRunBlueScriptTemp != null) {
+    processDataStoreObj.runBlueScriptProcess(
+      "",
+      "",
+      EventStartRunBlueScriptTemp
+    );
+  } else {
+    processDataStoreObj.runAllProcess(isDebug);
+  }
 };
 
 let pageModel = "";
 const page_type = route.query.page_type;
-if(page_type=="edit"){
+if (page_type == "edit") {
   pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
-  toEventStartRun();
-}else if(page_type=="browse"){
+  toEventStartRun(true);
+} else if (page_type == "browse") {
   findAllPageRenderTreeByPageID();
 }
-
-const toEventStartRun=()=>{
-  nextTick(()=>{
-    const { stop } =  useIntersectionObserver(document.getElementById("pageViewID"), ([{ isIntersecting }]) => {
-    console.log('cbc-检测元素可见性', isIntersecting);
-    // 需求：如果目标元素进入可视区，就发送请求，并停止检测
-    if (isIntersecting) {
-      // 当目标元素进入可视区域时，才发送请求
-      console.log('cbc-进入可视区，需要发送请求');
-      eventStartRun();
-      // 请求已发送，主动停止检查
-      stop();
-    }
-    });
-  });
-}
-const eventStartRun=()=>{
-  
-}
-
-
 
 //页面块样式
 const pageBlockStyle = computed(() => {

@@ -13,12 +13,38 @@ const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 import * as treeFun from "@/common/js/tree.js";
 import { nextTick } from "vue";
 
+
+
 export const processDataStore = defineStore("processDataID", {
   state: () => ({
     debugProcessFlag: null,
   }),
   getters: {},
   actions: {
+    eventProcess(eventType, obj, component) {
+      blueScriptData.value.forEach(element => {
+        if (element.related_ref==component.ref && element.config.blue_script_in_out_config.out) {
+          //输出参数设置值
+          element.config.blue_script_in_out_config.out.forEach(outItem => {
+            if (outItem.label == eventType) {
+              //赋值
+              outItem.value = obj;
+              //如果有连接线，则执行下一个蓝图节点
+              outItem.connectedTargetArr.forEach(connectedTargetItem => {
+                let param = {};
+                param.blue_script_ref = connectedTargetItem.cell;
+                param.fromPort = outItem.connectedSource.port;
+                param.toPort = connectedTargetItem.port;
+                param.value = obj;
+                this.setNodeInValueAndRunProcessFun(param);
+              });
+            }
+          });
+        }
+      });
+    },
+    
+
     runAllProcess(flag) {
       this.debugProcessFlag = flag;
       console.log(
