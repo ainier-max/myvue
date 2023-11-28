@@ -84,6 +84,9 @@
       >
     </div>
 
+    <div style="padding-bottom:15px"></div>
+
+
     <el-dialog
       v-model="chooseDialogFlag"
       :title="dialogTitle"
@@ -125,6 +128,8 @@
       ></PackComponentChoose>
     </el-dialog>
   </div>
+
+  
 </template>
 
 <script setup lang="ts">

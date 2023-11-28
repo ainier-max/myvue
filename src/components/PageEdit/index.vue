@@ -142,18 +142,16 @@
 
     <div style="flex-basis: 18%; overflow: auto">
       <!--基础配置-->
-      <CommonSetting
-        style="padding-bottom:15px"
+      <BaseSetting
         v-if="showBaseSettingFun"
         @refreshLayoutDesign="refreshLayoutDesign"
-      ></CommonSetting>
+      ></BaseSetting>
       <!--内容配置-->
-      <ContentSetting style="padding-bottom:15px" v-if="designType == 'layoutDesign'"></ContentSetting>
+      <ContentSetting  v-if="designType == 'layoutDesign'"></ContentSetting>
       <!--开发者配置-->
-      <DevSetting style="padding-bottom:15px" v-if="designType == 'layoutDesign'"></DevSetting>
+      <DevSetting  v-if="designType == 'layoutDesign'"></DevSetting>
       <!--蓝图配置-->
       <BlueScriptSettings
-        style="padding-bottom:15px"
         v-if="designType == 'blueScriptDesign'"
       ></BlueScriptSettings>
       
@@ -186,7 +184,7 @@ import { highLightNode } from "@/components/PageEdit/PageDesign/BlueScriptDesign
 import AddBlueScriptTool from "@/components/PageEdit/DialogContent/AddBlueScriptTool/index.vue";
 import AddPageBlock from "@/components/PageEdit/DialogContent/AddPageBlock/index.vue";
 
-import CommonSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/CommonSetting/index.vue";
+import BaseSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/BaseSetting/index.vue";
 import ContentSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/ContentSetting/index.vue";
 import DevSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/DevSetting/index.vue";
 

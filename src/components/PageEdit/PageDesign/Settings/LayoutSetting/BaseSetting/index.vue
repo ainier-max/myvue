@@ -273,14 +273,12 @@
             show-alpha
           />
         </div>
-      </div>
 
-      
-      
+        <div style="padding-bottom:15px"></div>
+      </div>
       
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
