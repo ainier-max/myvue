@@ -89,6 +89,14 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
       item.config.blue_script_visualize_config = eval(
         "(" + obj.blue_script_visualize_config_str + ")"
       );
+      //配置
+      item.config.settings= {};
+      item.config.blue_script_visualize_config.settings.forEach(element => {
+        if(element=="GetValueFromObjectSetting"){
+          item.config.settings.GetValueFromObjectSetting='';
+        }
+      });
+
 
       item.config.blue_script_node_config = eval(
         "(" + obj.blue_script_node_config_str + ")"

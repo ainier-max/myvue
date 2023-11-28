@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%; width: 100%;position: relative" v-if="pageBlockRenderData">
+  <div style="height: 100%; width: 100%;position: relative" v-if="pageBlockRenderData && props.pageBlockData.config.attr.show == true ">
     <div v-for="(pageLayout, index) in pageBlockRenderData.children"
     :style="setPageLayoutStyle(pageLayout)">
       <PageLayoutRender
@@ -24,8 +24,7 @@ const props = defineProps({
   pageBlockData: null,
 });
 
-console.log("当前外部页面数据--props.pageBlockData", props.pageBlockData);
-
+console.log("当前外部页面数据12--props.pageBlockData", props.pageBlockData);
 const pageBlockRenderData = ref(null);
 
 let indexTemp = _.findIndex(relativePageRenderTreeData.value, function (o) {
@@ -33,7 +32,7 @@ let indexTemp = _.findIndex(relativePageRenderTreeData.value, function (o) {
 });
 pageBlockRenderData.value = relativePageRenderTreeData.value[indexTemp];
 
-console.log("要渲染的外部页面数据", pageBlockRenderData);
+console.log("要渲染的外部页面数据123", pageBlockRenderData);
 
 //页面布局样式
 const setPageLayoutStyle = computed(() => {

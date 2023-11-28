@@ -111,7 +111,11 @@
           </el-col>
           <el-col :span="12">
             <div align="right" style="margin-right: 20px">
-              <el-button type="success" size="small" @click="showDebugProcessWin(true)"
+              <el-button
+                type="success"
+                size="small"
+                v-if="designType == 'blueScriptDesign'"
+                @click="showDebugProcessWin(true)"
                 >调试界面</el-button
               >
               <el-button type="success" size="small" @click="toSave"
@@ -136,17 +140,24 @@
       </div>
     </div>
 
-    <div style="flex-basis: 18%">
+    <div style="flex-basis: 18%; overflow: auto">
       <!--基础配置-->
       <CommonSetting
-        v-if="designType == 'layoutDesign'"
+        style="padding-bottom:15px"
+        v-if="showBaseSettingFun"
         @refreshLayoutDesign="refreshLayoutDesign"
       ></CommonSetting>
-
+      <!--内容配置-->
+      <ContentSetting style="padding-bottom:15px" v-if="designType == 'layoutDesign'"></ContentSetting>
+      <!--开发者配置-->
+      <DevSetting style="padding-bottom:15px" v-if="designType == 'layoutDesign'"></DevSetting>
       <!--蓝图配置-->
       <BlueScriptSettings
+        style="padding-bottom:15px"
         v-if="designType == 'blueScriptDesign'"
       ></BlueScriptSettings>
+      
+      <div style="height: 50px"></div>
     </div>
   </div>
 
@@ -166,7 +177,7 @@
 
 <script setup lang="ts">
 //import 'default-passive-events';
-import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
+import { provide, ref, nextTick, onMounted, watchEffect ,computed} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
@@ -176,11 +187,14 @@ import AddBlueScriptTool from "@/components/PageEdit/DialogContent/AddBlueScript
 import AddPageBlock from "@/components/PageEdit/DialogContent/AddPageBlock/index.vue";
 
 import CommonSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/CommonSetting/index.vue";
+import ContentSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/ContentSetting/index.vue";
+import DevSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/DevSetting/index.vue";
+
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
 import BlueScriptSettings from "@/components/PageEdit/PageDesign/Settings/BlueScriptSetting/index.vue";
 import BlueScriptDesign from "@/components/PageEdit/PageDesign/BlueScriptDesign/index.vue";
-import PageDebug from "@/components/PageEdit/PageDesign/PageDebug/index.vue"
+import PageDebug from "@/components/PageEdit/PageDesign/PageDebug/index.vue";
 
 import {
   commonExcuteRequest,
@@ -207,7 +221,9 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 
 import { blueScriptDataStore } from "@/store/blueScriptData.ts";
 const blueScriptDataStoreObj = blueScriptDataStore();
-const { blueScriptData,currentBlueScript } = storeToRefs(blueScriptDataStoreObj);
+const { blueScriptData, currentBlueScript } = storeToRefs(
+  blueScriptDataStoreObj
+);
 
 const defaultProps = { children: "children", label: "label" };
 
@@ -217,10 +233,31 @@ const page_id = route.query.page_id;
 const pageRenderTreeRef = ref(null);
 
 const designType = ref("layoutDesign");
-const debugProcessFlag=ref(false);
-provide('debugProcessFlag', debugProcessFlag);
+const debugProcessFlag = ref(false);
+provide("debugProcessFlag", debugProcessFlag);
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
+const showBaseSettingFun = computed(() => {
+  console.log("showBaseSettingFun--");
+  if (designType.value == "layoutDesign") {
+    if (
+      currentPageRenderTreeNodeData.value &&
+      currentPageRenderTreeNodeData.value.type != "childBlock"
+    ) {
+      return true;
+    } else if (
+      currentPageRenderTreeNodeData.value &&
+      currentPageRenderTreeNodeData.value.type == "childBlock" &&
+      !currentPageRenderTreeNodeData.value.pid
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }else{
+    return false;
+  }
+});
 
 const isUsed = () => {
   //console.log("isUsed--blueScriptData",blueScriptData);
@@ -261,16 +298,16 @@ const saveBlueScript = () => {
   param.page_id = page_id;
   param.main_block_config_str = main_block_config_str;
 
-  let newBlueScriptData=[];
+  let newBlueScriptData = [];
   blueScriptData.value.forEach((element) => {
     element.page_id = page_id;
     element.config_str = objectToString(element.config);
     //创建新对象（去除不必要的对象属性，如：graphNode,debugParamObj）
-    let objTemp=window._.cloneDeep(element);
-    if(objTemp.graphNode){
+    let objTemp = window._.cloneDeep(element);
+    if (objTemp.graphNode) {
       delete objTemp.graphNode;
     }
-    if(objTemp.debugParamObj){
+    if (objTemp.debugParamObj) {
       delete objTemp.debugParamObj;
     }
     newBlueScriptData.push(objTemp);
@@ -334,7 +371,7 @@ const findFrontEndComponentCallBack = (result, nodeData) => {
     console.log("findFrontEndComponentCallBack--result", result);
     let obj = result.objects[0];
     obj.related_ref = nodeData.ref;
-    obj.nodeData=nodeData;
+    obj.nodeData = nodeData;
     blueScriptDataStoreObj.add(obj);
   }
 };
@@ -356,8 +393,8 @@ const refreshLayoutDesign = () => {
   console.log("布局设计页面刷新!");
   designType.value = "";
   nextTick(() => {
-    //designType.value = "layoutDesign";
-    designType.value = "blueScriptDesign";
+    designType.value = "layoutDesign";
+    //designType.value = "blueScriptDesign";
   });
 };
 
@@ -374,12 +411,11 @@ const nodeClick = (data) => {
   if (designType.value == "layoutDesign") {
     //设置当前树节点的值，并这是当前所处的顶层页面块Block
     currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
-
   } else if (designType.value == "blueScriptDesign") {
     //仅设置当前树节点的值
     currentPageRenderTreeNodeData.value = data;
     //被使用才定位
-    if(isUsed()){
+    if (isUsed()) {
       //定位
       //let blueScriptRefTemp = "";
       blueScriptData.value.forEach((element) => {
@@ -397,8 +433,6 @@ const nodeClick = (data) => {
         }
       });
     }
-    
-    
   }
 };
 
@@ -474,7 +508,7 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
   blueScriptData.value.forEach((element) => {
     result["AllPageRenderTree"].forEach((item) => {
       if (element.related_ref == item.ref) {
-        console.log("item1232",item);
+        console.log("item1232", item);
         element.blue_script_name = item.name;
         element.config.blue_script_node_config.label = item.name;
       }
@@ -485,6 +519,7 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
 const savePageRenderTree = () => {
   let arrayTemp = pageRenderTreeDataStoreObj.getPageRenderTreeDataForArray();
   console.log("savePageRenderTree--arrayTemp", arrayTemp);
+  let pageNameTemp = "";
   let newArrayTemp = [];
   for (let i = 0; i < arrayTemp.length; i++) {
     let { id, pid, ref, type, related_value } = { ...arrayTemp[i] };
@@ -500,10 +535,14 @@ const savePageRenderTree = () => {
       page_id,
       config_str,
     });
+    if (arrayTemp[i].type == "mainBlock" && !arrayTemp[i].pid) {
+      pageNameTemp = name;
+    }
   }
   let param = {};
   param.sql = "page_render_tree.savePageRenderTree";
   param.page_id = page_id;
+  param.page_name = pageNameTemp;
   param.pageRenderTreeData = newArrayTemp;
   console.log("传参param", param);
   commonExcuteByBatchRequest(window.axios, param, savePageRenderTreeCallBack);
@@ -547,10 +586,9 @@ const getChooseBlueScriptTool = (obj) => {
   dialogFlag.value = false;
 };
 
-
-const showDebugProcessWin=(closeFlag)=>{
-  debugProcessFlag.value=true;
-  if(closeFlag==true){
+const showDebugProcessWin = (closeFlag) => {
+  debugProcessFlag.value = true;
+  if (closeFlag == true) {
     //关闭节点配置页面
     //currentBlueScript.value=null;
     //取消节点高亮选择
@@ -558,8 +596,8 @@ const showDebugProcessWin=(closeFlag)=>{
     //   element.getAttrs().body.fill = 'rgba(40, 44, 52,0.9)';
     //   element.setAttrs(element.getAttrs().body.fill);
     // });
-  } 
-}
+  }
+};
 
 // 生命周期钩子
 onMounted(() => {

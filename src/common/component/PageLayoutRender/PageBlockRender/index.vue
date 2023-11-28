@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%; width: 100%;position: relative" v-if="pageBlockRenderData">
+  <div style="height: 100%; width: 100%;position: relative" v-if="pageBlockRenderData && props.pageBlockData.config.attr.show == true">
     <div v-for="(pageLayout, index) in pageBlockRenderData.children"
     :style="setPageLayoutStyle(pageLayout)">
       <PageLayoutRender

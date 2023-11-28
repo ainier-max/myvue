@@ -64,8 +64,7 @@
       <ShowInParam v-if="item == 'ShowInParam'"></ShowInParam>
       <ShowOutParam v-if="item == 'ShowOutParam'"></ShowOutParam>
       <SetDimensionsAndMetrics v-if="item == 'SetDimensionsAndMetrics'"></SetDimensionsAndMetrics>
-
-      
+      <GetValueFromObjectSetting v-if="item == 'GetValueFromObjectSetting'"></GetValueFromObjectSetting>
     </div>
 
     <div style="height: 20px"></div>
@@ -138,7 +137,7 @@ import AddInPortAndParam from "./AddInPortAndParam/index.vue";
 import ShowInParam from "./ShowInParam/index.vue";
 import ShowOutParam from "./ShowOutParam/index.vue";
 import SetDimensionsAndMetrics from "./SetDimensionsAndMetrics/index.vue";
-
+import GetValueFromObjectSetting from "./GetValueFromObjectSetting/index.vue";
 
 import { ElMessage } from "element-plus";
 

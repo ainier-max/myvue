@@ -78,7 +78,7 @@ export default {
       if(type=="component"){
         //表单验证后执行
         let param = {};
-        param.sql = "page_component.updateBlueScriptConfig";
+        param.sql = "page_component_frontend.updateBlueScriptConfig";
         param.blue_script_node_config_str=this.currentBlueScript.blue_script_node_config_str;
         param.blue_script_in_out_config_str=this.currentBlueScript.blue_script_in_out_config_str;
         param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;

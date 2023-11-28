@@ -3,6 +3,7 @@ import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageEditStoreObj = pageRenderTreeDataStore();
 const { pageRenderTreeData } = storeToRefs(pageEditStoreObj);
 import { findParent,findNodeById,findNodeByRef } from "@/common/js/tree.js";
+import {  nextTick } from "vue";
 
 export const currentDealDataStore = defineStore("currentDealDataID", {
   state: () => ({
@@ -28,7 +29,11 @@ export const currentDealDataStore = defineStore("currentDealDataID", {
       console.log("当前选中渲染树节点数据：",data);
       //设置当前渲染树节点
       this.currentPageRenderTreeNodeData = data;
-      if (data.type=="mainBlock" || data.type=="childBlock") {
+      //|| data.type=="childBlock"
+      if (data.type=="mainBlock") {
+        this.currentTopPageBlockData = data;
+        this.currentTopPageLayoutData = null;
+      } else if (data.type=="childBlock" && !data.pid) {
         this.currentTopPageBlockData = data;
         this.currentTopPageLayoutData = null;
       } else {
@@ -44,6 +49,22 @@ export const currentDealDataStore = defineStore("currentDealDataID", {
       }
       
     },
+    refreshCurrentPageRenderTreeNodeData() {
+      console.log("refreshCurrentPageRenderTreeNodeData--this.currentPageRenderTreeNodeData",this.currentPageRenderTreeNodeData);
+      if (this.currentPageRenderTreeNodeData.config.attr.show == true) {
+        console.log("refreshCurrentPageRenderTreeNodeData--进入刷新");
+        //刷新当前节点
+        this.currentPageRenderTreeNodeData.config.attr.show=false;
+        nextTick(()=>{
+          this.currentPageRenderTreeNodeData.config.attr.show=true;
+        });
+      } else {
+        
+      }
+
+      
+    },
+
     //刷新顶层的layout
     refreshCurrentTopPageLayoutData() {
       //如果当前选中的树节点是顶层页面块，则不刷新
