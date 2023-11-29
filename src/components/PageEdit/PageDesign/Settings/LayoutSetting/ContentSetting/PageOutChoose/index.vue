@@ -93,7 +93,6 @@ const findRelativePageRenderTreeByPageIDCallBack = (result) => {
     relativePageRenderTreeData.value.push(dataTemp[0]);
   }
   getPageOut(dataTemp[0]);
-  console.log("relativePageRenderTreeData112", relativePageRenderTreeData);
 };
 
 

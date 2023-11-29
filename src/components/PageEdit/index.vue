@@ -16,9 +16,11 @@
           :highlight-current="true"
           :current-node-key="currentPageRenderTreeNodeData?.id"
           @node-click="nodeClick"
+          :filter-node-method="filterNode"
         >
           <template #default="{ node, data }">
-            <span class="custom-tree-node">
+
+            <span class="custom-tree-node" >
               <span
                 v-if="
                   data.type == 'mainBlock' ||
@@ -202,12 +204,12 @@ import {
   commonBatchSelectRequest,
   commonExcuteRequestAndOtherParam,
 } from "@/common/js/request.js";
-import { getListData, deleteNode } from "@/common/js/tree.js";
+import { getListData, deleteNode,findParent } from "@/common/js/tree.js";
 
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData, relativePageRenderTreeData } = storeToRefs(
+const { pageRenderTreeData } = storeToRefs(
   pageRenderTreeDataStoreObj
 );
 
@@ -225,6 +227,7 @@ const { blueScriptData, currentBlueScript } = storeToRefs(
 
 const defaultProps = { children: "children", label: "label" };
 
+
 const route = useRoute();
 const page_id = route.query.page_id;
 //const page_debug_flag = route.query.page_debug_flag;
@@ -236,7 +239,7 @@ provide("debugProcessFlag", debugProcessFlag);
 //console.log("page_id", page_id);
 //console.log("page_debug_flag", page_debug_flag);
 const showBaseSettingFun = computed(() => {
-  console.log("showBaseSettingFun--");
+  //console.log("showBaseSettingFun--");
   if (designType.value == "layoutDesign") {
     if (
       currentPageRenderTreeNodeData.value &&
@@ -298,17 +301,21 @@ const saveBlueScript = () => {
 
   let newBlueScriptData = [];
   blueScriptData.value.forEach((element) => {
-    element.page_id = page_id;
-    element.config_str = objectToString(element.config);
-    //创建新对象（去除不必要的对象属性，如：graphNode,debugParamObj）
-    let objTemp = window._.cloneDeep(element);
-    if (objTemp.graphNode) {
-      delete objTemp.graphNode;
+    //只保存非关联页面的蓝图数据
+    if(!element.isRelativePage){
+      element.page_id = page_id;
+      element.config_str = objectToString(element.config);
+      //创建新对象（去除不必要的对象属性，如：graphNode,debugParamObj）
+      let objTemp = window._.cloneDeep(element);
+      if (objTemp.graphNode) {
+        delete objTemp.graphNode;
+      }
+      if (objTemp.debugParamObj) {
+        delete objTemp.debugParamObj;
+      }
+      newBlueScriptData.push(objTemp);
     }
-    if (objTemp.debugParamObj) {
-      delete objTemp.debugParamObj;
-    }
-    newBlueScriptData.push(objTemp);
+    
   });
   param.blueScriptData = newBlueScriptData;
   console.log("saveBlueScript--param", param);
@@ -453,6 +460,11 @@ const findAllPageRenderTreeByPageID = () => {
       page_id: page_id,
       resultKey: "AllBlueScript",
     },
+    {
+      sql: "page_blue_script.findRalativeBlueScriptByPageID",
+      page_id: page_id,
+      resultKey: "RalativeBlueScript",
+    },
   ];
   commonBatchSelectRequest(axios, param, findAllPageRenderTreeByPageIDCallBack);
 };
@@ -506,13 +518,41 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
   blueScriptData.value.forEach((element) => {
     result["AllPageRenderTree"].forEach((item) => {
       if (element.related_ref == item.ref) {
-        console.log("item1232", item);
+        //console.log("item1232", item);
         element.blue_script_name = item.name;
         element.config.blue_script_node_config.label = item.name;
       }
     });
   });
+
+  result["RalativeBlueScript"].forEach(element => {
+    element.isRelativePage=true;
+    blueScriptData.value.push(element);
+  });
+
+
+  let startTime = new Date().getTime();
+  console.log("渲染树过滤开始时间",startTime);
+  nextTick(()=>{
+    //过滤不显示
+    pageRenderTreeRef.value.filter("无效参数");
+    let endTime = new Date().getTime();
+    console.log("渲染树过滤结束时间",endTime);
+    console.log("渲染树过滤花费时间",(endTime-startTime)+"ms");
+  });
+  
 };
+//不显示关联的
+const  filterNode= (value, data, node) => {
+  //console.log("filterNode-value",value);
+  //console.log("filterNode--data12",data);
+  if(data.isRelativePage && data.isRelativePage==true){
+    return false;
+  }else{
+    return true;
+  }
+}
+
 //保存页面渲染树
 const savePageRenderTree = () => {
   let arrayTemp = pageRenderTreeDataStoreObj.getPageRenderTreeDataForArray();
@@ -520,21 +560,24 @@ const savePageRenderTree = () => {
   let pageNameTemp = "";
   let newArrayTemp = [];
   for (let i = 0; i < arrayTemp.length; i++) {
-    let { id, pid, ref, type, related_value } = { ...arrayTemp[i] };
-    let config_str = objectToString(arrayTemp[i].config);
-    let name = arrayTemp[i].label;
-    newArrayTemp.push({
-      id,
-      pid,
-      name,
-      ref,
-      type,
-      related_value,
-      page_id,
-      config_str,
-    });
-    if (arrayTemp[i].type == "mainBlock" && !arrayTemp[i].pid) {
-      pageNameTemp = name;
+    //只保存非关联页面的数据
+    if(!arrayTemp[i].isRelativePage){
+      let { id, pid, ref, type, related_value } = { ...arrayTemp[i] };
+      let config_str = objectToString(arrayTemp[i].config);
+      let name = arrayTemp[i].label;
+      newArrayTemp.push({
+        id,
+        pid,
+        name,
+        ref,
+        type,
+        related_value,
+        page_id,
+        config_str,
+      });
+      if (arrayTemp[i].type == "mainBlock" && !arrayTemp[i].pid) {
+        pageNameTemp = name;
+      }
     }
   }
   let param = {};

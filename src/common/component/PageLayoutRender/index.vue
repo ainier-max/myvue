@@ -81,15 +81,15 @@ const props = defineProps({
   pageLayoutData: null,
 });
 
-console.log(
-  "页面布局数据--props.pageLayoutData",
-  props.pageLayoutData.children
-);
+// console.log(
+//   "页面布局数据--props.pageLayoutData",
+//   props.pageLayoutData.children
+// );
 
 //页面布局样式
 const pageLayoutStyle = computed(() => {
   return function (pageLayout) {
-    console.log("pageLayoutStyle--pageLayout", pageLayout);
+    //console.log("pageLayoutStyle--pageLayout", pageLayout);
     let styleObj = {};
     if (pageLayout.config.attr.labelType == "flex") {
       let widthTemp =
@@ -146,14 +146,14 @@ const pageLayoutStyle = computed(() => {
       styleObj.display = "flex";
       styleObj.flexDirection = "row";
     }
-    console.log("pageLayoutStyle--styleObj", styleObj);
+    //console.log("pageLayoutStyle--styleObj", styleObj);
     return styleObj;
   };
 });
 //设置布局里面的组件，页面块样式
 const setStyle = computed(() => {
   return function (item) {
-    console.log("setStyle--item", item);
+    //console.log("setStyle--item", item);
     let styleObj = {};
     styleObj.boxSizing = "border-box";
 
@@ -189,7 +189,7 @@ const setStyle = computed(() => {
     ) {
       styleObj.background = item.config.attr.backgroundColorValue;
     }
-    console.log("setStyle--styleObj", styleObj);
+    //console.log("setStyle--styleObj", styleObj);
 
     return styleObj;
   };

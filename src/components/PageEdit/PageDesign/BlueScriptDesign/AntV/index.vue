@@ -12,8 +12,8 @@
 <script setup lang="ts">
 import { provide, ref, nextTick, onMounted, watchEffect } from "vue";
 import axios from "axios";
-import { objectToString } from "@/common/js/objStr.js";
 import { addEdge,initGraph,highLightNode } from "./AntV.js";
+import { objectToString, stringToObject } from "@/common/js/objStr.js";
 
 import { storeToRefs } from "pinia";
 
@@ -43,11 +43,19 @@ onMounted(() => {
 
   //添加节点
   blueScriptData.value.forEach((element) => {
-    blueScriptDataStoreObj.addAntVGraphNode(element);
+    //只添加非关联页面的蓝图节点
+    if(!element.isRelativePage){
+      blueScriptDataStoreObj.addAntVGraphNode(element);
+    }else{
+      element.config = stringToObject(element.config_str);
+    }
   });
   //节点添加完成后，添加连线
   blueScriptData.value.forEach((element) => {
-    addEdge(element.config.blue_script_in_out_config);
+    //只添加非关联页面的蓝图节点
+    if(!element.isRelativePage){
+      addEdge(element.config.blue_script_in_out_config);
+    }
   });
   
 });

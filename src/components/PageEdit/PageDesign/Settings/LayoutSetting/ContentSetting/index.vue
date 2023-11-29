@@ -146,7 +146,7 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData, relativePageRenderTreeData } = storeToRefs(
+const { pageRenderTreeData } = storeToRefs(
   pageRenderTreeDataStoreObj
 );
 const chooseDialogType = ref("");

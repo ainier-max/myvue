@@ -35,7 +35,7 @@ import {
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData, relativePageRenderTreeData } = storeToRefs(
+const { pageRenderTreeData } = storeToRefs(
   pageRenderTreeDataStoreObj
 );
 

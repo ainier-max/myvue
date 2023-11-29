@@ -24,7 +24,7 @@ const props = defineProps({
   pageBlockData: null,
 });
 
-console.log("当前外部页面数据12--props.pageBlockData", props.pageBlockData);
+//console.log("当前外部页面数据12--props.pageBlockData", props.pageBlockData);
 const pageBlockRenderData = ref(null);
 
 let indexTemp = _.findIndex(relativePageRenderTreeData.value, function (o) {
@@ -32,12 +32,12 @@ let indexTemp = _.findIndex(relativePageRenderTreeData.value, function (o) {
 });
 pageBlockRenderData.value = relativePageRenderTreeData.value[indexTemp];
 
-console.log("要渲染的外部页面数据123", pageBlockRenderData);
+//console.log("要渲染的外部页面数据123", pageBlockRenderData);
 
 //页面布局样式
 const setPageLayoutStyle = computed(() => {
   return function (pageLayout) {
-    console.log("pageLayoutStyle--pageLayout", pageLayout);
+    //console.log("pageLayoutStyle--pageLayout", pageLayout);
     let styleObj = {};
     styleObj.position="absolute";
     styleObj.left=pageLayout.config.attr.xPer+"%";

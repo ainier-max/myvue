@@ -19,8 +19,22 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
       this.sortTree(data);
       this.relativePageRenderTreeData = data;
       console.log("关联页面渲染树数据--setRelativePageRenderTreeData", this.relativePageRenderTreeData);
+
+      this.setIsRelativePage(this.relativePageRenderTreeData);
+      this.relativePageRenderTreeData.forEach(element => {
+        this.pageRenderTreeData.push(element);
+      });
+
     },
-    
+    //设置节点isRelativePage为关联页面
+    setIsRelativePage(nodes) {
+      for (const node of nodes) {
+        node.isRelativePage = true;
+        if (node.children) {
+          this.setIsRelativePage(node.children);
+        }
+      }
+    },
     
     // setPageRenderTreeDataByReLativePageID(nodes, element) {
     //   for (const node of nodes) {

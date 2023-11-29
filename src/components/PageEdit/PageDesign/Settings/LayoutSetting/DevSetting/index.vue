@@ -51,7 +51,7 @@ const { currentPageRenderTreeNodeData } = storeToRefs(
   currentDealDataStoreObj
 );
 
-console.log("currentPageRenderTreeNodeData123214",currentPageRenderTreeNodeData);
+//console.log("currentPageRenderTreeNodeData123214",currentPageRenderTreeNodeData);
 
 const devConfigDialogFlag = ref(false);
 const devConfigFlag = ref(false);
