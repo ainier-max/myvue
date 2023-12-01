@@ -71,6 +71,11 @@ const findAllPageRenderTreeByPageID = () => {
       page_id: page_id,
       resultKey: "AllBlueScript",
     },
+    {
+      sql: "page_blue_script.findRalativeBlueScriptByPageID",
+      page_id: page_id,
+      resultKey: "RalativeBlueScript",
+    }
   ];
   commonBatchSelectRequest(axios, param, findAllPageRenderTreeByPageIDCallBack);
 };
@@ -116,6 +121,12 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
   pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
   //蓝图数据
   blueScriptDataStoreObj.setBlueScriptData(result["AllBlueScript"]);
+  result["RalativeBlueScript"].forEach(element => {
+    element.isRelativePage=true;
+    element.config = stringToObject(element.config_str);
+    blueScriptData.value.push(element);
+  });
+
   //执行逻辑
   toEventStartRun(false);
 };

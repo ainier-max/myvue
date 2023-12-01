@@ -43,7 +43,7 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
       this.blueScriptData = data;
       console.log("所有蓝图数据：", this.blueScriptData);
     },
-    //页面方式添加跌点
+    //页面方式添加节点
     addNodeByPageOut(obj) {
       console.log("addNodeByPageOut--obj", obj);
       let item = {};
