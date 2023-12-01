@@ -154,8 +154,12 @@
       <DevSetting  v-if="designType == 'layoutDesign'"></DevSetting>
       <!--蓝图配置-->
       <BlueScriptSettings
-        v-if="designType == 'blueScriptDesign'"
+        v-if="designType == 'blueScriptDesign' && currentPageRenderTreeNodeData.type!='mainBlock'"
       ></BlueScriptSettings>
+      <!--页面块蓝图配置-->
+      <BlueScriptSettingForMainBlock v-if="designType == 'blueScriptDesign' && currentPageRenderTreeNodeData.type=='mainBlock'" ></BlueScriptSettingForMainBlock>
+      
+      
       
       <div style="height: 50px"></div>
     </div>
@@ -193,6 +197,8 @@ import DevSetting from "@/components/PageEdit/PageDesign/Settings/LayoutSetting/
 import LayoutDesign from "@/components/PageEdit/PageDesign/LayoutDesign/index.vue";
 
 import BlueScriptSettings from "@/components/PageEdit/PageDesign/Settings/BlueScriptSetting/index.vue";
+import BlueScriptSettingForMainBlock from "@/components/PageEdit/PageDesign/Settings/BlueScriptSettingForMainBlock/index.vue";
+
 import BlueScriptDesign from "@/components/PageEdit/PageDesign/BlueScriptDesign/index.vue";
 import PageDebug from "@/components/PageEdit/PageDesign/PageDebug/index.vue";
 
@@ -283,6 +289,7 @@ const toSave = () => {
 };
 const saveBlueScript = () => {
   console.log("saveBlueScript--pageRenderTreeData", pageRenderTreeData);
+  console.log("saveBlueScript--blueScriptData", blueScriptData);
   pageRenderTreeData.value[0].config.blueScriptAttr.x =
     window.antVGraph.getGraphArea().x;
   pageRenderTreeData.value[0].config.blueScriptAttr.y =
@@ -330,7 +337,7 @@ const saveBlueScriptCallBack = (result) => {
 
 const router = useRouter();
 const toBrowse = () => {
-  const { href } = router.resolve({
+  const { href } = router.resolve({ 
     path: "/PageBrowse",
     query: {
       page_id: page_id,
@@ -354,11 +361,21 @@ const addBlueSciptNode = (nodeData) => {
   console.log("addBlueSciptNode--nodeData", nodeData);
   if (nodeData.type == "frontEndComponent") {
     findFrontEndComponent(nodeData);
+  } else if(nodeData.type == "pageOut"){
+    console.log("addBlueSciptNode--pageRenderTreeData",pageRenderTreeData);
+    pageRenderTreeData.value.forEach(element => {
+      if(element.ref==nodeData.ref){
+        blueScriptDataStoreObj.addNodeByPageOut(element);
+      }
+    });
   } else {
     ElMessage.error("暂时不支持该类型！");
     return;
   }
 };
+
+
+
 
 const findFrontEndComponent = (nodeData) => {
   let param = {};

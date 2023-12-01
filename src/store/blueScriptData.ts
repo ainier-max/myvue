@@ -6,10 +6,10 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
   currentDealDataStoreObj
 );
 import {
-  addPort,addStartPointFlag
+  addPort,
+  addStartPointFlag,
 } from "@/components/PageEdit/PageDesign/BlueScriptDesign/AntV/AntV.js";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
-
 
 export const blueScriptDataStore = defineStore("blueScriptDataID", {
   state: () => ({
@@ -21,16 +21,20 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
   actions: {
     setCurrentBlueScriptNode(node) {
       this.currentBlueScriptNode = node;
-      this.blueScriptData.forEach(element => {
+      this.blueScriptData.forEach((element) => {
         if (element.blue_script_ref == node.blue_script_ref) {
           this.currentBlueScript = element;
           console.log("当前蓝图this.currentBlueScript", this.currentBlueScript);
-          if (this.currentBlueScript.type!="blueScriptTool") {
-            currentDealDataStoreObj.setCurrentPageRenderTreeNodeDataByRef(this.currentBlueScript.related_ref);
+          if (this.currentBlueScript.type != "blueScriptTool") {
+            currentDealDataStoreObj.setCurrentPageRenderTreeNodeDataByRef(
+              this.currentBlueScript.related_ref
+            );
           }
         }
       });
     },
+
+    
     setBlueScriptData(data) {
       data.forEach((element) => {
         //element.config = eval("(" + element.config_str + ")");
@@ -39,17 +43,71 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
       this.blueScriptData = data;
       console.log("所有蓝图数据：", this.blueScriptData);
     },
+    //页面方式添加跌点
+    addNodeByPageOut(obj) {
+      console.log("addNodeByPageOut--obj", obj);
+      let item = {};
+      item.blue_script_name = obj.label;
+      item.blue_script_id = "pageOut";
+      item.blue_script_ref = "blueScriptRef-" + window.cbcuuid();
+      item.type = obj.type;
+      item.related_ref = obj.ref;
+
+      item.config = {};
+      item.config.blue_script_visualize_config = {};
+      item.config.blue_script_visualize_config.settings = ["InitPageOutParam"];
+      item.config.blue_script_in_out_config = {};
+      item.config.blue_script_in_out_config.in = obj.config.blueScriptAttr.in;
+      item.config.blue_script_in_out_config.out = obj.config.blueScriptAttr.out;
+      item.config.blue_script_logic_config = {};
+      item.config.blue_script_logic_config.logicFun = function (paramObj) {
+        console.log("logicFunForPageOut--paramObj", paramObj);
+        paramObj.type = "runNextProcessFunByPageOut";
+        console.log(paramObj.callBackFun.toString());
+        paramObj.callBackFun(paramObj);
+      };
+      item.config.blue_script_node_config = {
+        id: item.blue_script_ref,
+        label: obj.label,
+        shape: "dynamics-in-rect",
+        x: window.antVGraph.getGraphArea().x + 20,
+        y:window.antVGraph.getGraphArea().y + 20,
+        width: 180,
+        height: 180,
+        attrs: {
+          body: {
+            fill: "rgb(40, 44, 52,0.9)",
+            stroke: "#d9d9d9",
+            strokeWidth: 1,
+          },
+          label: {
+            fill: "#ffffff", // 文字颜色
+            fontSize: 14, // 文字大小
+            refX: 0.5,
+            refY: 8,
+            textAnchor: "middle",
+            textVerticalAnchor: "top",
+          },
+        },
+      };
+      //添加蓝图节点
+      this.addAntVGraphNode(item);
+      this.blueScriptData.push(item);
+      console.log("addNodeByPageOut--blueScriptData",this.blueScriptData);
+    },
+   
+
     //删除蓝图节点
     delete(node) {
       console.log("delete--node", node);
       window.antVGraph.removeNode(node);
       console.log("delete--this.blueScriptData", this.blueScriptData);
-    
+
       // this.blueScriptData = _.remove(this.blueScriptData, function(n) {
       //   return n.blue_script_ref=node.blue_script_ref
       // });
       for (let i = 0; i < this.blueScriptData.length; i++) {
-        if ((this.blueScriptData[i].blue_script_ref == node.blue_script_ref)) {
+        if (this.blueScriptData[i].blue_script_ref == node.blue_script_ref) {
           this.blueScriptData.splice(i, 1);
           i = i - 1;
         }
@@ -58,7 +116,7 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
     },
     //添加蓝图节点
     add(obj) {
-      console.log("blueScriptData-add(obj)",obj);
+      console.log("blueScriptData-add(obj)", obj);
       let item = {};
       item.config = {};
       if (obj.type == "blueScriptTool") {
@@ -90,13 +148,12 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
         "(" + obj.blue_script_visualize_config_str + ")"
       );
       //配置
-      item.config.settings= {};
-      item.config.blue_script_visualize_config.settings.forEach(element => {
-        if(element=="GetValueFromObjectSetting"){
-          item.config.settings.GetValueFromObjectSetting='';
+      item.config.settings = {};
+      item.config.blue_script_visualize_config.settings.forEach((element) => {
+        if (element == "GetValueFromObjectSetting") {
+          item.config.settings.GetValueFromObjectSetting = "";
         }
       });
-
 
       item.config.blue_script_node_config = eval(
         "(" + obj.blue_script_node_config_str + ")"

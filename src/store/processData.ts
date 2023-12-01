@@ -104,6 +104,8 @@ export const processDataStore = defineStore("processDataID", {
         }
       });
 
+      
+
       if (fromPort == "" || inTemp.length == 1) {
         //如果蓝图无输入端口,不需要等待输入
         //如果输入个数为1个参数时，不需要等待输入
@@ -117,6 +119,12 @@ export const processDataStore = defineStore("processDataID", {
       } else {
         blueScript.waitFlag = true;
       }
+
+      //如果蓝图节点是页面块，则不需要等待
+      if (blueScript.blue_script_id=="pageOut") {
+        blueScript.waitFlag = false;
+      }
+
       console.log(
         blueScript.blue_script_name + ",该蓝图节点的等待标识：",
         blueScript.waitFlag
@@ -148,6 +156,7 @@ export const processDataStore = defineStore("processDataID", {
 
       if (blueScript.waitFlag == true) {
         let processArrFlag = [];
+        console.log("折线图--inTemp",inTemp);
         inTemp.forEach((element) => {
           //事件类型不考虑,连接状态为true,执行状态为true,表示该蓝图端口已被执行
           if (element.type != "event" && element.type != "function") {
@@ -209,7 +218,7 @@ export const processDataStore = defineStore("processDataID", {
     },
     //回调
     callBackFun(paramObj) {
-      console.log("callBackFun--paramObj", paramObj);
+      console.log("callBackFun--paramObj", paramObj.type);
       if (paramObj.debugFlag == true) {
         currentBlueScript.value = paramObj.blueScript;
         return;
@@ -218,8 +227,35 @@ export const processDataStore = defineStore("processDataID", {
         this.runNextProcessFun(paramObj);
       } else if (paramObj.type == "refreshComponentFun") {
         this.refreshComponentFun(paramObj);
+      }else if (paramObj.type == "runNextProcessFunByPageOut") {
+        this.runNextProcessFunByPageOut(paramObj);
       }
     },
+
+    //外部页面块执行逻辑
+    runNextProcessFunByPageOut(paramObj) {
+      console.log("runNextProcessFunByPageOut--paramObj", paramObj);
+      paramObj.blueScript.config.blue_script_in_out_config.in.forEach(inTemp => {
+        if (inTemp.portID == paramObj.runPort) {
+          paramObj.blueScriptData.value.forEach(element => {
+            if (inTemp.blue_script_ref == element.blue_script_ref) {
+              //赋值并执行蓝图节点
+              element.config.blue_script_in_out_config.in.forEach(otherInTemp => {
+                if (otherInTemp.label == inTemp.label) {
+                  otherInTemp.value = inTemp.value;
+                  
+                  this.runBlueScriptProcess("", "", element);
+                }
+              });
+            }
+          });
+        }
+      });
+
+      
+      
+    },
+
     //刷新页面渲染树的组件数据
     refreshComponentFun(paramObj) {
       console.log(

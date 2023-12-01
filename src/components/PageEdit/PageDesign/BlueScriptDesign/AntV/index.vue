@@ -106,13 +106,16 @@ const addGraphEvent = () => {
   });
 
   window.antVGraph.on("edge:connected", ({ isNew, edge }) => {
+    console.log("edge:connected--blueScriptData", blueScriptData.value);
     console.log("edge:connected--isNew", isNew, edge);
     if (isNew) {
       let valueTemp = null;
       //赋值out状态
       blueScriptData.value.forEach((element) => {
         console.log("edge:connected--element", element);
-        if (element.graphNode.id == edge.source.cell) {
+        
+        //if (element.graphNode.id == edge.source.cell) {
+        if (element.blue_script_ref == edge.source.cell) {
           element.config.blue_script_in_out_config.out.forEach((item) => {
             if (item.portID == edge.source.port) {
               item.connected = true;
@@ -126,7 +129,7 @@ const addGraphEvent = () => {
       //赋值in状态
       blueScriptData.value.forEach((element) => {
         console.log("edge:connected--element", element);
-        if (element.graphNode.id == edge.target.cell) {
+        if (element.blue_script_ref == edge.target.cell) {
           element.config.blue_script_in_out_config.in.forEach((item) => {
             if (item.portID == edge.target.port) {
               item.connected = true;

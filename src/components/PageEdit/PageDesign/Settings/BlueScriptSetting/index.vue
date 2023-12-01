@@ -1,6 +1,6 @@
 <template>
   <div
-    style="width: 100%; height: 100%; overflow: auto"
+    style="width: 100%; height: 100%; "
     v-if="currentBlueScript"
   >
     <div class="titleClass" align="center">蓝图配置</div>
@@ -42,7 +42,7 @@
     </template>
 
     <div
-      v-if="currentBlueScript != null && currentBlueScript?.config"
+      v-if="currentBlueScript != null && currentBlueScript?.config && currentBlueScript?.blue_script_id!='pageOut'"
       style="margin-left: 18px"
     >
       <el-divider content-position="left"
@@ -55,16 +55,21 @@
 
     <div
       v-if="currentBlueScript?.config"
-      v-for="(item, index) in currentBlueScript.config
-        .blue_script_visualize_config.settings"
+      v-for="(item, index) in currentBlueScript?.config
+        ?.blue_script_visualize_config?.settings"
     >
       <StartPointFlag v-if="item == 'StartPointFlag'"></StartPointFlag>
       <DataModelChoose v-if="item == 'DataModelChoose'"></DataModelChoose>
       <AddInPortAndParam v-if="item == 'AddInPortAndParam'"></AddInPortAndParam>
       <ShowInParam v-if="item == 'ShowInParam'"></ShowInParam>
       <ShowOutParam v-if="item == 'ShowOutParam'"></ShowOutParam>
-      <SetDimensionsAndMetrics v-if="item == 'SetDimensionsAndMetrics'"></SetDimensionsAndMetrics>
-      <GetValueFromObjectSetting v-if="item == 'GetValueFromObjectSetting'"></GetValueFromObjectSetting>
+      <SetDimensionsAndMetrics
+        v-if="item == 'SetDimensionsAndMetrics'"
+      ></SetDimensionsAndMetrics>
+      <GetValueFromObjectSetting
+        v-if="item == 'GetValueFromObjectSetting'"
+      ></GetValueFromObjectSetting>
+      <InitPageOutParam v-if="item == 'InitPageOutParam'"></InitPageOutParam>
     </div>
 
     <div style="height: 20px"></div>
@@ -124,12 +129,13 @@ import { ref } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { blueScriptDataStore } from "@/store/blueScriptData.ts";
 const blueScriptDataStoreObj = blueScriptDataStore();
-const { currentBlueScript } = storeToRefs(blueScriptDataStoreObj);
+const { blueScriptData, currentBlueScript } = storeToRefs(
+  blueScriptDataStoreObj
+);
+
 import MyMonacoEditor from "@/common/component/CodeEditor/MyMonacoEditor/index.vue";
-import {objectToString} from "@/common/js/objStr.js";
-import {js_beautify} from "js-beautify";
-
-
+import { objectToString } from "@/common/js/objStr.js";
+import { js_beautify } from "js-beautify";
 
 import StartPointFlag from "./StartPointFlag/index.vue";
 import DataModelChoose from "./DataModelChoose/index.vue";
@@ -138,6 +144,8 @@ import ShowInParam from "./ShowInParam/index.vue";
 import ShowOutParam from "./ShowOutParam/index.vue";
 import SetDimensionsAndMetrics from "./SetDimensionsAndMetrics/index.vue";
 import GetValueFromObjectSetting from "./GetValueFromObjectSetting/index.vue";
+import InitPageOutParam from "./InitPageOutParam/index.vue";
+
 
 import { ElMessage } from "element-plus";
 
@@ -152,7 +160,7 @@ import {
 
 const blueScriptLogicDialogVisible = ref(false);
 const blueScriptLogicFlag = ref(false);
-const blue_script_logic_config_str=ref("");
+const blue_script_logic_config_str = ref("");
 
 console.log("当前节点的蓝图配置：", currentBlueScript.value);
 const changeBlueScriptNodeLabel = () => {
@@ -167,10 +175,17 @@ const changeBlueScriptNodeLabel = () => {
   });
 };
 
-const updateConfig=(code)=>{
-  blue_script_logic_config_str.value=code;
-  currentBlueScript.value.config.blue_script_logic_config=eval("(" + code + ")");
-}
+const updateConfig = (code) => {
+  blue_script_logic_config_str.value = code;
+  currentBlueScript.value.config.blue_script_logic_config.logicFun = eval(
+    "(" + code + ")"
+  );
+  blueScriptData.value.forEach((element) => {
+    if (element.blue_script_ref == currentBlueScript.value.blue_script_ref) {
+      element.config.blue_script_logic_config.logicFun = eval("(" + code + ")");
+    }
+  });
+};
 const blueScriptLogicSave = () => {
   console.log(
     "blueScriptLogicSave--currentBlueScript",
@@ -178,16 +193,16 @@ const blueScriptLogicSave = () => {
   );
   let param = {};
 
-  if (currentBlueScript.value.type=="blueScriptTool") {
+  if (currentBlueScript.value.type == "blueScriptTool") {
     //蓝图执行逻辑保存
     param.sql = "page_blue_script_tools.updateBlueScriptLogicConfig";
     param.blue_script_id = currentBlueScript.value.blue_script_id;
-    param.blue_script_logic_config_str =blue_script_logic_config_str.value;
-  } else if(currentBlueScript.value.type=="frontEndComponent") {
+    param.blue_script_logic_config_str = blue_script_logic_config_str.value;
+  } else if (currentBlueScript.value.type == "frontEndComponent") {
     //前端组件执行逻辑保存
     param.sql = "page_component_frontend.updateBlueScriptLogicConfig";
     param.component_id = currentBlueScript.value.blue_script_id;
-    param.blue_script_logic_config_str =blue_script_logic_config_str.value;
+    param.blue_script_logic_config_str = blue_script_logic_config_str.value;
   }
   console.log("blueScriptLogicSave--param", param);
   commonExcuteRequest(axios, param, blueScriptLogicSaveCallBack);
@@ -213,32 +228,39 @@ const debugBlueScriptLogic = () => {
 };
 
 const showBlueScriptLogicDialog = () => {
-  console.log("findPageBlueScript--currentBlueScript",currentBlueScript);
-  let param={};
-  if (currentBlueScript.value.type=="blueScriptTool") {
-    param.sql="page_blue_script_tools.find";
-    param.blue_script_id=currentBlueScript.value.blue_script_id;
-  }else if(currentBlueScript.value.type=="frontEndComponent"){
-    param.sql="page_component_frontend.find";
-    param.component_id=currentBlueScript.value.blue_script_id;
-  }
-  commonSelectRequest(axios, param, findPageBlueScriptCallBack);
-};
-
-const findPageBlueScriptCallBack=(result)=>{
-  console.log("findPageBlueScript--result",result);
-  blue_script_logic_config_str.value=result.objects[0].blue_script_logic_config_str;
+  //console.log("showBlueScriptLogicDialog--currentBlueScript",currentBlueScript.value);
+  let code = currentBlueScript.value.config.blue_script_logic_config.logicFun.toString();
+  //console.log("showBlueScriptLogicDialog--code",code);
+  blue_script_logic_config_str.value = js_beautify(code);
   blueScriptLogicDialogVisible.value = true;
   blueScriptLogicFlag.value = false;
-}
+};
+
+// const showBlueScriptLogicDialog = () => {
+//   console.log("findPageBlueScript--currentBlueScript",currentBlueScript);
+//   let param={};
+//   if (currentBlueScript.value.type=="blueScriptTool") {
+//     param.sql="page_blue_script_tools.find";
+//     param.blue_script_id=currentBlueScript.value.blue_script_id;
+//   }else if(currentBlueScript.value.type=="frontEndComponent"){
+//     param.sql="page_component_frontend.find";
+//     param.component_id=currentBlueScript.value.blue_script_id;
+//   }
+//   commonSelectRequest(axios, param, findPageBlueScriptCallBack);
+// };
+
+// const findPageBlueScriptCallBack=(result)=>{
+//   console.log("findPageBlueScript--result",result);
+//   blue_script_logic_config_str.value=result.objects[0].blue_script_logic_config_str;
+//   blueScriptLogicDialogVisible.value = true;
+//   blueScriptLogicFlag.value = false;
+// }
 
 const openedHandle = () => {
   blueScriptLogicFlag.value = true;
 };
 
-const showDebugProcessWin=()=>{
-
-}
+const showDebugProcessWin = () => {};
 </script>
 
 <style scoped>

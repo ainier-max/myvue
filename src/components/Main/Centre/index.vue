@@ -198,7 +198,9 @@ export default {
           x:0,
           y:0,
           w:3000,
-          h:2000
+          h:2000,
+          in:[],
+          out:[]
         }
       };
       param.config_str=objectToString(configObj);
