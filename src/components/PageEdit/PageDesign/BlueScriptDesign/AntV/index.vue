@@ -27,6 +27,13 @@ import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
 const { topPageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
+import { currentDealDataStore } from "@/store/currentDealData.ts";
+const currentDealDataStoreObj = currentDealDataStore();
+const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
+  currentDealDataStoreObj
+);
+
+
 onMounted(() => {
   //初始化画布区域
   window.antVGraph = initGraph("container");
@@ -134,6 +141,18 @@ const addGraphEvent = () => {
             if (item.portID == edge.target.port) {
               item.connected = true;
               item.value = valueTemp;
+              if(element.config?.dataset?.data){
+                //设置dataset数据
+                element.config.dataset.data=valueTemp;
+                //设置dataset字段
+                if (element.config.dataset.data.length > 0) {
+                  let objTemp = element.config.dataset.data[0];
+                  element.config.dataset.fields = [];
+                  for (let key in objTemp) {
+                    element.config.dataset.fields.push(key);
+                  }
+                }
+              }
             }
           });
         }
@@ -194,6 +213,9 @@ const addGraphEvent = () => {
   window.antVGraph.on("node:click", ({ e, x, y, node, view }) => {
     console.log("当前选中的node:", node);
     blueScriptDataStoreObj.setCurrentBlueScriptNode(node);
+
+    //currentPageRenderTreeNodeData
+
     //节点高亮
     highLightNode(node);
   });

@@ -22,11 +22,56 @@ export const processDataStore = defineStore("processDataID", {
   getters: {},
   actions: {
     eventProcess(eventType, obj, component) {
+      console.log("eventProcess--eventType, obj, component", eventType, obj, component);
+      let eventPort = "";
       blueScriptData.value.forEach(element => {
         if (element.related_ref==component.ref && element.config.blue_script_in_out_config.out) {
           //输出参数设置值
           element.config.blue_script_in_out_config.out.forEach(outItem => {
             if (outItem.label == eventType) {
+              eventPort = outItem.portID;
+              //console.log("eventProcess--eventType",eventType);
+              //赋值
+              outItem.value = obj;
+              //如果有连接线，则执行下一个蓝图节点
+              outItem.connectedTargetArr.forEach(connectedTargetItem => {
+                let param = {};
+                param.blue_script_ref = connectedTargetItem.cell;
+                param.fromPort = outItem.connectedSource.port;
+                param.toPort = connectedTargetItem.port;
+                param.value = obj;
+                this.setNodeInValueAndRunProcessFun(param);
+              });
+            }
+          });
+        }
+      });
+
+      
+      //如果事件执行的端口是对外部页面进行调用，则执行该逻辑，把传递的值赋值给《外部页面》的蓝图并执行下一个蓝图
+      //console.log("eventProcess--pageRenderTreeData",pageRenderTreeData);
+      //获取顶层页面块的《输出配置》
+      pageRenderTreeData.value.forEach(element => {
+        if (element.page_id == component.page_id && element.type == "mainBlock") {
+          element.config.blueScriptAttr.out.forEach(outItem => {
+            if (outItem.portID==eventPort) {
+              //该端口被设置为外部页面端口。
+              this.runProcessByOutPort(eventPort,obj);
+            }
+          });
+          let outSetting = element.config.blueScriptAttr.out;
+          console.log("eventProcess--outSetting", outSetting);
+          console.log("eventProcess--eventPort",eventPort);
+        }
+      });
+
+    },
+
+    runProcessByOutPort(eventPort,obj) {
+      blueScriptData.value.forEach(element => {
+        if (element.blue_script_id=="pageOut") {
+          element.config.blue_script_in_out_config.out.forEach(outItem => {
+            if (outItem.portID==eventPort) {
               //赋值
               outItem.value = obj;
               //如果有连接线，则执行下一个蓝图节点
@@ -243,7 +288,6 @@ export const processDataStore = defineStore("processDataID", {
               element.config.blue_script_in_out_config.in.forEach(otherInTemp => {
                 if (otherInTemp.label == inTemp.label) {
                   otherInTemp.value = inTemp.value;
-                  
                   this.runBlueScriptProcess("", "", element);
                 }
               });

@@ -9,7 +9,7 @@
       "
     >
       <div style="margin-top: 10px">属于《外部页面》类型</div>
-      <el-button type="success" style="margin-top: 10px" @click="toPageEdit"
+      <el-button type="success" style="margin-top: 10px;margin-bottom:15px" @click="toPageEdit"
         >打开配置地址</el-button
       >
     </div>

@@ -19,8 +19,7 @@
           :filter-node-method="filterNode"
         >
           <template #default="{ node, data }">
-
-            <span class="custom-tree-node" >
+            <span class="custom-tree-node">
               <span
                 v-if="
                   data.type == 'mainBlock' ||
@@ -149,18 +148,23 @@
         @refreshLayoutDesign="refreshLayoutDesign"
       ></BaseSetting>
       <!--内容配置-->
-      <ContentSetting  v-if="designType == 'layoutDesign'"></ContentSetting>
+      <ContentSetting v-if="designType == 'layoutDesign'"></ContentSetting>
       <!--开发者配置-->
-      <DevSetting  v-if="designType == 'layoutDesign'"></DevSetting>
+      <DevSetting v-if="designType == 'layoutDesign'"></DevSetting>
       <!--蓝图配置-->
       <BlueScriptSettings
-        v-if="designType == 'blueScriptDesign' && currentPageRenderTreeNodeData.type!='mainBlock'"
+        v-if="
+          designType == 'blueScriptDesign' && (currentPageRenderTreeNodeData?.type != 'mainBlock' || currentBlueScript?.type=='blueScriptTool')
+        "
       ></BlueScriptSettings>
       <!--页面块蓝图配置-->
-      <BlueScriptSettingForMainBlock v-if="designType == 'blueScriptDesign' && currentPageRenderTreeNodeData.type=='mainBlock'" ></BlueScriptSettingForMainBlock>
-      
-      
-      
+      <BlueScriptSettingForMainBlock
+        v-if="
+          designType == 'blueScriptDesign' &&
+          currentPageRenderTreeNodeData?.type == 'mainBlock'
+        "
+      ></BlueScriptSettingForMainBlock>
+
       <div style="height: 50px"></div>
     </div>
   </div>
@@ -181,7 +185,7 @@
 
 <script setup lang="ts">
 //import 'default-passive-events';
-import { provide, ref, nextTick, onMounted, watchEffect ,computed} from "vue";
+import { provide, ref, nextTick, onMounted, watchEffect, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
@@ -210,14 +214,12 @@ import {
   commonBatchSelectRequest,
   commonExcuteRequestAndOtherParam,
 } from "@/common/js/request.js";
-import { getListData, deleteNode,findParent } from "@/common/js/tree.js";
+import { getListData, deleteNode, findParent } from "@/common/js/tree.js";
 
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData } = storeToRefs(
-  pageRenderTreeDataStoreObj
-);
+const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 import { currentDealDataStore } from "@/store/currentDealData.ts";
 const currentDealDataStoreObj = currentDealDataStore();
@@ -232,7 +234,6 @@ const { blueScriptData, currentBlueScript } = storeToRefs(
 );
 
 const defaultProps = { children: "children", label: "label" };
-
 
 const route = useRoute();
 const page_id = route.query.page_id;
@@ -261,7 +262,7 @@ const showBaseSettingFun = computed(() => {
     } else {
       return false;
     }
-  }else{
+  } else {
     return false;
   }
 });
@@ -280,6 +281,7 @@ const isUsed = () => {
 
 const toSave = () => {
   if (designType.value == "layoutDesign") {
+    saveBlueScript();
     savePageRenderTree();
   }
   if (designType.value == "blueScriptDesign") {
@@ -290,17 +292,21 @@ const toSave = () => {
 const saveBlueScript = () => {
   console.log("saveBlueScript--pageRenderTreeData", pageRenderTreeData);
   console.log("saveBlueScript--blueScriptData", blueScriptData);
-  pageRenderTreeData.value[0].config.blueScriptAttr.x =
-    window.antVGraph.getGraphArea().x;
-  pageRenderTreeData.value[0].config.blueScriptAttr.y =
-    window.antVGraph.getGraphArea().y;
-  pageRenderTreeData.value[0].config.blueScriptAttr.h =
-    window.antVGraph.getGraphArea().height;
-  pageRenderTreeData.value[0].config.blueScriptAttr.w =
-    window.antVGraph.getGraphArea().width;
+  if (window.antVGraph) {
+    pageRenderTreeData.value[0].config.blueScriptAttr.x =
+      window.antVGraph.getGraphArea().x;
+    pageRenderTreeData.value[0].config.blueScriptAttr.y =
+      window.antVGraph.getGraphArea().y;
+    pageRenderTreeData.value[0].config.blueScriptAttr.h =
+      window.antVGraph.getGraphArea().height;
+    pageRenderTreeData.value[0].config.blueScriptAttr.w =
+      window.antVGraph.getGraphArea().width;
+  }
+
   let main_block_config_str = objectToString(
     pageRenderTreeData.value[0].config
   );
+
   let param = {};
   param.sql = "page_blue_script.saveAllPageBlueScript";
   param.page_id = page_id;
@@ -309,7 +315,7 @@ const saveBlueScript = () => {
   let newBlueScriptData = [];
   blueScriptData.value.forEach((element) => {
     //只保存非关联页面的蓝图数据
-    if(!element.isRelativePage){
+    if (!element.isRelativePage) {
       element.page_id = page_id;
       element.config_str = objectToString(element.config);
       //创建新对象（去除不必要的对象属性，如：graphNode,debugParamObj）
@@ -322,11 +328,12 @@ const saveBlueScript = () => {
       }
       newBlueScriptData.push(objTemp);
     }
-    
   });
   param.blueScriptData = newBlueScriptData;
   console.log("saveBlueScript--param", param);
-  commonExcuteByBatchRequest(window.axios, param, saveBlueScriptCallBack);
+  if (param.blueScriptData.length > 0) {
+    commonExcuteByBatchRequest(window.axios, param, saveBlueScriptCallBack);
+  }
 };
 
 const saveBlueScriptCallBack = (result) => {
@@ -337,7 +344,7 @@ const saveBlueScriptCallBack = (result) => {
 
 const router = useRouter();
 const toBrowse = () => {
-  const { href } = router.resolve({ 
+  const { href } = router.resolve({
     path: "/PageBrowse",
     query: {
       page_id: page_id,
@@ -361,10 +368,10 @@ const addBlueSciptNode = (nodeData) => {
   console.log("addBlueSciptNode--nodeData", nodeData);
   if (nodeData.type == "frontEndComponent") {
     findFrontEndComponent(nodeData);
-  } else if(nodeData.type == "pageOut"){
-    console.log("addBlueSciptNode--pageRenderTreeData",pageRenderTreeData);
-    pageRenderTreeData.value.forEach(element => {
-      if(element.ref==nodeData.ref){
+  } else if (nodeData.type == "pageOut") {
+    console.log("addBlueSciptNode--pageRenderTreeData", pageRenderTreeData);
+    pageRenderTreeData.value.forEach((element) => {
+      if (element.ref == nodeData.ref) {
         blueScriptDataStoreObj.addNodeByPageOut(element);
       }
     });
@@ -373,9 +380,6 @@ const addBlueSciptNode = (nodeData) => {
     return;
   }
 };
-
-
-
 
 const findFrontEndComponent = (nodeData) => {
   let param = {};
@@ -402,6 +406,8 @@ const findFrontEndComponentCallBack = (result, nodeData) => {
 const treeRemove = (nodeData) => {
   //删除节点
   pageRenderTreeDataStoreObj.deleteNodeByData(nodeData);
+  //删除蓝图节点
+  blueScriptDataStoreObj.deleteBlueScriptByRelatedRef(nodeData.ref);
   //如果删除的节点为当前选中的节点，则设置为当前节点的父节点
   if (nodeData.id == pageRenderTreeRef.value.getCurrentKey()) {
     currentDealDataStoreObj.setCurrentPageRenderTreeNodeDataByID(nodeData.pid);
@@ -429,13 +435,21 @@ watchEffect(() => {
 });
 //树节点点击事件
 const nodeClick = (data) => {
+
+
   //界面设计才设置当前页面树
   if (designType.value == "layoutDesign") {
     //设置当前树节点的值，并这是当前所处的顶层页面块Block
     currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
   } else if (designType.value == "blueScriptDesign") {
+    
+
     //仅设置当前树节点的值
     currentPageRenderTreeNodeData.value = data;
+    if(currentPageRenderTreeNodeData.value.type=="mainBlock"){
+      currentBlueScript.value=null;
+    }
+    console.log("currentPageRenderTreeNodeData2132",currentPageRenderTreeNodeData);
     //被使用才定位
     if (isUsed()) {
       //定位
@@ -542,43 +556,42 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
     });
   });
 
-  result["RalativeBlueScript"].forEach(element => {
-    element.isRelativePage=true;
+  result["RalativeBlueScript"].forEach((element) => {
+    element.isRelativePage = true;
     blueScriptData.value.push(element);
   });
 
-
   let startTime = new Date().getTime();
-  console.log("渲染树过滤开始时间",startTime);
-  nextTick(()=>{
+  console.log("渲染树过滤开始时间", startTime);
+  nextTick(() => {
     //过滤不显示
     pageRenderTreeRef.value.filter("无效参数");
     let endTime = new Date().getTime();
-    console.log("渲染树过滤结束时间",endTime);
-    console.log("渲染树过滤花费时间",(endTime-startTime)+"ms");
+    console.log("渲染树过滤结束时间", endTime);
+    console.log("渲染树过滤花费时间", endTime - startTime + "ms");
   });
-  
 };
 //不显示关联的
-const  filterNode= (value, data, node) => {
+const filterNode = (value, data, node) => {
   //console.log("filterNode-value",value);
   //console.log("filterNode--data12",data);
-  if(data.isRelativePage && data.isRelativePage==true){
+  if (data.isRelativePage && data.isRelativePage == true) {
     return false;
-  }else{
+  } else {
     return true;
   }
-}
+};
 
 //保存页面渲染树
 const savePageRenderTree = () => {
   let arrayTemp = pageRenderTreeDataStoreObj.getPageRenderTreeDataForArray();
   console.log("savePageRenderTree--arrayTemp", arrayTemp);
   let pageNameTemp = "";
+  let topPageBlockRefTemp = "";
   let newArrayTemp = [];
   for (let i = 0; i < arrayTemp.length; i++) {
     //只保存非关联页面的数据
-    if(!arrayTemp[i].isRelativePage){
+    if (!arrayTemp[i].isRelativePage) {
       let { id, pid, ref, type, related_value } = { ...arrayTemp[i] };
       let config_str = objectToString(arrayTemp[i].config);
       let name = arrayTemp[i].label;
@@ -594,6 +607,7 @@ const savePageRenderTree = () => {
       });
       if (arrayTemp[i].type == "mainBlock" && !arrayTemp[i].pid) {
         pageNameTemp = name;
+        topPageBlockRefTemp=ref;
       }
     }
   }
@@ -601,6 +615,7 @@ const savePageRenderTree = () => {
   param.sql = "page_render_tree.savePageRenderTree";
   param.page_id = page_id;
   param.page_name = pageNameTemp;
+  param.topPageBlockRef = topPageBlockRefTemp;
   param.pageRenderTreeData = newArrayTemp;
   console.log("传参param", param);
   commonExcuteByBatchRequest(window.axios, param, savePageRenderTreeCallBack);
@@ -635,6 +650,9 @@ const showDidlog = (type) => {
 };
 
 const toDesign = (type) => {
+  if(type=="layoutDesign" && !currentPageRenderTreeNodeData.value){
+    currentPageRenderTreeNodeData.value=pageRenderTreeData.value[0];
+  }
   designType.value = type;
 };
 

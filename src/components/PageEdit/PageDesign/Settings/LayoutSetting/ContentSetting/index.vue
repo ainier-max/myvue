@@ -149,6 +149,13 @@ const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
 const { pageRenderTreeData } = storeToRefs(
   pageRenderTreeDataStoreObj
 );
+
+import { blueScriptDataStore } from "@/store/blueScriptData.ts";
+const blueScriptDataStoreObj = blueScriptDataStore();
+const { blueScriptData, currentBlueScript } = storeToRefs(
+  blueScriptDataStoreObj
+);
+
 const chooseDialogType = ref("");
 const chooseDialogFlag = ref(false);
 const dialogTitle = ref("");
@@ -173,6 +180,8 @@ const getChooseData = (chooseData) => {
       currentPageRenderTreeNodeData,
       chooseData
     );
+    //删除蓝图节点
+    blueScriptDataStoreObj.deleteBlueScriptByRelatedRef(currentPageRenderTreeNodeData.value.ref);
   }
   chooseDialogFlag.value = false;
   //组件个数发生变化，重新渲染
@@ -270,10 +279,13 @@ const addFlexInder = (type) => {
   } else {
     //替换内容
     layoutTemp.pid = currentPageRenderTreeNodeData.value.pid;
+    //替换内容
     pageRenderTreeDataStoreObj.replaceNodeByData(
       currentPageRenderTreeNodeData,
       layoutTemp
     );
+    //删除蓝图节点
+    blueScriptDataStoreObj.deleteBlueScriptByRelatedRef(currentPageRenderTreeNodeData.value.ref);
   }
 
   //布局个数发生变化，重新渲染

@@ -29,6 +29,8 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
             currentDealDataStoreObj.setCurrentPageRenderTreeNodeDataByRef(
               this.currentBlueScript.related_ref
             );
+          } else {
+            currentPageRenderTreeNodeData.value = null;
           }
         }
       });
@@ -55,7 +57,7 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
 
       item.config = {};
       item.config.blue_script_visualize_config = {};
-      item.config.blue_script_visualize_config.settings = ["InitPageOutParam"];
+      item.config.blue_script_visualize_config.settings = ["InitPageOutParam","ShowInParam", "ShowOutParam"];
       item.config.blue_script_in_out_config = {};
       item.config.blue_script_in_out_config.in = obj.config.blueScriptAttr.in;
       item.config.blue_script_in_out_config.out = obj.config.blueScriptAttr.out;
@@ -96,6 +98,16 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
       console.log("addNodeByPageOut--blueScriptData",this.blueScriptData);
     },
    
+    deleteBlueScriptByRelatedRef(relatedRef) {
+      console.log("deleteBlueScriptByRelatedRef--relatedRef",relatedRef);
+      for (let i = 0; i < this.blueScriptData.length; i++) {
+        if (this.blueScriptData[i].related_ref == relatedRef) {
+          this.blueScriptData.splice(i, 1);
+          i = i - 1;
+        }
+      }
+      console.log("deleteBlueScriptByRelatedRef--this.blueScriptData",this.blueScriptData);
+    },
 
     //删除蓝图节点
     delete(node) {

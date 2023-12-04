@@ -228,7 +228,7 @@ const debugBlueScriptLogic = () => {
 };
 
 const showBlueScriptLogicDialog = () => {
-  //console.log("showBlueScriptLogicDialog--currentBlueScript",currentBlueScript.value);
+  console.log("showBlueScriptLogicDialog--currentBlueScript",currentBlueScript.value);
   let code = currentBlueScript.value.config.blue_script_logic_config.logicFun.toString();
   //console.log("showBlueScriptLogicDialog--code",code);
   blue_script_logic_config_str.value = js_beautify(code);
