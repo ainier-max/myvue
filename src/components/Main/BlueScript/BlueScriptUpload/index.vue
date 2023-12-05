@@ -60,8 +60,6 @@ export default {
   },
 
   methods: {
-
-
     updateConfig(code){
       if(this.changeType=="blueScriptNodeConfig"){
         this.currentBlueScript.blue_script_node_config_str=code;
@@ -91,14 +89,18 @@ export default {
         param.blue_script_node_config_str=this.currentBlueScript.blue_script_node_config_str;
         param.blue_script_in_out_config_str=this.currentBlueScript.blue_script_in_out_config_str;
         param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;
-
-
         param.blue_script_id=this.GetQueryString("blue_script_id");
         commonExcuteRequest(window.axios, param, this.saveBlueScriptInfoCallBack);
+      }else if(type=="packComponent"){
+         //表单验证后执行
+        let param = {};
+        param.sql = "page_component_pack.updateBlueScriptConfig";
+        param.blue_script_node_config_str=this.currentBlueScript.blue_script_node_config_str;
+        param.blue_script_in_out_config_str=this.currentBlueScript.blue_script_in_out_config_str;
+        param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;
+        param.component_id=this.GetQueryString("blue_script_id");
+        commonExcuteRequest(window.axios, param, this.saveBlueScriptInfoCallBack);
       }
-
-
-
     },
     saveBlueScriptInfoCallBack(result){
       if (result.state == "success") {
@@ -111,6 +113,24 @@ export default {
     changeTypeFun(){
 
     },
+    findBlueScriptInfoByPackComponentType(){
+      let param = {};
+      param.sql = "page_component_pack.findAll";
+      param.component_id = this.GetQueryString("blue_script_id");
+      commonSelectRequest(axios, param, this.findBlueScriptInfoByPackComponentTypeCallBack);
+    },
+    findBlueScriptInfoByPackComponentTypeCallBack(result){
+      if(result.objects.length>0){
+        this.currentBlueScript=result.objects[0];
+        //美化js代码
+        this.currentBlueScript.blue_script_node_config_str=js_beautify(this.currentBlueScript.blue_script_node_config_str);
+        this.currentBlueScript.blue_script_in_out_config_str=js_beautify(this.currentBlueScript.blue_script_in_out_config_str);
+        this.currentBlueScript.blue_script_visualize_config_str=js_beautify(this.currentBlueScript.blue_script_visualize_config_str);
+        console.log("当前currentBlueScript",this.currentBlueScript);
+        this.initGragh();
+      }
+    },
+
     findBlueScriptInfoByComponentType(){
       let param = {};
       param.sql = "page_component_frontend.find";
@@ -338,6 +358,8 @@ export default {
       this.findBlueScriptInfoByComponentType();
     }else if(type=="bluescript"){
       this.findBlueScriptInfoByBlueScriptType();
+    }else if(type=="packComponent"){
+      this.findBlueScriptInfoByPackComponentType();
     }
 
     const erd = elementResizeDetectorMaker();

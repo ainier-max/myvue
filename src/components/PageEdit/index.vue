@@ -375,11 +375,35 @@ const addBlueSciptNode = (nodeData) => {
         blueScriptDataStoreObj.addNodeByPageOut(element);
       }
     });
-  } else {
+  } else if (nodeData.type == "packComponent") {
+    findPackComponent(nodeData);
+  }else {
     ElMessage.error("暂时不支持该类型！");
     return;
   }
 };
+
+const findPackComponent=(nodeData)=>{
+  let param = {};
+  param.sql = "page_component_pack.findAll";
+  param.component_id = nodeData.related_value;
+  commonSelectRequestAndOtherParam(
+    window.axios,
+    param,
+    findPackComponentCallBack,
+    nodeData
+  );
+}
+
+const findPackComponentCallBack=(result,nodeData)=>{
+  if (result.objects.length > 0) {
+    console.log("findPackComponentCallBack--result", result);
+    let obj = result.objects[0];
+    obj.related_ref = nodeData.ref;
+    obj.nodeData = nodeData;
+    blueScriptDataStoreObj.add(obj);
+  }
+}
 
 const findFrontEndComponent = (nodeData) => {
   let param = {};

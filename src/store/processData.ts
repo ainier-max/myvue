@@ -309,7 +309,7 @@ export const processDataStore = defineStore("processDataID", {
       );
       if (
         paramObj.blueScript.related_ref &&
-        paramObj.blueScript.type == "frontEndComponent"
+        (paramObj.blueScript.type == "frontEndComponent" || paramObj.blueScript.type == "packComponent" )
       ) {
         let pageRenderTreeObj = treeFun.findNodeByRef(
           pageRenderTreeData.value,

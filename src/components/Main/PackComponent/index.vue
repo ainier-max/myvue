@@ -57,6 +57,10 @@
                 <Edit @click="toShowPackComponent(scope.row)"/>
               </el-icon>
 
+              <el-icon size="20" color="cornflowerblue" style="cursor:pointer;padding-left: 10px">
+                  <EditPen @click="toEditBlueScriptCode(scope.row)"/>
+                </el-icon>
+
               <el-icon
                 size="20"
                 color="red"
@@ -120,6 +124,8 @@
                   "
                   @click="() => treeEdit(data)"
                 ></Edit>
+
+                
 
                 <Delete
                   v-if="data.id != 1"
@@ -427,6 +433,12 @@ const treeHandleCancle = (item, data) => {
 };
 
 const handleNodeClick = (item, data) => {};
+
+import { useRoute, useRouter } from "vue-router";
+const router = useRouter();
+const toEditBlueScriptCode=(row)=>{
+  router.push({ name: 'BlueScriptName', query: { blue_script_id:row.component_id,type:"packComponent" }})
+}
 </script>
 
 <style scoped>

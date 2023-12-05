@@ -203,6 +203,11 @@ const blueScriptLogicSave = () => {
     param.sql = "page_component_frontend.updateBlueScriptLogicConfig";
     param.component_id = currentBlueScript.value.blue_script_id;
     param.blue_script_logic_config_str = blue_script_logic_config_str.value;
+  }else if (currentBlueScript.value.type == "packComponent") {
+    //前端组件执行逻辑保存
+    param.sql = "page_component_pack.updateBlueScriptLogicConfig";
+    param.component_id = currentBlueScript.value.blue_script_id;
+    param.blue_script_logic_config_str = blue_script_logic_config_str.value;
   }
   console.log("blueScriptLogicSave--param", param);
   commonExcuteRequest(axios, param, blueScriptLogicSaveCallBack);

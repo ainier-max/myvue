@@ -206,7 +206,7 @@ const setFlexStyle = computed(() => {
     //内部布局组件样式
     styleObj.flexBasis = item.config.attr.flexBasis + "%";
     if (page_type == "edit") {
-      if (currentPageRenderTreeNodeData.value.ref == item.ref) {
+      if (currentPageRenderTreeNodeData.value && currentPageRenderTreeNodeData.value.ref == item.ref) {
         //选中边框样式
         styleObj.border = "2px solid blue";
       } else {

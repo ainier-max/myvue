@@ -219,7 +219,8 @@ export default {
       this.blueScriptLogicDialogVisible=false;
     },
     blueScriptLogicSave(){
-      console.log("blueScriptLogicSave--this.currentBlueScript",this.currentBlueScript);
+      console.log("blueScriptLogicSave--this.currentBlueScript2132",this.currentBlueScript);
+      return;
       let param = {};
       if(typeof (this.currentBlueScript.component_ref)!="undefined" && this.currentBlueScript.component_ref!=""){
         param.sql = "page_component.updateBlueScriptLogicConfig";

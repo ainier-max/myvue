@@ -144,6 +144,14 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
         if (obj.nodeData.config.dataset) {
           item.config.dataset = obj.nodeData.config.dataset;
         }
+      }else if (obj.type == "packComponent") {
+        item.blue_script_name = obj.component_name;
+        item.blue_script_id = obj.component_id;
+        item.type = obj.type;
+        item.related_ref = obj.related_ref;
+        if (obj.nodeData.config.dataset) {
+          item.config.dataset = obj.nodeData.config.dataset;
+        }
       }
 
       item.blue_script_ref = "blueScriptRef-" + window.cbcuuid();
