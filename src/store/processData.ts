@@ -13,28 +13,41 @@ const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 import * as treeFun from "@/common/js/tree.js";
 import { nextTick } from "vue";
 
-
-
 export const processDataStore = defineStore("processDataID", {
   state: () => ({
     debugProcessFlag: null,
+    allComponentInstance: [], //组件实例集合
   }),
   getters: {},
   actions: {
     eventProcess(eventType, obj, component) {
-      console.log("eventProcess--eventType, obj, component", eventType, obj, component);
+      console.log(
+        "eventProcess--eventType, obj, component",
+        eventType,
+        obj,
+        component
+      );
       let eventPort = "";
-      blueScriptData.value.forEach(element => {
-        if (element.related_ref==component.ref && element.config.blue_script_in_out_config.out) {
+      blueScriptData.value.forEach((element) => {
+        if (
+          element.related_ref == component.ref &&
+          element.config.blue_script_in_out_config.out
+        ) {
+          //设置关联节点为false
+          if (element.config.settings && element.config.settings.RelevancePortSetProcessFlagToFalse) {
+            element.config.settings.RelevancePortSetProcessFlagToFalse.forEach(element => {
+              this.setProcessFlag(element.relevancedRef,element.pordedID);
+            });
+          }
           //输出参数设置值
-          element.config.blue_script_in_out_config.out.forEach(outItem => {
+          element.config.blue_script_in_out_config.out.forEach((outItem) => {
             if (outItem.label == eventType) {
               eventPort = outItem.portID;
               //console.log("eventProcess--eventType",eventType);
               //赋值
               outItem.value = obj;
               //如果有连接线，则执行下一个蓝图节点
-              outItem.connectedTargetArr.forEach(connectedTargetItem => {
+              outItem.connectedTargetArr.forEach((connectedTargetItem) => {
                 let param = {};
                 param.blue_script_ref = connectedTargetItem.cell;
                 param.fromPort = outItem.connectedSource.port;
@@ -47,35 +60,49 @@ export const processDataStore = defineStore("processDataID", {
         }
       });
 
-      
       //如果事件执行的端口是对外部页面进行调用，则执行该逻辑，把传递的值赋值给《外部页面》的蓝图并执行下一个蓝图
       //console.log("eventProcess--pageRenderTreeData",pageRenderTreeData);
       //获取顶层页面块的《输出配置》
-      pageRenderTreeData.value.forEach(element => {
-        if (element.page_id == component.page_id && element.type == "mainBlock") {
-          element.config.blueScriptAttr.out.forEach(outItem => {
-            if (outItem.portID==eventPort) {
+      pageRenderTreeData.value.forEach((element) => {
+        if (
+          element.page_id == component.page_id &&
+          element.type == "mainBlock"
+        ) {
+          element.config.blueScriptAttr.out.forEach((outItem) => {
+            if (outItem.portID == eventPort) {
               //该端口被设置为外部页面端口。
-              this.runProcessByOutPort(eventPort,obj);
+              this.runProcessByOutPort(eventPort, obj);
             }
           });
           let outSetting = element.config.blueScriptAttr.out;
           console.log("eventProcess--outSetting", outSetting);
-          console.log("eventProcess--eventPort",eventPort);
+          console.log("eventProcess--eventPort", eventPort);
         }
       });
-
     },
 
-    runProcessByOutPort(eventPort,obj) {
-      blueScriptData.value.forEach(element => {
-        if (element.blue_script_id=="pageOut") {
-          element.config.blue_script_in_out_config.out.forEach(outItem => {
-            if (outItem.portID==eventPort) {
+    setProcessFlag(relevancedRef, pordedID) {
+      blueScriptData.value.forEach((element) => {
+        if (element.blue_script_ref == relevancedRef) {
+          //输出参数设置值
+          element.config.blue_script_in_out_config.in.forEach((inItem) => {
+            if (inItem.portID==pordedID) {
+              inItem.ifProcessFlag=false;
+            }
+          });
+        }
+      });
+    },
+
+    runProcessByOutPort(eventPort, obj) {
+      blueScriptData.value.forEach((element) => {
+        if (element.blue_script_id == "pageOut") {
+          element.config.blue_script_in_out_config.out.forEach((outItem) => {
+            if (outItem.portID == eventPort) {
               //赋值
               outItem.value = obj;
               //如果有连接线，则执行下一个蓝图节点
-              outItem.connectedTargetArr.forEach(connectedTargetItem => {
+              outItem.connectedTargetArr.forEach((connectedTargetItem) => {
                 let param = {};
                 param.blue_script_ref = connectedTargetItem.cell;
                 param.fromPort = outItem.connectedSource.port;
@@ -88,7 +115,6 @@ export const processDataStore = defineStore("processDataID", {
         }
       });
     },
-    
 
     runAllProcess(flag) {
       this.debugProcessFlag = flag;
@@ -149,8 +175,6 @@ export const processDataStore = defineStore("processDataID", {
         }
       });
 
-      
-
       if (fromPort == "" || inTemp.length == 1) {
         //如果蓝图无输入端口,不需要等待输入
         //如果输入个数为1个参数时，不需要等待输入
@@ -166,7 +190,7 @@ export const processDataStore = defineStore("processDataID", {
       }
 
       //如果蓝图节点是页面块，则不需要等待
-      if (blueScript.blue_script_id=="pageOut") {
+      if (blueScript.blue_script_id == "pageOut") {
         blueScript.waitFlag = false;
       }
 
@@ -201,7 +225,7 @@ export const processDataStore = defineStore("processDataID", {
 
       if (blueScript.waitFlag == true) {
         let processArrFlag = [];
-        console.log("折线图--inTemp",inTemp);
+        console.log("折线图--inTemp", inTemp);
         inTemp.forEach((element) => {
           //事件类型不考虑,连接状态为true,执行状态为true,表示该蓝图端口已被执行
           if (element.type != "event" && element.type != "function") {
@@ -226,7 +250,7 @@ export const processDataStore = defineStore("processDataID", {
 
         if (toStartFlag == true) {
           for (let i = 0; i < inTemp.length; i++) {
-            if (toPort == inTemp[i].portID && inTemp[i].type == "function") {
+            if (toPort == inTemp[i].portID && inTemp[i].type == "method") {
               paramObj.functionReturnValue = this.excuteFunction(
                 inTemp[i],
                 blueScript
@@ -261,6 +285,26 @@ export const processDataStore = defineStore("processDataID", {
         blueScript.config.blue_script_logic_config.logicFun(paramObj);
       }
     },
+    excuteFunction(inObj, blueScript) {
+      //console.log("excuteFunction--inObj:", inObj);
+      //console.log("excuteFunction--blueScript:", blueScript);
+      console.log("excuteFunction--allComponentInstance:", this.allComponentInstance);
+      let functionRetrunValue = null;
+      this.allComponentInstance.forEach((element) => {
+        if (element.cbcRefValue == blueScript.related_ref) {
+          console.log("excuteFunction--当前实例对象:", element);
+          if (inObj.param == "inValue") {
+            functionRetrunValue = element.refs[element.cbcRefValue][
+              inObj.label
+            ](inObj.value);
+          } else {
+            functionRetrunValue =
+              element.refs[element.cbcRefValue][inObj.label]();
+          }
+        }
+      });
+      return functionRetrunValue;
+    },
     //回调
     callBackFun(paramObj) {
       console.log("callBackFun--paramObj", paramObj.type);
@@ -272,32 +316,48 @@ export const processDataStore = defineStore("processDataID", {
         this.runNextProcessFun(paramObj);
       } else if (paramObj.type == "refreshComponentFun") {
         this.refreshComponentFun(paramObj);
-      }else if (paramObj.type == "runNextProcessFunByPageOut") {
+      } else if (paramObj.type == "runNextProcessFunByPageOut") {
         this.runNextProcessFunByPageOut(paramObj);
-      }
+      } else if (paramObj.type == "runChangedProcessFun") {
+        this.runChangedProcessFun(paramObj);
+      } 
     },
+
+    runChangedProcessFun(paramObj) {
+      console.log(paramObj.blueScript.blue_script_name+"runChangedProcessFun--paramObj:", paramObj);
+      for (let j = 0; j < paramObj.changedOut.connectedTargetArr.length; j++) {
+          let connectedTargetTemp = paramObj.changedOut.connectedTargetArr[j];
+          let param = {};
+          param.blue_script_ref = connectedTargetTemp.cell;
+          param.fromPort = paramObj.changedOut.connectedSource.port;
+          param.toPort = connectedTargetTemp.port;
+          param.value = paramObj.value;
+          this.setNodeInValueAndRunProcessFun(param);
+      }
+  },
 
     //外部页面块执行逻辑
     runNextProcessFunByPageOut(paramObj) {
       console.log("runNextProcessFunByPageOut--paramObj", paramObj);
-      paramObj.blueScript.config.blue_script_in_out_config.in.forEach(inTemp => {
-        if (inTemp.portID == paramObj.runPort) {
-          paramObj.blueScriptData.value.forEach(element => {
-            if (inTemp.blue_script_ref == element.blue_script_ref) {
-              //赋值并执行蓝图节点
-              element.config.blue_script_in_out_config.in.forEach(otherInTemp => {
-                if (otherInTemp.label == inTemp.label) {
-                  otherInTemp.value = inTemp.value;
-                  this.runBlueScriptProcess("", "", element);
-                }
-              });
-            }
-          });
+      paramObj.blueScript.config.blue_script_in_out_config.in.forEach(
+        (inTemp) => {
+          if (inTemp.portID == paramObj.runPort) {
+            paramObj.blueScriptData.value.forEach((element) => {
+              if (inTemp.blue_script_ref == element.blue_script_ref) {
+                //赋值并执行蓝图节点
+                element.config.blue_script_in_out_config.in.forEach(
+                  (otherInTemp) => {
+                    if (otherInTemp.label == inTemp.label) {
+                      otherInTemp.value = inTemp.value;
+                      this.runBlueScriptProcess("", "", element);
+                    }
+                  }
+                );
+              }
+            });
+          }
         }
-      });
-
-      
-      
+      );
     },
 
     //刷新页面渲染树的组件数据
@@ -309,7 +369,8 @@ export const processDataStore = defineStore("processDataID", {
       );
       if (
         paramObj.blueScript.related_ref &&
-        (paramObj.blueScript.type == "frontEndComponent" || paramObj.blueScript.type == "packComponent" )
+        (paramObj.blueScript.type == "frontEndComponent" ||
+          paramObj.blueScript.type == "packComponent")
       ) {
         let pageRenderTreeObj = treeFun.findNodeByRef(
           pageRenderTreeData.value,
@@ -377,10 +438,7 @@ export const processDataStore = defineStore("processDataID", {
               item.ifProcessFlag = true;
               console.log("222", element);
               if (element.config.dataset) {
-                if (
-                  param.value &&
-                  typeof param.value.length == "undefined"
-                ) {
+                if (param.value && typeof param.value.length == "undefined") {
                   //值不是数组并设置dataSet数据
                   element.config.dataset.data = [param.value];
                 } else {
@@ -400,7 +458,6 @@ export const processDataStore = defineStore("processDataID", {
                   }
                 }
               }
-
 
               console.log("setNodeInValueAndRunProcessFun--element1", element);
               this.runBlueScriptProcess(param.fromPort, param.toPort, element);

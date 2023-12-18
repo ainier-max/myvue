@@ -1,10 +1,9 @@
 <template>
-  <div v-if="currentBlueScript?.config">
+  <div v-if="currentBlueScript?.config" style="margin-left: 18px">
     <el-divider content-position="left"
       ><span style="font-size: 18px">输出参数</span></el-divider
     >
     <div
-      style="margin-left: 18px"
       v-for="(item, index) in currentBlueScript.config.blue_script_in_out_config
         .out"
       :key="index"

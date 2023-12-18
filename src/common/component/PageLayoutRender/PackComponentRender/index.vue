@@ -27,6 +27,8 @@ import {
 } from "vue";
 import { commonSelectRequest } from "@/common/js/request.js";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
+import { processDataStore } from "@/store/processData.ts";
+const processDataStoreObj = processDataStore();
 
 let currentInstance = getCurrentInstance();
 if (currentInstance.components == null) {
@@ -43,6 +45,7 @@ const eventFun = (eventType, obj, component) => {
   console.log("eventFun--事件类型：", eventType);
   console.log("eventFun--事件传递值：", obj);
   console.log("eventFun--当前组件信息：", component);
+  processDataStoreObj.eventProcess(eventType,obj,component);
 };
 
 

@@ -137,7 +137,7 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
         item.type = obj.type;
         item.related_ref = obj.related_ref;
       } else if (obj.type == "frontEndComponent") {
-        item.blue_script_name = obj.component_name;
+        item.blue_script_name = obj.nodeData.label;
         item.blue_script_id = obj.component_id;
         item.type = obj.type;
         item.related_ref = obj.related_ref;
@@ -145,7 +145,7 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
           item.config.dataset = obj.nodeData.config.dataset;
         }
       }else if (obj.type == "packComponent") {
-        item.blue_script_name = obj.component_name;
+        item.blue_script_name = obj.nodeData.label;
         item.blue_script_id = obj.component_id;
         item.type = obj.type;
         item.related_ref = obj.related_ref;

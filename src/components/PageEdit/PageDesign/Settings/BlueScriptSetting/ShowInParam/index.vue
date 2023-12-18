@@ -1,10 +1,9 @@
 <template>
-  <div v-if="currentBlueScript?.config">
+  <div v-if="currentBlueScript?.config" style="margin-left: 18px">
     <el-divider content-position="left"
       ><span style="font-size: 18px">输入参数</span></el-divider
     >
     <div
-      style="margin-left: 18px"
       v-for="(item, index) in currentBlueScript.config.blue_script_in_out_config
         .in"
       :key="index"
@@ -220,6 +219,17 @@
       </div>
       <!--不确定输出类型-->
       <div v-if="item.show == true && item.type == 'doubtful'">
+        <el-input
+          type="textarea"
+          v-if="
+            typeof item.value == 'boolean' &&
+            item.value != null
+          "
+          disabled
+          :value="item.value"
+          style="width: 250px"
+          placeholder=""
+        />
         <el-input
           type="textarea"
           v-if="

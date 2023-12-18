@@ -142,10 +142,11 @@ const addGraphEvent = () => {
               item.connected = true;
               item.value = valueTemp;
               if(element.config?.dataset?.data){
+                console.log("element1232",element);
                 //设置dataset数据
                 element.config.dataset.data=valueTemp;
                 //设置dataset字段
-                if (element.config.dataset.data.length > 0) {
+                if (element.config.dataset.data && element.config.dataset.data.length > 0) {
                   let objTemp = element.config.dataset.data[0];
                   element.config.dataset.fields = [];
                   for (let key in objTemp) {

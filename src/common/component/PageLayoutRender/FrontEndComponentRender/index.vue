@@ -17,23 +17,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted, computed, getCurrentInstance } from "vue";
+import {ref, nextTick, onMounted, computed, getCurrentInstance } from "vue";
 import * as Vue from "vue";
 
+import { storeToRefs } from "pinia";
 import { processDataStore } from "@/store/processData.ts";
 const processDataStoreObj = processDataStore();
-
-let currentInstance = getCurrentInstance();
-if (currentInstance.components == null) {
-  currentInstance.components = [];
-}
+const { allComponentInstance } = storeToRefs(processDataStoreObj);
 
 const props = defineProps({
   frontEndComponentData: null,
 });
 
+let currentInstance = getCurrentInstance();
+if (currentInstance.components == null) {
+  currentInstance.components = [];
+}
+currentInstance.cbcRefValue=props.frontEndComponentData.ref;
+currentInstance.cbcLabelValue=props.frontEndComponentData.label;
+
+let pushFlag=true;
+for(let i=0;i<allComponentInstance.value.length;i++){
+  if(allComponentInstance.value[i].cbcRefValue==props.frontEndComponentData.ref){
+    allComponentInstance.value[i]=currentInstance;
+    pushFlag=false;
+    //console.log("组件12更新，其组件实例替换element",currentInstance);
+    //console.log("组件12更新，其组件实例替换allComponentInstance",allComponentInstance);
+  }
+}
+
+if(pushFlag==true){
+  //console.log("组件12初始化",currentInstance);
+  allComponentInstance.value.push(currentInstance);
+}
+
+
+
 const showFlag = ref(false);
-//console.log("frontEndComponentData", props.frontEndComponentData);
+// console.log("frontEndComponentData12321", props.frontEndComponentData);
 // props.frontEndComponentData.component_config =
 //   props.frontEndComponentData.config;
 
@@ -75,7 +96,9 @@ const registerComponent = (component_code) => {
   });
 };
 registerComponent(props.frontEndComponentData.component_code);
-onMounted(() => {});
+onMounted(() => {
+  
+});
 </script>
 
 <style scoped></style>

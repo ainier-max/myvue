@@ -30,9 +30,25 @@
         <span v-if="currentPageRenderTreeNodeData.type == 'flex-row'"
           >水平布局</span
         >
+        <el-button
+            v-if="currentPageRenderTreeNodeData.type == 'flex-row'"
+            @click="changeType('flex-column')"
+            size="small"
+            style="margin-left:10px"
+            type="success"
+            >切换垂直布局</el-button
+          >
         <span v-if="currentPageRenderTreeNodeData.type == 'flex-column'"
           >垂直布局</span
         >
+        <el-button
+            v-if="currentPageRenderTreeNodeData.type == 'flex-column'"
+            @click="changeType('flex-row')"
+            size="small"
+            style="margin-left:10px"
+            type="success"
+            >切换水平布局</el-button
+          >
         <span v-if="currentPageRenderTreeNodeData.type == 'frontEndComponent'"
           >前端组件</span
         >
@@ -372,6 +388,11 @@ const showPopover = () => {
   customContent.value = strTemp;
 };
 
+const changeType=(type)=>{
+  console.log("changeType--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData.value);
+  currentPageRenderTreeNodeData.value.type=type;
+  changeToRefresh();
+}
 
 //刷新布局
 const changeToRefresh = () => {

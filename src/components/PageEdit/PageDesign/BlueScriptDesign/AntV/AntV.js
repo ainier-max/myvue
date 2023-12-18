@@ -186,6 +186,7 @@ export function addEdge(blue_script_in_out_config) {
 
 //添加node节点上的端口
 export function addPort(node, blue_script_in_out_config) {
+  //console.log("addPort--blue_script_in_out_config",blue_script_in_out_config);
   let inParams = blue_script_in_out_config.in;
   if (typeof inParams != "undefined") {
     for (let i = 0; i < inParams.length; i++) {
@@ -219,7 +220,7 @@ export function addPort(node, blue_script_in_out_config) {
               },
             },
           });
-        } else if (inParams[i].type == "function") {
+        } else if (inParams[i].type == "method") {
           node.addPort({
             key: inParams[i].key,
             id: inParams[i].portID,
@@ -240,7 +241,7 @@ export function addPort(node, blue_script_in_out_config) {
               path: {
                 d: "M -6 -8 L 0 8 L 6 -8 Z",
                 magnet: true,
-                fill: "white",
+                fill: "gray",
               },
             },
           });

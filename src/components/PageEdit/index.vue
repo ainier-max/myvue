@@ -233,6 +233,10 @@ const { blueScriptData, currentBlueScript } = storeToRefs(
   blueScriptDataStoreObj
 );
 
+import { processDataStore } from "@/store/processData.ts";
+const processDataStoreObj = processDataStore();
+const { allComponentInstance } = storeToRefs(processDataStoreObj);
+
 const defaultProps = { children: "children", label: "label" };
 
 const route = useRoute();
@@ -419,9 +423,11 @@ const findFrontEndComponent = (nodeData) => {
 const findFrontEndComponentCallBack = (result, nodeData) => {
   if (result.objects.length > 0) {
     console.log("findFrontEndComponentCallBack--result", result);
+    console.log("findFrontEndComponentCallBack--nodeData", nodeData);
     let obj = result.objects[0];
     obj.related_ref = nodeData.ref;
     obj.nodeData = nodeData;
+    //obj.component_name=
     blueScriptDataStoreObj.add(obj);
   }
 };
@@ -687,6 +693,8 @@ const getChooseBlueScriptTool = (obj) => {
 };
 
 const showDebugProcessWin = (closeFlag) => {
+  //置空实例
+  allComponentInstance.value=[];
   debugProcessFlag.value = true;
   if (closeFlag == true) {
     //关闭节点配置页面

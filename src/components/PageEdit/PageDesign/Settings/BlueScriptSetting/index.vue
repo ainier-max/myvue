@@ -29,7 +29,7 @@
       placeholder="名称："
     />
 
-    <template
+    <div 
       v-if="currentBlueScript?.config?.blue_script_visualize_config?.describe"
     >
       <div class="leftTitle">描述：</div>
@@ -39,7 +39,7 @@
         disabled
         placeholder="描述："
       />
-    </template>
+    </div>
 
     <div
       v-if="currentBlueScript != null && currentBlueScript?.config && currentBlueScript?.blue_script_id!='pageOut'"
@@ -70,6 +70,11 @@
         v-if="item == 'GetValueFromObjectSetting'"
       ></GetValueFromObjectSetting>
       <InitPageOutParam v-if="item == 'InitPageOutParam'"></InitPageOutParam>
+      <RelevancePortSetProcessFlagToFalse v-if="item == 'RelevancePortSetProcessFlagToFalse'"></RelevancePortSetProcessFlagToFalse>
+      <ExecFunction v-if="item == 'ExecFunction'"></ExecFunction>
+
+      
+      
     </div>
 
     <div style="height: 20px"></div>
@@ -87,13 +92,24 @@
     :modal="false"
     @opened="openedHandle"
   >
-    <MyMonacoEditor
-      id="blueScriptSettingsEditorID"
-      v-if="blueScriptLogicFlag && blue_script_logic_config_str"
-      :code="blue_script_logic_config_str"
-      @update="updateConfig"
-      style="height: 520px"
-    ></MyMonacoEditor>
+  
+  <div>
+    <span
+      v-for="(item,index) in Object.keys(blueScriptLogicConfigTemp)"
+      class="designButton" :style="activeName == item ? { color: 'rgba(0, 0, 0, 1)' }: { color: 'gray' }"
+      @click="tabsHandleClick(item)">{{item}}</span>
+      <div   v-for="(item,index) in Object.keys(blueScriptLogicConfigTemp)">
+        <MyMonacoEditor
+          :id="'blueScriptSettingsEditorID'+item"
+          v-if="activeName==item && blueScriptLogicConfigTemp[item]"
+          :code="blueScriptLogicConfigTemp[item]"
+          @update="updateConfig"
+          style="height: 450px;padding-top:15px;"
+        ></MyMonacoEditor>
+      </div>
+      
+  </div>
+  
     <template #footer>
       <span class="dialog-footer" style="padding-bottom: 200px">
         <el-button
@@ -125,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { blueScriptDataStore } from "@/store/blueScriptData.ts";
 const blueScriptDataStoreObj = blueScriptDataStore();
@@ -145,6 +161,9 @@ import ShowOutParam from "./ShowOutParam/index.vue";
 import SetDimensionsAndMetrics from "./SetDimensionsAndMetrics/index.vue";
 import GetValueFromObjectSetting from "./GetValueFromObjectSetting/index.vue";
 import InitPageOutParam from "./InitPageOutParam/index.vue";
+import RelevancePortSetProcessFlagToFalse from "./RelevancePortSetProcessFlagToFalse/index.vue";
+import ExecFunction from "./ExecFunction/index.vue";
+
 
 
 import { ElMessage } from "element-plus";
@@ -159,8 +178,9 @@ import {
 } from "@/common/js/request.js";
 
 const blueScriptLogicDialogVisible = ref(false);
-const blueScriptLogicFlag = ref(false);
 const blue_script_logic_config_str = ref("");
+
+const activeName = ref('')
 
 console.log("当前节点的蓝图配置：", currentBlueScript.value);
 const changeBlueScriptNodeLabel = () => {
@@ -175,16 +195,28 @@ const changeBlueScriptNodeLabel = () => {
   });
 };
 
+const blueScriptLogicConfigTemp=ref({});
+const tabsHandleClick=(tab)=>{
+  activeName.value=tab;
+}
+
 const updateConfig = (code) => {
-  blue_script_logic_config_str.value = code;
-  currentBlueScript.value.config.blue_script_logic_config.logicFun = eval(
-    "(" + code + ")"
-  );
-  blueScriptData.value.forEach((element) => {
-    if (element.blue_script_ref == currentBlueScript.value.blue_script_ref) {
-      element.config.blue_script_logic_config.logicFun = eval("(" + code + ")");
-    }
-  });
+  console.log("updateConfig--code",code);
+  if(code){
+    blueScriptLogicConfigTemp.value[activeName.value]=code;
+    blue_script_logic_config_str.value = objectToString(blueScriptLogicConfigTemp.value);
+    currentBlueScript.value.config.blue_script_logic_config.logicFun = eval(
+      "(" + code + ")"
+    );
+
+    blueScriptData.value.forEach((element) => {
+      if (element.blue_script_ref == currentBlueScript.value.blue_script_ref) {
+        Object.keys(blueScriptLogicConfigTemp.value).forEach(item => {
+          element.config.blue_script_logic_config[item]=eval("(" + blueScriptLogicConfigTemp.value[item] + ")");
+        });
+      }
+    });
+  }
 };
 const blueScriptLogicSave = () => {
   console.log(
@@ -197,17 +229,17 @@ const blueScriptLogicSave = () => {
     //蓝图执行逻辑保存
     param.sql = "page_blue_script_tools.updateBlueScriptLogicConfig";
     param.blue_script_id = currentBlueScript.value.blue_script_id;
-    param.blue_script_logic_config_str = blue_script_logic_config_str.value;
+    param.blue_script_logic_config_str = objectToString(blueScriptLogicConfigTemp.value);
   } else if (currentBlueScript.value.type == "frontEndComponent") {
     //前端组件执行逻辑保存
     param.sql = "page_component_frontend.updateBlueScriptLogicConfig";
     param.component_id = currentBlueScript.value.blue_script_id;
-    param.blue_script_logic_config_str = blue_script_logic_config_str.value;
+    param.blue_script_logic_config_str = objectToString(blueScriptLogicConfigTemp.value);
   }else if (currentBlueScript.value.type == "packComponent") {
     //前端组件执行逻辑保存
     param.sql = "page_component_pack.updateBlueScriptLogicConfig";
     param.component_id = currentBlueScript.value.blue_script_id;
-    param.blue_script_logic_config_str = blue_script_logic_config_str.value;
+    param.blue_script_logic_config_str = objectToString(blueScriptLogicConfigTemp.value);
   }
   console.log("blueScriptLogicSave--param", param);
   commonExcuteRequest(axios, param, blueScriptLogicSaveCallBack);
@@ -233,36 +265,25 @@ const debugBlueScriptLogic = () => {
 };
 
 const showBlueScriptLogicDialog = () => {
-  console.log("showBlueScriptLogicDialog--currentBlueScript",currentBlueScript.value);
-  let code = currentBlueScript.value.config.blue_script_logic_config.logicFun.toString();
-  //console.log("showBlueScriptLogicDialog--code",code);
-  blue_script_logic_config_str.value = js_beautify(code);
-  blueScriptLogicDialogVisible.value = true;
-  blueScriptLogicFlag.value = false;
+  blueScriptLogicConfigTemp.value={};
+  nextTick(()=>{
+    console.log("showBlueScriptLogicDialog--currentBlueScript",currentBlueScript.value);
+    for (let key in currentBlueScript.value.config.blue_script_logic_config) {
+      blueScriptLogicConfigTemp.value[key]=js_beautify(currentBlueScript.value.config.blue_script_logic_config[key].toString());
+    }
+    console.log("showBlueScriptLogicDialog--blueScriptLogicConfigTemp",blueScriptLogicConfigTemp);
+    let code = currentBlueScript.value.config.blue_script_logic_config.logicFun.toString();
+    //console.log("showBlueScriptLogicDialog--code",code);
+    blue_script_logic_config_str.value = js_beautify(code);
+    blueScriptLogicDialogVisible.value = true;
+  });
 };
 
-// const showBlueScriptLogicDialog = () => {
-//   console.log("findPageBlueScript--currentBlueScript",currentBlueScript);
-//   let param={};
-//   if (currentBlueScript.value.type=="blueScriptTool") {
-//     param.sql="page_blue_script_tools.find";
-//     param.blue_script_id=currentBlueScript.value.blue_script_id;
-//   }else if(currentBlueScript.value.type=="frontEndComponent"){
-//     param.sql="page_component_frontend.find";
-//     param.component_id=currentBlueScript.value.blue_script_id;
-//   }
-//   commonSelectRequest(axios, param, findPageBlueScriptCallBack);
-// };
-
-// const findPageBlueScriptCallBack=(result)=>{
-//   console.log("findPageBlueScript--result",result);
-//   blue_script_logic_config_str.value=result.objects[0].blue_script_logic_config_str;
-//   blueScriptLogicDialogVisible.value = true;
-//   blueScriptLogicFlag.value = false;
-// }
-
 const openedHandle = () => {
-  blueScriptLogicFlag.value = true;
+  activeName.value="";
+  nextTick(()=>{
+    activeName.value="logicFun";
+  });
 };
 
 const showDebugProcessWin = () => {};
@@ -287,5 +308,11 @@ const showDebugProcessWin = () => {};
   padding-top: 5px;
   padding-left: 15px;
   padding-right: 15px;
+}
+
+.designButton {
+  font-weight: bold;
+  padding-left: 8px;
+  cursor: pointer;
 }
 </style>
