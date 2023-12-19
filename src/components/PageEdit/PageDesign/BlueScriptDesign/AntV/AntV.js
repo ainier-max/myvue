@@ -9,7 +9,11 @@ export function highLightNode(node){
       element.getAttrs().body.fill = "rgb(255,251,230,0.8)";
       element.setAttrs(element.getAttrs().body.fill);
     } else {
-      element.getAttrs().body.fill = "rgba(40, 44, 52,0.9)";
+      if (element.copyFlag) {
+        element.getAttrs().body.fill = "rgba(95,158,160,0.9)"
+      } else {
+        element.getAttrs().body.fill = "rgba(40, 44, 52,0.9)";
+      }
       element.setAttrs(element.getAttrs().body.fill);
     }
   });

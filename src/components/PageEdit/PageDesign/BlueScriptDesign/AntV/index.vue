@@ -3,6 +3,7 @@
 
   <div v-if="menuFlag" :style="menuStyle">
     <div style="height: 5px"></div>
+    <div class="menuItemClass" @click="menuCopy" v-if="!currentBlueScriptNode.copyFlag">复制</div>
     <div class="menuItemClass" @click="menuItemDelete">删除</div>
     <div class="menuItemClass" @click="menuClose">关闭</div>
     <div style="height: 5px"></div>
@@ -76,6 +77,18 @@ const menuItemDelete = () => {
     menuFlag.value = false;
   }
 };
+
+const menuCopy=()=>{
+  console.log("menuCopy--currentBlueScriptNode",currentBlueScriptNode);
+  console.log("menuCopy--blueScriptData",blueScriptData);
+  blueScriptData.value.forEach(element => {
+    if(element.blue_script_ref==currentBlueScriptNode.value.blue_script_ref){
+      blueScriptDataStoreObj.copy(element);
+    }
+  });
+  menuFlag.value = false;
+}
+
 const menuClose = () => {
   menuFlag.value = false;
 };
@@ -219,6 +232,7 @@ const addGraphEvent = () => {
 
     //节点高亮
     highLightNode(node);
+    menuFlag.value = false;
   });
 
   window.antVGraph.on("node:mouseleave", ({ node }) => {

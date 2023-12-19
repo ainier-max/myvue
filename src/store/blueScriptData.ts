@@ -126,11 +126,40 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
       }
       console.log("delete--this.blueScriptData", this.blueScriptData);
     },
+    copy(obj) {
+      let item = _.cloneDeep(obj);
+      item.blue_script_ref = "blueScriptRef-" + window.cbcuuid();
+      item.config.blue_script_node_config.x = item.config.blue_script_node_config.x + 20;
+      item.config.blue_script_node_config.y = item.config.blue_script_node_config.y + 20;
+      item.config.blue_script_node_config.id = item.blue_script_ref;
+      item.config.blue_script_node_config.attrs.body.fill = "rgba(95,158,160,0.9)";
+
+      item.config.blue_script_in_out_config.in.forEach(inItem => {
+        inItem.connected = false;
+        inItem.ifProcessFlag = false;
+      });
+      item.config.blue_script_in_out_config.out.forEach(outItem => {
+        outItem.connected = false;
+        outItem.ifProcessFlag = false;
+        outItem.connectedTargetArr = [];
+        outItem.connectedSource = null;
+      });
+
+      item.config.copyFlag = true;
+      console.log("copy--item",item);
+      this.createPort(item);
+      this.addAntVGraphNode(item);
+      this.blueScriptData.push(item);
+      console.log("copy--this.blueScriptData", this.blueScriptData);
+      
+    },
+
     //添加蓝图节点
     add(obj) {
       console.log("blueScriptData-add(obj)", obj);
       let item = {};
       item.config = {};
+      item.config.copyFlag = false;
       if (obj.type == "blueScriptTool") {
         item.blue_script_name = obj.blue_script_name;
         item.blue_script_id = obj.blue_script_id;
@@ -217,6 +246,7 @@ export const blueScriptDataStore = defineStore("blueScriptDataID", {
       let nodeTemp = window.antVGraph.addNode(
         item.config.blue_script_node_config
       );
+      nodeTemp.copyFlag = item.config.copyFlag;
       nodeTemp.blue_script_ref = item.blue_script_ref;
       //添加蓝图节点端口
       addPort(nodeTemp, item.config.blue_script_in_out_config);
