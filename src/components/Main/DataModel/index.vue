@@ -111,12 +111,12 @@
           </el-form-item>
           <el-form-item label="名称：">
             <el-input
-                @input="labelInput"
+              @input="labelInput"
               v-model="currentDataModelTreeNodeData.label"
               placeholder="label"
             />
           </el-form-item>
-          <el-form-item label="模型类型： ">
+          <el-form-item label="模型类型： " style="width: 300px">
             <el-select
               v-model="currentDataModelTreeNodeData.data_model_type"
               placeholder="data_model_type"
@@ -135,7 +135,8 @@
           </el-form-item>
           <el-form-item
             label="开启缓存： "
-            v-if="currentDataModelTreeNodeData.data_model_type=='select'"
+            v-if="currentDataModelTreeNodeData.data_model_type == 'select'"
+            style="width: 200px"
           >
             <el-select
               v-model="currentDataModelTreeNodeData.is_cache"
@@ -148,8 +149,10 @@
 
           <div>
             <div class="leftTitle" style="padding-bottom: 10px">
-              模型SQL（参考：<a href="javascript:window.open('https://mybatis.net.cn/dynamic-sql.html')">MyBatis用法</a>）<br>
-              
+              模型SQL（参考：<a
+                href="javascript:window.open('https://mybatis.net.cn/dynamic-sql.html')"
+                >MyBatis用法</a
+              >）<br />
             </div>
             <MyMonacoEditor
               v-if="codeEditorFlag"
@@ -218,18 +221,26 @@
       <el-form-item label="名称">
         <el-input v-model="namespaceForm.name" placeholder="name" />
       </el-form-item>
-      <el-form-item label="命名空间" v-if="!currentDataModelTreeNodeData?.name_space">
+      <el-form-item
+        label="命名空间"
+        v-if="!currentDataModelTreeNodeData?.name_space"
+      >
         <el-input v-model="namespaceForm.name_space" placeholder="name_space" />
       </el-form-item>
-      <el-form-item label="模型ID" v-if="currentDataModelTreeNodeData?.name_space">
-        <el-input v-model="namespaceForm.data_model_id" placeholder="data_model_id" />
+      <el-form-item
+        label="模型ID"
+        v-if="currentDataModelTreeNodeData?.name_space"
+      >
+        <el-input
+          v-model="namespaceForm.data_model_id"
+          placeholder="data_model_id"
+        />
       </el-form-item>
     </el-form>
     <div align="center" style="padding-top: 10px">
       <el-button type="primary" @click="addNameSpace">保存</el-button>
     </div>
   </el-dialog>
-
 
   <el-dialog
     title="确认框"
@@ -238,27 +249,29 @@
     width="60%"
   >
     <div v-if="!currentDataModelTreeNodeData?.data_model_id">
-        将要删除<span style="color:red;font-weight: bold">({{ currentDataModelTreeNodeData?.name }})</span>
-        <br>该操作也会把对应的整个命名空间中的SQL进行删除，数据不可恢复，请小心操作。
+      将要删除<span style="color: red; font-weight: bold"
+        >({{ currentDataModelTreeNodeData?.name }})</span
+      >
+      <br />该操作也会把对应的整个命名空间中的SQL进行删除，数据不可恢复，请小心操作。
     </div>
 
     <div v-if="currentDataModelTreeNodeData?.data_model_id">
-        将要删除<span style="color:red;font-weight: bold">({{ currentDataModelTreeNodeData?.name }})</span>
-        <br>数据不可恢复，请小心操作。
+      将要删除<span style="color: red; font-weight: bold"
+        >({{ currentDataModelTreeNodeData?.name }})</span
+      >
+      <br />数据不可恢复，请小心操作。
     </div>
-      <template #footer>
+    <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="deleteNameSpace">确 定</el-button>
       </span>
-      </template>
-    
+    </template>
   </el-dialog>
-
 </template>
 
 <script setup lang="ts">
 import { provide, ref, nextTick, onMounted } from "vue";
-import { getListData ,findNodeById} from "@/common/js/tree.js";
+import { getListData, findNodeById } from "@/common/js/tree.js";
 import { ElMessage } from "element-plus";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import MyMonacoEditor from "@/common/component/CodeEditor/MyMonacoEditor/index.vue";
@@ -271,7 +284,7 @@ import {
   commonBatchSelectRequest,
   commonExcuteRequestAndOtherParam,
   commonMapperRefreshByEditNameSpace,
-  mapperRefreshByDeleteNameSpace
+  mapperRefreshByDeleteNameSpace,
 } from "@/common/js/request.js";
 
 let defaultProps = {
@@ -291,13 +304,16 @@ const testSelectResultDialogVisible = ref(false);
 const namespaceForm = ref({
   name: "",
   name_space: "",
-  data_model_id:"",
+  data_model_id: "",
 });
-const labelInput=()=>{
-    let nodeTemp=findNodeById(dataModelTreeData.value,currentDataModelTreeNodeData.value.id);
-    console.log("变化",nodeTemp);
-    nodeTemp.label=currentDataModelTreeNodeData.value.label;
-}
+const labelInput = () => {
+  let nodeTemp = findNodeById(
+    dataModelTreeData.value,
+    currentDataModelTreeNodeData.value.id
+  );
+  console.log("变化", nodeTemp);
+  nodeTemp.label = currentDataModelTreeNodeData.value.label;
+};
 
 //查找组件树
 const findDataModelTree = () => {
@@ -356,13 +372,10 @@ const onSubmit = () => {
 const onSubmitCallBack = (result) => {
   if ((result.state = "success")) {
     ElMessage.success("保存成功！");
-
   }
 };
 
 const onTest = () => {
-
-
   if (currentDataModelTreeNodeData.value.data_model_type == "select") {
     let param = stringToObject(
       currentDataModelTreeNodeData.value.data_model_param
@@ -418,16 +431,16 @@ const addNameSpace = () => {
   console.log("addNameSpace--namespaceForm", namespaceForm);
   let param = {};
   param.name = namespaceForm.value.name;
-  if(namespaceForm.value.name_space){
+  if (namespaceForm.value.name_space) {
     param.name_space = namespaceForm.value.name_space;
-  }else{
+  } else {
     param.name_space = currentDataModelTreeNodeData.value.name_space;
   }
-  param.id=window.cbcuuid();
-  param.pid=currentDataModelTreeNodeData.value.id;
-  param.data_model_id=namespaceForm.value.data_model_id;
+  param.id = window.cbcuuid();
+  param.pid = currentDataModelTreeNodeData.value.id;
+  param.data_model_id = namespaceForm.value.data_model_id;
   //console.log("传参param",param);
-  param.sql="page_data_model_tree.addNameSpace";
+  param.sql = "page_data_model_tree.addNameSpace";
   commonExcuteRequest(axios, param, addNameSpaceCallBack);
 };
 const addNameSpaceCallBack = (result) => {
@@ -435,39 +448,37 @@ const addNameSpaceCallBack = (result) => {
     ElMessage.success("保存成功！");
     addNameSpaceDialogVisible.value = false;
     findDataModelTree();
-    namespaceForm.value.name="";
-    namespaceForm.value.name_space="";
-    namespaceForm.value.data_model_id="";
+    namespaceForm.value.name = "";
+    namespaceForm.value.name_space = "";
+    namespaceForm.value.data_model_id = "";
   }
 };
 
-
 //删除逻辑
-const deleteNameSpaceDialogVisible=ref(false);
+const deleteNameSpaceDialogVisible = ref(false);
 const treeRemove = (data) => {
-    deleteNameSpaceDialogVisible.value=true;
+  deleteNameSpaceDialogVisible.value = true;
 };
-const deleteNameSpace=()=>{
-    let param={};
-    param.id=currentDataModelTreeNodeData.value.id;
-    param.pid=currentDataModelTreeNodeData.value.pid;
-    param.name_space=currentDataModelTreeNodeData.value.name_space;
-    if(!currentDataModelTreeNodeData.value.data_model_id){
-        param.deleteType="deleteNamespace";
-    }else{
-        param.deleteType="deleteSQL";
-    }
-    
-    mapperRefreshByDeleteNameSpace(axios, param, deleteNameSpaceCallBack);
-}
-const deleteNameSpaceCallBack = (result) => {
-    if (result.state == "success") {
-        ElMessage.success("删除成功！");
-        deleteNameSpaceDialogVisible.value = false;
-        findDataModelTree();
-    }
-}
+const deleteNameSpace = () => {
+  let param = {};
+  param.id = currentDataModelTreeNodeData.value.id;
+  param.pid = currentDataModelTreeNodeData.value.pid;
+  param.name_space = currentDataModelTreeNodeData.value.name_space;
+  if (!currentDataModelTreeNodeData.value.data_model_id) {
+    param.deleteType = "deleteNamespace";
+  } else {
+    param.deleteType = "deleteSQL";
+  }
 
+  mapperRefreshByDeleteNameSpace(axios, param, deleteNameSpaceCallBack);
+};
+const deleteNameSpaceCallBack = (result) => {
+  if (result.state == "success") {
+    ElMessage.success("删除成功！");
+    deleteNameSpaceDialogVisible.value = false;
+    findDataModelTree();
+  }
+};
 
 const handleNodeClick = (item, data) => {
   console.log("handleNodeClick--item, data", item, data);
@@ -490,17 +501,17 @@ const findByIDCallBack = (result) => {
     currentDataModelTreeNodeData.value.name;
   currentDataModelTreeNodeData.value.old_name_space =
     result.objects[0].name_space;
-    
-    //如果没有值，则附加默认值
-    if(!currentDataModelTreeNodeData.value.data_model_type){
-        currentDataModelTreeNodeData.value.data_model_type="select";
-    }
-    if(!currentDataModelTreeNodeData.value.is_cache){
-        currentDataModelTreeNodeData.value.is_cache="false";
-    }
-    if(!currentDataModelTreeNodeData.value.data_model_param){
-        currentDataModelTreeNodeData.value.data_model_param="{}";
-    }
+
+  //如果没有值，则附加默认值
+  if (!currentDataModelTreeNodeData.value.data_model_type) {
+    currentDataModelTreeNodeData.value.data_model_type = "select";
+  }
+  if (!currentDataModelTreeNodeData.value.is_cache) {
+    currentDataModelTreeNodeData.value.is_cache = "false";
+  }
+  if (!currentDataModelTreeNodeData.value.data_model_param) {
+    currentDataModelTreeNodeData.value.data_model_param = "{}";
+  }
   nextTick(() => {
     codeEditorFlag.value = true;
   });

@@ -1,6 +1,9 @@
 <template>
-  <div v-if="option && mapID" :id="mapID" style="width:100%;height:100%">
-  </div>
+  <div
+    v-if="option && mapID"
+    :id="mapID"
+    style="width: 100%; height: 100%"
+  ></div>
 </template>
 
 <script>
@@ -18,10 +21,10 @@ export default {
   },
   data() {
     return {
-      mapID:"",
+      mapID: "",
       option,
-      devOption:null,
-      map:null
+      devOption: null,
+      map: null,
     };
   },
   components: {},
@@ -46,7 +49,7 @@ export default {
       } else {
         console.log("没有配置投影CRS");
       }
-      console.log("crsTemp123",crsTemp);
+      console.log("crsTemp123", crsTemp);
 
       var mapOption = {};
       mapOption.closePopupOnClick = mapConfig.closePopupOnClick;
@@ -97,20 +100,18 @@ export default {
       //this.component.map = this.map;
       this.map.noSaveFlag = true;
       this.map.noSaveDescribe = "地图对象";
-      this.$emit('event', "loadMapEnd", this.map , this.component);
+      this.$emit("event", "loadMapEnd", this.map, this.component);
     },
-    addWMS() {
-      
-    }
+    addWMS() {},
   },
   created() {
-    this.mapID="map_"+window.cbcuuid();
-    console.log("this.mapID1",this.mapID);
-    console.log("component1232",this.component);
-    if(this.component==null){
-      this.devOption=option.devOption;
+    this.mapID = "map_" + window.cbcuuid();
+    console.log("this.mapID1", this.mapID);
+    console.log("component1232", this.component);
+    if (this.component == null) {
+      this.devOption = option.devOption;
     } else {
-      this.devOption=option.devOption;
+      this.devOption = option.devOption;
       //this.devOption=this.component.component_config;
     }
     console.log("this.devOption123", this.devOption);
