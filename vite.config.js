@@ -4,6 +4,9 @@ import path from "path";
 
 export default defineConfig({
   plugins: [pluginVue()],
+  define: {
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "true",
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src/"),

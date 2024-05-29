@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%;">
+  <div style="width: 100%">
     <div class="titleClass" align="center">基础配置</div>
     <div
       align="center"
@@ -9,7 +9,10 @@
       "
     >
       <div style="margin-top: 10px">属于《外部页面》类型</div>
-      <el-button type="success" style="margin-top: 10px;margin-bottom:15px" @click="toPageEdit"
+      <el-button
+        type="success"
+        style="margin-top: 10px; margin-bottom: 15px"
+        @click="toPageEdit"
         >打开配置地址</el-button
       >
     </div>
@@ -31,24 +34,24 @@
           >水平布局</span
         >
         <el-button
-            v-if="currentPageRenderTreeNodeData.type == 'flex-row'"
-            @click="changeType('flex-column')"
-            size="small"
-            style="margin-left:10px"
-            type="success"
-            >切换垂直布局</el-button
-          >
+          v-if="currentPageRenderTreeNodeData.type == 'flex-row'"
+          @click="changeType('flex-column')"
+          size="small"
+          style="margin-left: 10px"
+          type="success"
+          >切换垂直布局</el-button
+        >
         <span v-if="currentPageRenderTreeNodeData.type == 'flex-column'"
           >垂直布局</span
         >
         <el-button
-            v-if="currentPageRenderTreeNodeData.type == 'flex-column'"
-            @click="changeType('flex-row')"
-            size="small"
-            style="margin-left:10px"
-            type="success"
-            >切换水平布局</el-button
-          >
+          v-if="currentPageRenderTreeNodeData.type == 'flex-column'"
+          @click="changeType('flex-row')"
+          size="small"
+          style="margin-left: 10px"
+          type="success"
+          >切换水平布局</el-button
+        >
         <span v-if="currentPageRenderTreeNodeData.type == 'frontEndComponent'"
           >前端组件</span
         >
@@ -94,16 +97,19 @@
           placeholder="页面块宽度"
         />
 
-        <template v-if="currentPageRenderTreeNodeData.type=='mainBlock'">
+        <template v-if="currentPageRenderTreeNodeData.type == 'mainBlock'">
           <div class="leftTitle">页面模式</div>
-          <el-radio-group class="rightValue" v-model=" currentPageRenderTreeNodeData.config.attr.pageModel">
-            <el-radio label="adaptation" size="small">自适应</el-radio>
-            <el-radio label="reality" size="small">实际宽高</el-radio>
-            <el-radio label="adaptationW-realityH" size="small">宽度自适应，实际高度</el-radio>
+          <el-radio-group
+            class="rightValue"
+            v-model="currentPageRenderTreeNodeData.config.attr.pageModel"
+          >
+            <el-radio value="adaptation" size="small">自适应</el-radio>
+            <el-radio value="reality" size="small">实际宽高</el-radio>
+            <el-radio value="adaptationW-realityH" size="small"
+              >宽度自适应，实际高度</el-radio
+            >
           </el-radio-group>
         </template>
-        
-
       </template>
 
       <!--非mainBlock/childBlock类型的高度，宽度-->
@@ -290,9 +296,8 @@
           />
         </div>
 
-        <div style="padding-bottom:15px"></div>
+        <div style="padding-bottom: 15px"></div>
       </div>
-      
     </div>
   </div>
 </template>
@@ -319,9 +324,7 @@ const { currentPageRenderTreeNodeData, currentTopPageBlockData } = storeToRefs(
 
 import { blueScriptDataStore } from "@/store/blueScriptData.ts";
 const blueScriptDataStoreObj = blueScriptDataStore();
-const { blueScriptData } = storeToRefs(
-  blueScriptDataStoreObj
-);
+const { blueScriptData } = storeToRefs(blueScriptDataStoreObj);
 
 const getNewImgUrlByTopPageBlock = (imgUUID, otherParam) => {
   currentPageRenderTreeNodeData.value.config.attr.backgroundImgValue = imgUUID;
@@ -388,11 +391,14 @@ const showPopover = () => {
   customContent.value = strTemp;
 };
 
-const changeType=(type)=>{
-  console.log("changeType--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData.value);
-  currentPageRenderTreeNodeData.value.type=type;
+const changeType = (type) => {
+  console.log(
+    "changeType--currentPageRenderTreeNodeData",
+    currentPageRenderTreeNodeData.value
+  );
+  currentPageRenderTreeNodeData.value.type = type;
   changeToRefresh();
-}
+};
 
 //刷新布局
 const changeToRefresh = () => {
@@ -428,18 +434,18 @@ const handleInput = (type) => {
   }
 };
 
-
-const changeBlueScriptNodeLabel=()=>{
+const changeBlueScriptNodeLabel = () => {
   //console.log("changeBlueScriptNodeLabel--blueScriptData",blueScriptData.value);
   //console.log("changeBlueScriptNodeLabel--currentPageRenderTreeNodeData",currentPageRenderTreeNodeData.value);
-  blueScriptData.value.forEach(element => {
-    if(element.related_ref==currentPageRenderTreeNodeData.value.ref){
-      element.blue_script_name=currentPageRenderTreeNodeData.value.label;
-      element.config.blue_script_node_config.label=currentPageRenderTreeNodeData.value.label;
+  blueScriptData.value.forEach((element) => {
+    if (element.related_ref == currentPageRenderTreeNodeData.value.ref) {
+      element.blue_script_name = currentPageRenderTreeNodeData.value.label;
+      element.config.blue_script_node_config.label =
+        currentPageRenderTreeNodeData.value.label;
     }
   });
   //console.log("changeBlueScriptNodeLabel--blueScriptData",blueScriptData.value);
-}
+};
 // 生命周期钩子
 onMounted(() => {});
 </script>
@@ -470,6 +476,6 @@ onMounted(() => {});
 }
 
 :deep(.el-radio) {
- display: block;
+  display: block;
 }
 </style>

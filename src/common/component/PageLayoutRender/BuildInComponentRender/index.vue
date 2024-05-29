@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%;height:100%;">
+  <div style="width: 100%; height: 100%">
     <component
       :ref="props.buildInComponentData.ref"
       v-if="
@@ -12,9 +12,7 @@
       :component="props.buildInComponentData"
     >
     </component>
-
   </div>
-  
 </template>
 
 <script setup lang="ts">
@@ -55,7 +53,7 @@ for (let i = 0; i < pathConfigArr.length; i++) {
 
 currentInstance.components[props.buildInComponentData.related_value] =
   defineAsyncComponent({
-    loader: () => import(/* @vite-ignore */ pathUrl),
+    loader: () => import(/* @vite-ignore */ pathUrl /* @vite-ignore */),
   });
 
 nextTick(() => {
