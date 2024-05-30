@@ -15,6 +15,9 @@
 import "default-passive-events";
 import * as Vue from "vue";
 
+import { loadDependentOn } from "@/common/js/loadDependentOn.js";
+
+let FFCesium = null;
 export default {
   name: "ComponentRegister",
   props: {},
@@ -25,6 +28,8 @@ export default {
       //component_id为空时，警告：Invalid vnode type when creating vnode: .
       component_id: "component_id",
       component: null,
+      dependentOnObj: null,
+      execLoadDependentFlag: false,
     };
   },
   //供动态注册组件使用,不可删除
@@ -67,6 +72,25 @@ export default {
 
     //设置组件代码
     setComponentInfo(componentInfo) {
+      //首次执行需要加载依赖
+      if (this.execLoadDependentFlag == false) {
+        this.dependentOnObj = {
+          vue: Vue,
+          echarts: null,
+          FFCesium: null,
+        };
+        //加载依赖
+        loadDependentOn.importModule(this.dependentOnObj);
+        this.execLoadDependentFlag = true;
+      }
+      let isLoadEndFlag = loadDependentOn.isLoadEnd(this.dependentOnObj);
+      //判断依赖是否都加载完成，加载完成才可继续执行
+      console.log("setComponentInfo--isLoadEndFlag", isLoadEndFlag);
+      if (!isLoadEndFlag) {
+        window.setTimeout(this.setComponentInfo, 100, componentInfo);
+        return;
+      }
+
       this.component = componentInfo;
       this.component_id = componentInfo.component_id;
       //如果组件的属性show为false,则不进行展示
@@ -93,7 +117,7 @@ export default {
     //注册组件
     registerComponent(component_code) {
       var option = {
-        moduleCache: { vue: Vue, echarts: window["echarts"] },
+        moduleCache: this.dependentOnObj,
         getFile(url) {
           return Promise.resolve(component_code);
         },

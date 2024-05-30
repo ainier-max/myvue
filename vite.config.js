@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import pluginVue from "@vitejs/plugin-vue";
 import path from "path";
+import vitePluginCesium from "vite-plugin-cesium";
 
 export default defineConfig({
-  plugins: [pluginVue()],
+  plugins: [pluginVue(), vitePluginCesium()],
   define: {
     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "true",
   },

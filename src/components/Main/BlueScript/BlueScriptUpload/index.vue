@@ -1,242 +1,338 @@
 <template>
-  <div style="width: 100%;height: 100%;overflow-y:hidden">
-    <div class="box left"  id="leftBox">
+  <div style="width: 100%; height: 100%; overflow-y: hidden">
+    <div class="box left" id="leftBox">
       <div class="resize-bar"></div>
       <div class="resize-line"></div>
       <div class="resize-box" id="resize-box">
-        <el-radio-group v-model="changeType" label="size control"
-                        style="position:absolute;right: 20px;top:10px;z-index: 1" @change="changeTypeFun">
-          <el-radio-button label="blueScriptNodeConfig">蓝图节点配置</el-radio-button>
-          <el-radio-button label="blueScriptInOutConfig">蓝图输入输出配置</el-radio-button>
-          <el-radio-button label="blueScriptVisualizeConfig">蓝图配置项</el-radio-button>
+        <el-radio-group
+          v-model="changeType"
+          style="position: absolute; right: 20px; top: 10px; z-index: 1"
+          @change="changeTypeFun"
+        >
+          <el-radio-button value="blueScriptNodeConfig"
+            >蓝图节点配置</el-radio-button
+          >
+          <el-radio-button value="blueScriptInOutConfig"
+            >蓝图输入输出配置</el-radio-button
+          >
+          <el-radio-button value="blueScriptVisualizeConfig"
+            >蓝图配置项</el-radio-button
+          >
         </el-radio-group>
-        <MyMonacoEditor v-if="codeShowFlag==true && changeType=='blueScriptNodeConfig' && currentBlueScript!=null" :id="nodeCodeID" :code="currentBlueScript.blue_script_node_config_str" @update="updateConfig"></MyMonacoEditor>
-        <MyMonacoEditor v-if="codeShowFlag==true && changeType=='blueScriptInOutConfig' && currentBlueScript!=null" :id="inoutCodeID"  :code="currentBlueScript.blue_script_in_out_config_str" @update="updateConfig"></MyMonacoEditor>
-        <MyMonacoEditor v-if="codeShowFlag==true && changeType=='blueScriptVisualizeConfig' && currentBlueScript!=null"  :id="visualizeCodeID"  :code="currentBlueScript.blue_script_visualize_config_str" @update="updateConfig"></MyMonacoEditor>
+        <MyMonacoEditor
+          v-if="
+            codeShowFlag == true &&
+            changeType == 'blueScriptNodeConfig' &&
+            currentBlueScript != null
+          "
+          :id="nodeCodeID"
+          :code="currentBlueScript.blue_script_node_config_str"
+          @update="updateConfig"
+        ></MyMonacoEditor>
+        <MyMonacoEditor
+          v-if="
+            codeShowFlag == true &&
+            changeType == 'blueScriptInOutConfig' &&
+            currentBlueScript != null
+          "
+          :id="inoutCodeID"
+          :code="currentBlueScript.blue_script_in_out_config_str"
+          @update="updateConfig"
+        ></MyMonacoEditor>
+        <MyMonacoEditor
+          v-if="
+            codeShowFlag == true &&
+            changeType == 'blueScriptVisualizeConfig' &&
+            currentBlueScript != null
+          "
+          :id="visualizeCodeID"
+          :code="currentBlueScript.blue_script_visualize_config_str"
+          @update="updateConfig"
+        ></MyMonacoEditor>
       </div>
     </div>
-    <div class="box right" id="rightDiv" style="background: #282c34;overflow-y:hidden">
-      <el-button @click="saveBlueScriptInfo" style="position:absolute;left: 20px;top:11px;z-index: 1"
-                 type="primary">保存
+    <div
+      class="box right"
+      id="rightDiv"
+      style="background: #282c34; overflow-y: hidden"
+    >
+      <el-button
+        @click="saveBlueScriptInfo"
+        style="position: absolute; left: 20px; top: 11px; z-index: 1"
+        type="primary"
+        >保存
       </el-button>
-      <el-button @click="returnFun" style="position:absolute;left: 80px;top:11px;z-index: 1">返回
+      <el-button
+        @click="returnFun"
+        style="position: absolute; left: 80px; top: 11px; z-index: 1"
+        >返回
       </el-button>
 
-      <div id="container" style="width: 100%;height: 100%;margin-top: 5px"></div>
-
+      <div
+        id="container"
+        style="width: 100%; height: 100%; margin-top: 5px"
+      ></div>
     </div>
   </div>
 </template>
 
 <script>
-import MyMonacoEditor from '../../../../common/component/CodeEditor/MyMonacoEditor/index.vue'
-import {commonExcuteRequest, commonSelectRequest} from "../../../../common/js/request.js";
+import MyMonacoEditor from "../../../../common/component/CodeEditor/MyMonacoEditor/index.vue";
+import {
+  commonExcuteRequest,
+  commonSelectRequest,
+} from "../../../../common/js/request.js";
 import axios from "axios";
-import {js_beautify} from "js-beautify";
-import {Graph, Shape, Edge} from '@antv/x6'
+import { js_beautify } from "js-beautify";
+import { Graph, Shape, Edge } from "@antv/x6";
 import elementResizeDetectorMaker from "element-resize-detector";
 export default {
-  name: 'BlueScriptUpload',
+  name: "BlueScriptUpload",
   props: {},
   components: {
-    MyMonacoEditor
+    MyMonacoEditor,
   },
   data() {
     return {
-      changeType:'blueScriptNodeConfig',
+      changeType: "blueScriptNodeConfig",
       currentBlueScript: null,
       graph: null,
-      currentNode:null,
-      nodeCodeID:"nodeCodeID",
-      inoutCodeID:"inoutCodeID",
-      visualizeCodeID:"visualizeCodeID",
-      logicCodeID:"logicCodeID",
-      codeShowFlag:false,
-
-    }
+      currentNode: null,
+      nodeCodeID: "nodeCodeID",
+      inoutCodeID: "inoutCodeID",
+      visualizeCodeID: "visualizeCodeID",
+      logicCodeID: "logicCodeID",
+      codeShowFlag: false,
+    };
   },
-  created() {
-
-  },
+  created() {},
 
   methods: {
-    updateConfig(code){
-      if(this.changeType=="blueScriptNodeConfig"){
-        this.currentBlueScript.blue_script_node_config_str=code;
-      }else if(this.changeType=="blueScriptInOutConfig"){
-        this.currentBlueScript.blue_script_in_out_config_str=code;
-      }else if(this.changeType=="blueScriptVisualizeConfig"){
-        this.currentBlueScript.blue_script_visualize_config_str=code;
+    updateConfig(code) {
+      if (this.changeType == "blueScriptNodeConfig") {
+        this.currentBlueScript.blue_script_node_config_str = code;
+      } else if (this.changeType == "blueScriptInOutConfig") {
+        this.currentBlueScript.blue_script_in_out_config_str = code;
+      } else if (this.changeType == "blueScriptVisualizeConfig") {
+        this.currentBlueScript.blue_script_visualize_config_str = code;
       }
       this.deleteNode();
       this.addNode();
     },
-    saveBlueScriptInfo(){
-      let type=this.GetQueryString("type");
-      if(type=="component"){
+    saveBlueScriptInfo() {
+      let type = this.GetQueryString("type");
+      if (type == "component") {
         //表单验证后执行
         let param = {};
         param.sql = "page_component_frontend.updateBlueScriptConfig";
-        param.blue_script_node_config_str=this.currentBlueScript.blue_script_node_config_str;
-        param.blue_script_in_out_config_str=this.currentBlueScript.blue_script_in_out_config_str;
-        param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;
-        param.component_id=this.GetQueryString("blue_script_id");
-        commonExcuteRequest(window.axios, param, this.saveBlueScriptInfoCallBack);
-      }else if(type=="bluescript"){
+        param.blue_script_node_config_str =
+          this.currentBlueScript.blue_script_node_config_str;
+        param.blue_script_in_out_config_str =
+          this.currentBlueScript.blue_script_in_out_config_str;
+        param.blue_script_visualize_config_str =
+          this.currentBlueScript.blue_script_visualize_config_str;
+        param.component_id = this.GetQueryString("blue_script_id");
+        commonExcuteRequest(
+          window.axios,
+          param,
+          this.saveBlueScriptInfoCallBack
+        );
+      } else if (type == "bluescript") {
         //表单验证后执行
         let param = {};
         param.sql = "page_blue_script_tools.updateBlueScriptConfig";
-        param.blue_script_node_config_str=this.currentBlueScript.blue_script_node_config_str;
-        param.blue_script_in_out_config_str=this.currentBlueScript.blue_script_in_out_config_str;
-        param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;
-        param.blue_script_id=this.GetQueryString("blue_script_id");
-        commonExcuteRequest(window.axios, param, this.saveBlueScriptInfoCallBack);
-      }else if(type=="packComponent"){
-         //表单验证后执行
+        param.blue_script_node_config_str =
+          this.currentBlueScript.blue_script_node_config_str;
+        param.blue_script_in_out_config_str =
+          this.currentBlueScript.blue_script_in_out_config_str;
+        param.blue_script_visualize_config_str =
+          this.currentBlueScript.blue_script_visualize_config_str;
+        param.blue_script_id = this.GetQueryString("blue_script_id");
+        commonExcuteRequest(
+          window.axios,
+          param,
+          this.saveBlueScriptInfoCallBack
+        );
+      } else if (type == "packComponent") {
+        //表单验证后执行
         let param = {};
         param.sql = "page_component_pack.updateBlueScriptConfig";
-        param.blue_script_node_config_str=this.currentBlueScript.blue_script_node_config_str;
-        param.blue_script_in_out_config_str=this.currentBlueScript.blue_script_in_out_config_str;
-        param.blue_script_visualize_config_str=this.currentBlueScript.blue_script_visualize_config_str;
-        param.component_id=this.GetQueryString("blue_script_id");
-        commonExcuteRequest(window.axios, param, this.saveBlueScriptInfoCallBack);
+        param.blue_script_node_config_str =
+          this.currentBlueScript.blue_script_node_config_str;
+        param.blue_script_in_out_config_str =
+          this.currentBlueScript.blue_script_in_out_config_str;
+        param.blue_script_visualize_config_str =
+          this.currentBlueScript.blue_script_visualize_config_str;
+        param.component_id = this.GetQueryString("blue_script_id");
+        commonExcuteRequest(
+          window.axios,
+          param,
+          this.saveBlueScriptInfoCallBack
+        );
       }
     },
-    saveBlueScriptInfoCallBack(result){
+    saveBlueScriptInfoCallBack(result) {
       if (result.state == "success") {
-        this.$message.success('修改成功！');
+        this.$message.success("修改成功！");
       }
     },
-    returnFun(){
-
-    },
-    changeTypeFun(){
-
-    },
-    findBlueScriptInfoByPackComponentType(){
+    returnFun() {},
+    changeTypeFun() {},
+    findBlueScriptInfoByPackComponentType() {
       let param = {};
       param.sql = "page_component_pack.findAll";
       param.component_id = this.GetQueryString("blue_script_id");
-      commonSelectRequest(axios, param, this.findBlueScriptInfoByPackComponentTypeCallBack);
+      commonSelectRequest(
+        axios,
+        param,
+        this.findBlueScriptInfoByPackComponentTypeCallBack
+      );
     },
-    findBlueScriptInfoByPackComponentTypeCallBack(result){
-      if(result.objects.length>0){
-        this.currentBlueScript=result.objects[0];
+    findBlueScriptInfoByPackComponentTypeCallBack(result) {
+      if (result.objects.length > 0) {
+        this.currentBlueScript = result.objects[0];
         //美化js代码
-        this.currentBlueScript.blue_script_node_config_str=js_beautify(this.currentBlueScript.blue_script_node_config_str);
-        this.currentBlueScript.blue_script_in_out_config_str=js_beautify(this.currentBlueScript.blue_script_in_out_config_str);
-        this.currentBlueScript.blue_script_visualize_config_str=js_beautify(this.currentBlueScript.blue_script_visualize_config_str);
-        console.log("当前currentBlueScript",this.currentBlueScript);
+        this.currentBlueScript.blue_script_node_config_str = js_beautify(
+          this.currentBlueScript.blue_script_node_config_str
+        );
+        this.currentBlueScript.blue_script_in_out_config_str = js_beautify(
+          this.currentBlueScript.blue_script_in_out_config_str
+        );
+        this.currentBlueScript.blue_script_visualize_config_str = js_beautify(
+          this.currentBlueScript.blue_script_visualize_config_str
+        );
+        console.log("当前currentBlueScript", this.currentBlueScript);
         this.initGragh();
       }
     },
 
-    findBlueScriptInfoByComponentType(){
+    findBlueScriptInfoByComponentType() {
       let param = {};
       param.sql = "page_component_frontend.find";
       param.component_id = this.GetQueryString("blue_script_id");
-      commonSelectRequest(axios, param, this.findBlueScriptInfoByComponentTypeCallBack);
+      commonSelectRequest(
+        axios,
+        param,
+        this.findBlueScriptInfoByComponentTypeCallBack
+      );
     },
-    findBlueScriptInfoByComponentTypeCallBack(result){
-      if(result.objects.length>0){
-        this.currentBlueScript=result.objects[0];
+    findBlueScriptInfoByComponentTypeCallBack(result) {
+      if (result.objects.length > 0) {
+        this.currentBlueScript = result.objects[0];
         //美化js代码
-        this.currentBlueScript.blue_script_node_config_str=js_beautify(this.currentBlueScript.blue_script_node_config_str);
-        this.currentBlueScript.blue_script_in_out_config_str=js_beautify(this.currentBlueScript.blue_script_in_out_config_str);
-        this.currentBlueScript.blue_script_visualize_config_str=js_beautify(this.currentBlueScript.blue_script_visualize_config_str);
-        console.log("当前currentBlueScript",this.currentBlueScript);
+        this.currentBlueScript.blue_script_node_config_str = js_beautify(
+          this.currentBlueScript.blue_script_node_config_str
+        );
+        this.currentBlueScript.blue_script_in_out_config_str = js_beautify(
+          this.currentBlueScript.blue_script_in_out_config_str
+        );
+        this.currentBlueScript.blue_script_visualize_config_str = js_beautify(
+          this.currentBlueScript.blue_script_visualize_config_str
+        );
+        console.log("当前currentBlueScript", this.currentBlueScript);
         this.initGragh();
       }
     },
-    findBlueScriptInfoByBlueScriptType(){
+    findBlueScriptInfoByBlueScriptType() {
       let param = {};
       param.sql = "page_blue_script_tools.find";
       param.blue_script_id = this.GetQueryString("blue_script_id");
       commonSelectRequest(axios, param, this.findBlueScriptInfoByTypeCallBack);
     },
-    findBlueScriptInfoByTypeCallBack(result){
-      if(result.objects.length>0){
-        this.currentBlueScript=result.objects[0];
+    findBlueScriptInfoByTypeCallBack(result) {
+      if (result.objects.length > 0) {
+        this.currentBlueScript = result.objects[0];
         //美化js代码
-        this.currentBlueScript.blue_script_node_config_str=js_beautify(this.currentBlueScript.blue_script_node_config_str);
-        this.currentBlueScript.blue_script_in_out_config_str=js_beautify(this.currentBlueScript.blue_script_in_out_config_str);
-        this.currentBlueScript.blue_script_visualize_config_str=js_beautify(this.currentBlueScript.blue_script_visualize_config_str);
-        console.log("当前currentBlueScript",this.currentBlueScript);
+        this.currentBlueScript.blue_script_node_config_str = js_beautify(
+          this.currentBlueScript.blue_script_node_config_str
+        );
+        this.currentBlueScript.blue_script_in_out_config_str = js_beautify(
+          this.currentBlueScript.blue_script_in_out_config_str
+        );
+        this.currentBlueScript.blue_script_visualize_config_str = js_beautify(
+          this.currentBlueScript.blue_script_visualize_config_str
+        );
+        console.log("当前currentBlueScript", this.currentBlueScript);
         this.initGragh();
       }
     },
 
-    GetQueryString(name){
-      console.log("window.location1",window.location);
-      var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-      let search=window.location.href.split("?")[1];
+    GetQueryString(name) {
+      console.log("window.location1", window.location);
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+      let search = window.location.href.split("?")[1];
       var r = search.match(reg);
-      if(r!=null)return  unescape(r[2]); return null;
+      if (r != null) return unescape(r[2]);
+      return null;
     },
-    initGragh(){
+    initGragh() {
       this.graph = new Graph({
-        container: document.getElementById('container'),
+        container: document.getElementById("container"),
         grid: true,
-        autoResize:true,
+        autoResize: true,
         width: 1500,
         height: 900,
       });
       this.addNode();
     },
 
-    deleteNode(){
+    deleteNode() {
       this.graph.removeNode(this.currentNode);
-      this.currentNode=null;
+      this.currentNode = null;
     },
 
-    addNode(){
-      if(this.currentBlueScript.blue_script_node_config_str==""){
+    addNode() {
+      if (this.currentBlueScript.blue_script_node_config_str == "") {
         return;
       }
-      let nodeConfig = eval("(" + this.currentBlueScript.blue_script_node_config_str + ")");
+      let nodeConfig = eval(
+        "(" + this.currentBlueScript.blue_script_node_config_str + ")"
+      );
       nodeConfig.id = "blueScriptRef-" + window.cbcuuid();
-      console.log("this.graph：11",this.graph);
-      nodeConfig.x = this.graph.getGraphArea().x+100;
-      nodeConfig.y = this.graph.getGraphArea().y+100;
+      console.log("this.graph：11", this.graph);
+      nodeConfig.x = this.graph.getGraphArea().x + 100;
+      nodeConfig.y = this.graph.getGraphArea().y + 100;
       //console.log("this.currentBlueScript885",this.currentBlueScript);
-      if(typeof (this.currentBlueScript.blue_script_name)=="undefined"){
+      if (typeof this.currentBlueScript.blue_script_name == "undefined") {
         nodeConfig.label = this.currentBlueScript.component_name;
-      }else{
+      } else {
         nodeConfig.label = this.currentBlueScript.blue_script_name;
       }
       this.currentNode = this.graph.addNode(nodeConfig);
       this.currentNode.ref = nodeConfig.id;
-      let obj={};
-      obj.config={};
-      if(this.currentBlueScript.blue_script_in_out_config_str==""){
+      let obj = {};
+      obj.config = {};
+      if (this.currentBlueScript.blue_script_in_out_config_str == "") {
         return;
       }
-      obj.config.param=eval("(" + this.currentBlueScript.blue_script_in_out_config_str + ")");
+      obj.config.param = eval(
+        "(" + this.currentBlueScript.blue_script_in_out_config_str + ")"
+      );
       this.currentNode = this.addPort(this.currentNode, obj.config);
     },
     addPort(node, config) {
       //console.log("param114", param);
       let param = config.param;
       let inParams = param.in;
-      if (typeof (inParams) != "undefined") {
+      if (typeof inParams != "undefined") {
         for (let i = 0; i < inParams.length; i++) {
-          if(inParams[i].show==true){
-            if (inParams[i].type == "event" ) {
+          if (inParams[i].show == true) {
+            if (inParams[i].type == "event") {
               node.addPort({
                 key: inParams[i].key,
                 id: inParams[i].portID,
-                group: 'in',
+                group: "in",
                 markup: [
                   {
-                    tagName: 'rect',
-                    selector: 'rect',
+                    tagName: "rect",
+                    selector: "rect",
                   },
                 ],
                 attrs: {
                   rect: {
                     magnet: true,
-                    stroke: '#31d0c6',
-                    fill: '#ffffff',
+                    stroke: "#31d0c6",
+                    fill: "#ffffff",
                     strokeWidth: 2,
                     width: 10,
                     height: 10,
@@ -245,50 +341,50 @@ export default {
                   },
                   text: {
                     text: inParams[i].label, // 标签文本
-                    fill: 'rgba(255,255,255,0.8)',
-                    fontSize: 12,    // 文字大小
+                    fill: "rgba(255,255,255,0.8)",
+                    fontSize: 12, // 文字大小
                   },
                 },
-              })
-            }else if(inParams[i].type == "function"){
+              });
+            } else if (inParams[i].type == "function") {
               node.addPort({
                 key: inParams[i].key,
                 id: inParams[i].portID,
-                group: 'in',
+                group: "in",
                 args: { angle: -90 },
                 markup: [
                   {
-                    tagName: 'path',
-                    selector: 'path',
+                    tagName: "path",
+                    selector: "path",
                   },
                 ],
                 attrs: {
                   text: {
                     text: inParams[i].label, // 标签文本
-                    fill: 'rgba(255,255,255,0.8)',
-                    fontSize: 12,    // 文字大小
+                    fill: "rgba(255,255,255,0.8)",
+                    fontSize: 12, // 文字大小
                   },
                   path: {
-                    d: 'M -6 -8 L 0 8 L 6 -8 Z',
+                    d: "M -6 -8 L 0 8 L 6 -8 Z",
                     magnet: true,
-                    fill: 'white',
+                    fill: "white",
                   },
                 },
-              })
-            }else {
+              });
+            } else {
               //console.log("111：",inParams[i].label);
               node.addPort({
                 key: inParams[i].key,
                 id: inParams[i].portID,
-                group: 'in',
+                group: "in",
                 attrs: {
                   text: {
                     text: inParams[i].label, // 标签文本
-                    fill: 'rgba(255,255,255,0.8)',
-                    fontSize: 12,    // 文字大小
+                    fill: "rgba(255,255,255,0.8)",
+                    fontSize: 12, // 文字大小
                   },
                 },
-              })
+              });
             }
           }
         }
@@ -296,26 +392,29 @@ export default {
 
       //输出端口
       let outParams = param.out;
-      if (typeof (outParams) != "undefined") {
+      if (typeof outParams != "undefined") {
         for (let i = 0; i < outParams.length; i++) {
           //console.log("outParams", outParams[i]);
-          if(outParams[i].show==true) {
-            if (outParams[i].type == "event" || outParams[i].type == "function") {
+          if (outParams[i].show == true) {
+            if (
+              outParams[i].type == "event" ||
+              outParams[i].type == "function"
+            ) {
               node.addPort({
                 key: outParams[i].key,
                 id: outParams[i].portID,
-                group: 'out',
+                group: "out",
                 markup: [
                   {
-                    tagName: 'rect',
-                    selector: 'rect',
+                    tagName: "rect",
+                    selector: "rect",
                   },
                 ],
                 attrs: {
                   rect: {
                     magnet: true,
-                    stroke: '#31d0c6',
-                    fill: '#ffffff',
+                    stroke: "#31d0c6",
+                    fill: "#ffffff",
                     strokeWidth: 2,
                     width: 10,
                     height: 10,
@@ -324,61 +423,56 @@ export default {
                   },
                   text: {
                     text: outParams[i].label, // 标签文本
-                    fill: 'rgba(255,255,255,0.8)',
-                    fontSize: 12,    // 文字大小
+                    fill: "rgba(255,255,255,0.8)",
+                    fontSize: 12, // 文字大小
                   },
                 },
-              })
+              });
             } else {
               node.addPort({
                 key: outParams[i].key,
                 id: outParams[i].portID,
-                group: 'out',
+                group: "out",
                 attrs: {
                   text: {
                     text: outParams[i].label, // 标签文本
-                    fill: 'rgba(255,255,255,0.8)',
-                    fontSize: 12,    // 文字大小
+                    fill: "rgba(255,255,255,0.8)",
+                    fontSize: 12, // 文字大小
                   },
                 },
-              })
+              });
             }
           }
         }
       }
       return node;
     },
-
-
   },
   mounted() {
-    let type=this.GetQueryString("type");
-    console.log("type1232",type);
-    if(type=="component"){
+    let type = this.GetQueryString("type");
+    console.log("type1232", type);
+    if (type == "component") {
       this.findBlueScriptInfoByComponentType();
-    }else if(type=="bluescript"){
+    } else if (type == "bluescript") {
       this.findBlueScriptInfoByBlueScriptType();
-    }else if(type=="packComponent"){
+    } else if (type == "packComponent") {
       this.findBlueScriptInfoByPackComponentType();
     }
 
     const erd = elementResizeDetectorMaker();
-    let the=this;
-    erd.listenTo(document.getElementById("resize-box"), element => {
+    let the = this;
+    erd.listenTo(document.getElementById("resize-box"), (element) => {
       the.$nextTick(() => {
         console.log("窗口变化4");
-        the.codeShowFlag=false;
+        the.codeShowFlag = false;
         the.$nextTick(() => {
-          the.codeShowFlag=true;
+          the.codeShowFlag = true;
         });
       });
     });
-
-
-  }
-}
+  },
+};
 </script>
-
 
 <style>
 .el-tabs__item {
@@ -399,18 +493,20 @@ export default {
   height: 100%;
 }
 
-
-::-webkit-scrollbar { /*滚动条整体样式*/
+::-webkit-scrollbar {
+  /*滚动条整体样式*/
   width: 5px; /*高宽分别对应横竖滚动条的尺寸*/
   height: 1px;
 }
 
-::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
   border-radius: 5px;
   background: #a8a9ab;
 }
 
-::-webkit-scrollbar-track { /*滚动条里面轨道*/
+::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
   border-radius: 5px;
   background: #f0f2f5;
 }
@@ -477,7 +573,7 @@ export default {
 
   .resize-bar:hover ~ .resize-line::after,
   .resize-bar:active ~ .resize-line::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 16px;
     height: 16px;
@@ -487,6 +583,4 @@ export default {
     background-size: 100% 100%;
   }
 }
-
 </style>
-

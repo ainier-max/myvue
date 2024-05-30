@@ -154,7 +154,9 @@
       <!--蓝图配置-->
       <BlueScriptSettings
         v-if="
-          designType == 'blueScriptDesign' && (currentPageRenderTreeNodeData?.type != 'mainBlock' || currentBlueScript?.type=='blueScriptTool')
+          designType == 'blueScriptDesign' &&
+          (currentPageRenderTreeNodeData?.type != 'mainBlock' ||
+            currentBlueScript?.type == 'blueScriptTool')
         "
       ></BlueScriptSettings>
       <!--页面块蓝图配置-->
@@ -185,7 +187,18 @@
 
 <script setup lang="ts">
 //import 'default-passive-events';
-import { provide, ref, nextTick, onMounted, watchEffect, computed } from "vue";
+import * as Vue from "vue";
+import { loadDependentOn } from "@/common/js/loadDependentOn.js";
+
+import {
+  provide,
+  ref,
+  nextTick,
+  onMounted,
+  watchEffect,
+  computed,
+  inject,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
 import { ElMessage } from "element-plus";
@@ -381,13 +394,13 @@ const addBlueSciptNode = (nodeData) => {
     });
   } else if (nodeData.type == "packComponent") {
     findPackComponent(nodeData);
-  }else {
+  } else {
     ElMessage.error("暂时不支持该类型！");
     return;
   }
 };
 
-const findPackComponent=(nodeData)=>{
+const findPackComponent = (nodeData) => {
   let param = {};
   param.sql = "page_component_pack.findAll";
   param.component_id = nodeData.related_value;
@@ -397,9 +410,9 @@ const findPackComponent=(nodeData)=>{
     findPackComponentCallBack,
     nodeData
   );
-}
+};
 
-const findPackComponentCallBack=(result,nodeData)=>{
+const findPackComponentCallBack = (result, nodeData) => {
   if (result.objects.length > 0) {
     console.log("findPackComponentCallBack--result", result);
     let obj = result.objects[0];
@@ -407,7 +420,7 @@ const findPackComponentCallBack=(result,nodeData)=>{
     obj.nodeData = nodeData;
     blueScriptDataStoreObj.add(obj);
   }
-}
+};
 
 const findFrontEndComponent = (nodeData) => {
   let param = {};
@@ -465,21 +478,20 @@ watchEffect(() => {
 });
 //树节点点击事件
 const nodeClick = (data) => {
-
-
   //界面设计才设置当前页面树
   if (designType.value == "layoutDesign") {
     //设置当前树节点的值，并这是当前所处的顶层页面块Block
     currentDealDataStoreObj.setCurrentPageRenderTreeNodeData(data);
   } else if (designType.value == "blueScriptDesign") {
-    
-
     //仅设置当前树节点的值
     currentPageRenderTreeNodeData.value = data;
-    if(currentPageRenderTreeNodeData.value.type=="mainBlock"){
-      currentBlueScript.value=null;
+    if (currentPageRenderTreeNodeData.value.type == "mainBlock") {
+      currentBlueScript.value = null;
     }
-    console.log("currentPageRenderTreeNodeData2132",currentPageRenderTreeNodeData);
+    console.log(
+      "currentPageRenderTreeNodeData2132",
+      currentPageRenderTreeNodeData
+    );
     //被使用才定位
     if (isUsed()) {
       //定位
@@ -637,7 +649,7 @@ const savePageRenderTree = () => {
       });
       if (arrayTemp[i].type == "mainBlock" && !arrayTemp[i].pid) {
         pageNameTemp = name;
-        topPageBlockRefTemp=ref;
+        topPageBlockRefTemp = ref;
       }
     }
   }
@@ -680,8 +692,8 @@ const showDidlog = (type) => {
 };
 
 const toDesign = (type) => {
-  if(type=="layoutDesign" && !currentPageRenderTreeNodeData.value){
-    currentPageRenderTreeNodeData.value=pageRenderTreeData.value[0];
+  if (type == "layoutDesign" && !currentPageRenderTreeNodeData.value) {
+    currentPageRenderTreeNodeData.value = pageRenderTreeData.value[0];
   }
   designType.value = type;
 };
@@ -694,7 +706,7 @@ const getChooseBlueScriptTool = (obj) => {
 
 const showDebugProcessWin = (closeFlag) => {
   //置空实例
-  allComponentInstance.value=[];
+  allComponentInstance.value = [];
   debugProcessFlag.value = true;
   if (closeFlag == true) {
     //关闭节点配置页面
@@ -707,9 +719,36 @@ const showDebugProcessWin = (closeFlag) => {
   }
 };
 
+//加载依赖
+const dependentOnObj = ref({});
+provide("provideDependentOnObj", dependentOnObj);
+const execLoadDependentFlag = ref(false);
+const loadDependentOnFun = () => {
+  //首次执行需要加载依赖
+  if (execLoadDependentFlag.value == false) {
+    dependentOnObj.value = {
+      vue: Vue,
+      echarts: null,
+      FFCesium: null,
+    };
+    //加载依赖
+    loadDependentOn.importModule(dependentOnObj.value);
+    execLoadDependentFlag.value = true;
+  }
+
+  let isLoadEndFlag = loadDependentOn.isLoadEnd(dependentOnObj.value);
+  //判断依赖是否都加载完成，加载完成才可继续执行
+  if (!isLoadEndFlag) {
+    window.setTimeout(loadDependentOnFun, 100);
+    return;
+  }
+  //开始执行
+  findAllPageRenderTreeByPageID();
+};
+
 // 生命周期钩子
 onMounted(() => {
-  findAllPageRenderTreeByPageID();
+  loadDependentOnFun();
 });
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%;height:100%;" class="ttt">
+  <div style="width: 100%; height: 100%" class="ttt">
     <component
       :id="'id_' + props.frontEndComponentData.ref"
       :ref="props.frontEndComponentData.ref"
@@ -17,7 +17,14 @@
 </template>
 
 <script setup lang="ts">
-import {ref, nextTick, onMounted, computed, getCurrentInstance } from "vue";
+import {
+  ref,
+  inject,
+  nextTick,
+  onMounted,
+  computed,
+  getCurrentInstance,
+} from "vue";
 import * as Vue from "vue";
 
 import { storeToRefs } from "pinia";
@@ -33,25 +40,25 @@ let currentInstance = getCurrentInstance();
 if (currentInstance.components == null) {
   currentInstance.components = [];
 }
-currentInstance.cbcRefValue=props.frontEndComponentData.ref;
-currentInstance.cbcLabelValue=props.frontEndComponentData.label;
+currentInstance.cbcRefValue = props.frontEndComponentData.ref;
+currentInstance.cbcLabelValue = props.frontEndComponentData.label;
 
-let pushFlag=true;
-for(let i=0;i<allComponentInstance.value.length;i++){
-  if(allComponentInstance.value[i].cbcRefValue==props.frontEndComponentData.ref){
-    allComponentInstance.value[i]=currentInstance;
-    pushFlag=false;
+let pushFlag = true;
+for (let i = 0; i < allComponentInstance.value.length; i++) {
+  if (
+    allComponentInstance.value[i].cbcRefValue == props.frontEndComponentData.ref
+  ) {
+    allComponentInstance.value[i] = currentInstance;
+    pushFlag = false;
     //console.log("组件12更新，其组件实例替换element",currentInstance);
     //console.log("组件12更新，其组件实例替换allComponentInstance",allComponentInstance);
   }
 }
 
-if(pushFlag==true){
+if (pushFlag == true) {
   //console.log("组件12初始化",currentInstance);
   allComponentInstance.value.push(currentInstance);
 }
-
-
 
 const showFlag = ref(false);
 // console.log("frontEndComponentData12321", props.frontEndComponentData);
@@ -64,13 +71,14 @@ const eventFun = (eventType, obj, component) => {
   console.log("eventFun--事件传递值：", obj);
   console.log("eventFun--当前组件信息：", component);
   //console.log("eventFun--frontEndComponentData：", props.frontEndComponentData);
-  processDataStoreObj.eventProcess(eventType,obj,component);
+  processDataStoreObj.eventProcess(eventType, obj, component);
 };
 
-
 const registerComponent = (component_code) => {
+  const dependentOnObj = inject("provideDependentOnObj");
+  console.log("registerComponent--dependentOnObj", dependentOnObj.value);
   var option = {
-    moduleCache: { vue: Vue, echarts: window["echarts"] },
+    moduleCache: dependentOnObj.value,
     getFile(url) {
       return Promise.resolve(component_code);
     },
@@ -96,9 +104,7 @@ const registerComponent = (component_code) => {
   });
 };
 registerComponent(props.frontEndComponentData.component_code);
-onMounted(() => {
-  
-});
+onMounted(() => {});
 </script>
 
 <style scoped></style>
