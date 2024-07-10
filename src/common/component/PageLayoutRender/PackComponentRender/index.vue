@@ -45,22 +45,21 @@ const eventFun = (eventType, obj, component) => {
   console.log("eventFun--事件类型：", eventType);
   console.log("eventFun--事件传递值：", obj);
   console.log("eventFun--当前组件信息：", component);
-  processDataStoreObj.eventProcess(eventType,obj,component);
+  processDataStoreObj.eventProcess(eventType, obj, component);
 };
-
 
 // 生命周期钩子
 onMounted(() => {
   let url =
     "/cbc/GetPageComponentPackmjs.cbc?component_id=" +
     props.packComponentData.related_value;
-  import(/* @vite-ignore */ url)
+  import(/* @vite-ignore */ url /* @vite-ignore */)
     .then((module) => {
       //console.log("module111333", module);
       //局部动态注册组件
       currentInstance.components[props.packComponentData.related_value] =
         module.default;
-        showFlag.value = true;
+      showFlag.value = true;
       //findComponentConfig();
     })
     .catch((error) => {

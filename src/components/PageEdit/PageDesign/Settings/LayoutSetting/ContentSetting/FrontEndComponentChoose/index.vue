@@ -76,27 +76,27 @@ const findPageComponentByIDCallBack = (result) => {
     obj.layout_ref =currentPageRenderTreeNodeData.value.ref;
     //obj.component_ref = "frontEndComponentRef-" + uuid();
     */
-    obj.id="id-"+uuid();
-    if(currentPageRenderTreeNodeData.value.type=="flex-row" || currentPageRenderTreeNodeData.value.type=="flex-column"){
+    obj.id = "id-" + uuid();
+    if (
+      currentPageRenderTreeNodeData.value.type == "flex-row" ||
+      currentPageRenderTreeNodeData.value.type == "flex-column"
+    ) {
       //当前节点为flex-row或者flex-column
-      obj.pid=currentPageRenderTreeNodeData.value.id;
-    }else{
+      obj.pid = currentPageRenderTreeNodeData.value.id;
+    } else {
       //当前节点为frontEndComponent/buildInComponent/packComponent
-      obj.pid=currentPageRenderTreeNodeData.value.pid;
+      obj.pid = currentPageRenderTreeNodeData.value.pid;
     }
 
-    obj.label=result.objects[0].component_name;
-    obj.ref = "frontEndComponentRef-" + uuid();
+    obj.label = result.objects[0].component_name;
     obj.type = result.objects[0].type;
+    obj.ref = "frontEndComponentRef-" + "-" + uuid();
     obj.page_id = page_id;
     obj.component_code = result.objects[0].component_code;
     obj.related_value = result.objects[0].component_id;
     obj.config_str = result.objects[0].component_config_str;
-    obj.config = eval(
-      "(" + result.objects[0].component_config_str + ")"
-    );
+    obj.config = eval("(" + result.objects[0].component_config_str + ")");
 
-    
     obj.config.attr.flexBasis = 100;
     obj.config.attr.padding = {};
     obj.config.attr.padding.unit = "px";
@@ -118,7 +118,7 @@ const findPageComponentByIDCallBack = (result) => {
     obj.config.attr.backgroundColorValue = null;
     obj.config.attr.backgroundImgValue = "";
 
-    emit("getChooseData",obj);
+    emit("getChooseData", obj);
   }
 };
 const findPageComponentTree = () => {
@@ -145,8 +145,6 @@ const pageCentreTreeNodeClick = (data, node) => {
       pageCentreTreeClickCount.value = 0;
       //单击事件处理
       //console.log('单击事件,可在此处理对应逻辑')
-      
-
     } else if (pageCentreTreeClickCount.value > 1) {
       //把次数归零
       pageCentreTreeClickCount.value = 0;
@@ -160,7 +158,6 @@ const pageCentreTreeNodeClick = (data, node) => {
 // 生命周期钩子
 onMounted(() => {
   findPageComponentTree();
-  
 });
 </script>
 

@@ -101,6 +101,7 @@ const registerComponent = (component_code) => {
   console.log("注册组件", props.frontEndComponentData.related_value);
   nextTick(() => {
     showFlag.value = true;
+    console.log("注册组件，显示", props.frontEndComponentData);
   });
 };
 registerComponent(props.frontEndComponentData.component_code);
