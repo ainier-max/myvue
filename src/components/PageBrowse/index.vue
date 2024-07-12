@@ -18,6 +18,8 @@
 
 <script setup lang="ts">
 //import "default-passive-events";
+import * as Vue from "vue";
+
 import { provide, ref, nextTick, onMounted, computed } from "vue";
 import PageLayoutRender from "@/common/component/PageLayoutRender/index.vue";
 import { objectToString, stringToObject } from "@/common/js/objStr.js";
@@ -35,9 +37,7 @@ import {
 import { storeToRefs } from "pinia";
 import { pageRenderTreeDataStore } from "@/store/pageRenderTreeData.ts";
 const pageRenderTreeDataStoreObj = pageRenderTreeDataStore();
-const { pageRenderTreeData } = storeToRefs(
-  pageRenderTreeDataStoreObj
-);
+const { pageRenderTreeData } = storeToRefs(pageRenderTreeDataStoreObj);
 
 import { blueScriptDataStore } from "@/store/blueScriptData.ts";
 const blueScriptDataStoreObj = blueScriptDataStore();
@@ -75,7 +75,7 @@ const findAllPageRenderTreeByPageID = () => {
       sql: "page_blue_script.findRalativeBlueScriptByPageID",
       page_id: page_id,
       resultKey: "RalativeBlueScript",
-    }
+    },
   ];
   commonBatchSelectRequest(axios, param, findAllPageRenderTreeByPageIDCallBack);
 };
@@ -121,8 +121,8 @@ const findAllPageRenderTreeByPageIDCallBack = (result) => {
   pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
   //蓝图数据
   blueScriptDataStoreObj.setBlueScriptData(result["AllBlueScript"]);
-  result["RalativeBlueScript"].forEach(element => {
-    element.isRelativePage=true;
+  result["RalativeBlueScript"].forEach((element) => {
+    element.isRelativePage = true;
     element.config = stringToObject(element.config_str);
     blueScriptData.value.push(element);
   });
@@ -184,15 +184,6 @@ const eventStartRun = (isDebug) => {
     processDataStoreObj.runAllProcess(isDebug);
   }
 };
-
-let pageModel = "";
-const page_type = route.query.page_type;
-if (page_type == "edit") {
-  pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
-  toEventStartRun(true);
-} else if (page_type == "browse") {
-  findAllPageRenderTreeByPageID();
-}
 
 //页面块样式
 const pageBlockStyle = computed(() => {
@@ -266,6 +257,44 @@ const setPageLayoutStyle = computed(() => {
     return styleObj;
   };
 });
+
+//加载依赖
+import { loadDependentOn } from "@/common/js/loadDependentOn.js";
+
+const dependentOnObj = ref({});
+provide("provideDependentOnObj", dependentOnObj);
+const execLoadDependentFlag = ref(false);
+const loadDependentOnFun = () => {
+  //首次执行需要加载依赖
+  if (execLoadDependentFlag.value == false) {
+    dependentOnObj.value = {
+      vue: Vue,
+      echarts: null,
+      FFCesium: null,
+    };
+    //加载依赖
+    loadDependentOn.importModule(dependentOnObj.value);
+    execLoadDependentFlag.value = true;
+  }
+
+  let isLoadEndFlag = loadDependentOn.isLoadEnd(dependentOnObj.value);
+  //判断依赖是否都加载完成，加载完成才可继续执行
+  if (!isLoadEndFlag) {
+    window.setTimeout(loadDependentOnFun, 100);
+    return;
+  }
+  //开始执行
+  findAllPageRenderTreeByPageID();
+};
+
+let pageModel = "";
+const page_type = route.query.page_type;
+if (page_type == "edit") {
+  pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
+  toEventStartRun(true);
+} else if (page_type == "browse") {
+  loadDependentOnFun();
+}
 
 onMounted(() => {
   window.addEventListener("resize", () => {

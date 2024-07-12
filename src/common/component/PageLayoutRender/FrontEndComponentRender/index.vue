@@ -83,7 +83,6 @@ const registerComponent = (component_code) => {
       return Promise.resolve(component_code);
     },
     addStyle(textContent) {
-      //console.log("textContent",textContent);
       const style = Object.assign(document.createElement("style"), {
         textContent,
       });
@@ -91,7 +90,8 @@ const registerComponent = (component_code) => {
       document.head.insertBefore(style, ref);
     },
   };
-  let component = loadModule("./Main.vue", option);
+  let vueName = "./Main" + new Date().getTime() + Math.random() + ".vue";
+  let component = loadModule(vueName, option);
   //局部动态注册组件
   currentInstance.components[props.frontEndComponentData.related_value] =
     Vue.defineAsyncComponent(() => component);
