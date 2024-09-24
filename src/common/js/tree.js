@@ -1,6 +1,7 @@
 //方法1
 //按elemenui tree的数据结构去构造数据
 export function getListData(objects, otherParams) {
+  console.log("getListData--objects", objects);
   var dataArray = [];
   for (var i = 0; i < objects.length; i++) {
     let parentId = objects[i].pid;
@@ -9,7 +10,7 @@ export function getListData(objects, otherParams) {
         id: objects[i].id,
         label: objects[i].name,
         pid: objects[i].pid,
-        children:[]
+        children: [],
       };
       for (let j = 0; j < otherParams.length; j++) {
         objTemp[otherParams[j]] = objects[i][otherParams[j]];
@@ -34,7 +35,7 @@ export function data2treeDG(datas, dataArray, otherParams) {
           id: data.id,
           label: data.name,
           pid: data.pid,
-          children:[]
+          children: [],
         };
         for (let j = 0; j < otherParams.length; j++) {
           objTemp[otherParams[j]] = data[otherParams[j]];
@@ -122,7 +123,7 @@ export function findNodeById(nodes, id) {
 
 //data：要遍历的数据， target：查找目标， result用于装查找结果的数组
 export function findParent(allNodes, target, result) {
-  let nodeTemp = findNodeById(allNodes,target.pid);
+  let nodeTemp = findNodeById(allNodes, target.pid);
   if (nodeTemp) {
     result.unshift(nodeTemp);
   }
@@ -156,7 +157,7 @@ export function findParent(allNodes, target, result) {
 }
 //根据id删除节点
 export function deleteNode(nodes, id) {
-  for (let i = 0; i < nodes.length;i++) {
+  for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].id === id) {
       nodes.splice(i, 1); //会修改原数组
       break;
