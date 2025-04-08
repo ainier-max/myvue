@@ -16,7 +16,7 @@ export const pageRenderTreeDataStore = defineStore("pageRenderTreeDataID", {
      */
     addToPageRenderTreeData(data) {
       this.pageRenderTreeData.push(data);
-      console.log("页面渲染树数据", this.pageRenderTreeData);
+      console.log("addToPageRenderTreeData--页面渲染树数据", this.pageRenderTreeData);
     },
     //设置关联页面数据
     setRelativePageRenderTreeData(data) {

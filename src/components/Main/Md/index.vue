@@ -8,10 +8,8 @@
         <el-collapse v-model="activeNames" @change="handleChange">
           <el-collapse-item title="介绍" name="1">
             <div>
-
               <div @click="toPath('介绍/低代码开发平台.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">低代码开发平台</div>
               <div @click="toPath('介绍/组件丰富方式.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">组件丰富方式</div>
-
             </div>
           </el-collapse-item>
           <el-collapse-item title="系统设计" name="5">
@@ -19,6 +17,8 @@
               <div @click="toPath('系统设计/技术选型.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">技术选型</div>
               <div @click="toPath('系统设计/页面渲染树.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">页面渲染树</div>
               <div @click="toPath('系统设计/全局配置.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">全局配置</div>
+              <div @click="toPath('系统设计/蓝图配置项说明.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">蓝图配置项说明</div>
+              <div @click="toPath('系统设计/蓝图逻辑关键函数.md')" style="padding-left:20px;font-weight: bold;font-size: 14px;cursor: pointer">蓝图逻辑关键函数</div>
             </div>
           </el-collapse-item>
 

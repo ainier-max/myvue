@@ -533,22 +533,26 @@
     for (let i = 0; i < arrayTemp.length; i++) {
       //只保存非关联页面的数据
       if (!arrayTemp[i].isRelativePage) {
-        let { id, pid, ref, type, related_value } = { ...arrayTemp[i] };
-        let config_str = objectToString(arrayTemp[i].config);
-        let name = arrayTemp[i].label;
-        newArrayTemp.push({
-          id,
-          pid,
-          name,
-          ref,
-          type,
-          related_value,
-          page_id,
-          config_str
-        });
-        if (arrayTemp[i].type == "mainBlock" && !arrayTemp[i].pid) {
-          pageNameTemp = name;
-          topPageBlockRefTemp = ref;
+        if (arrayTemp[i].length > 0) {
+          //外部页面块不保存
+        } else {
+          let { id, pid, ref, type, related_value } = { ...arrayTemp[i] };
+          let config_str = objectToString(arrayTemp[i].config);
+          let name = arrayTemp[i].label;
+          newArrayTemp.push({
+            id,
+            pid,
+            name,
+            ref,
+            type,
+            related_value,
+            page_id,
+            config_str
+          });
+          if (arrayTemp[i].type == "mainBlock" && !arrayTemp[i].pid) {
+            pageNameTemp = name;
+            topPageBlockRefTemp = ref;
+          }
         }
       }
     }
