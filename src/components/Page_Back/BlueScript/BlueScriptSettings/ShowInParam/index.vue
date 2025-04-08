@@ -1,6 +1,6 @@
 <template>
   <div v-if="currentBlueScript?.config">
-    <el-divider content-position="left"><span style="font-size: 18px">输入参数</span></el-divider>
+    <el-divider content-position="left"><span style="font-size: 18px">输入参数123</span></el-divider>
     <div v-for="(item,index) in currentBlueScript.config.in_out_config.in" :key="index">
       <div style="margin-top: 5px;color:rgba(255, 255, 255, 0.5);font-size: 14px">{{ index + 1 }}.{{
           item.label

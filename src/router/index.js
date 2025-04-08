@@ -15,10 +15,10 @@ const routes = [
         path: '/Login',
         component: () => import('../components/Login/login.vue')
     },
-    {
-        path: '/Page',
-        component: () => import('../components/Page/index.vue'),
-    },
+    // {
+    //     path: '/Page',
+    //     component: () => import('../components/Page/index.vue'),
+    // },
     {
         path: '/PageEdit',
         component: () => import('../components/PageEdit/index.vue'),
@@ -101,10 +101,10 @@ const routes = [
         path: '/TestLife',
         component: () => import('../components/Test/TestLife/PageDebug.vue'),
     },
-    {
-        path: '/TestLayout',
-        component: () => import('../components/Page/BlueScript/BlueScriptBlockTree/index.vue'),
-    },
+    // {
+    //     path: '/TestLayout',
+    //     component: () => import('../components/Page/BlueScript/BlueScriptBlockTree/index.vue'),
+    // },
     {
         path: '/TestPackUmdComponent',
         component: () => import('../components/Test/TestPackUmdComponent/index.vue'),

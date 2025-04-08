@@ -16,8 +16,6 @@ const blueScriptDataStoreObj = blueScriptDataStore();
 const { currentBlueScript } = storeToRefs(blueScriptDataStoreObj);
 import { addStartPointFlag,removeStartPointFlag } from "@/components/PageEdit/PageDesign/BlueScriptDesign/AntV/AntV.js";
 
-
-
 console.log("currentBlueScript21323",currentBlueScript);
 const startPointChange=(val)=>{
   currentBlueScript.value.config.startPointFlag = val;

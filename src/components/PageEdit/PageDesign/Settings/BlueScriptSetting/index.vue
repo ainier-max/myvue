@@ -31,6 +31,7 @@
     <div v-if="currentBlueScript?.config" v-for="(item, index) in currentBlueScript?.config?.blue_script_visualize_config?.settings">
       <StartPointFlag v-if="item == 'StartPointFlag'"></StartPointFlag>
       <DataModelChoose v-if="item == 'DataModelChoose'"></DataModelChoose>
+      <SetDataField v-if="item == 'SetDataField'"></SetDataField>
       <AddInPortAndParam v-if="item == 'AddInPortAndParam'"></AddInPortAndParam>
       <ShowInParam v-if="item == 'ShowInParam'"></ShowInParam>
       <ShowOutParam v-if="item == 'ShowOutParam'"></ShowOutParam>
@@ -99,6 +100,7 @@
   import { js_beautify } from "js-beautify";
 
   import StartPointFlag from "./StartPointFlag/index.vue";
+  import SetDataField from "./SetDataField/index.vue";
   import DataModelChoose from "./DataModelChoose/index.vue";
   import AddInPortAndParam from "./AddInPortAndParam/index.vue";
   import ShowInParam from "./ShowInParam/index.vue";

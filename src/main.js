@@ -93,6 +93,7 @@ import axios from "axios";
 window.axios = axios;
 import lodash from "lodash";
 window._ = lodash;
+window.lodash = lodash;
 import { loadModule } from "vue3-sfc-loader";
 window.loadModule = loadModule;
 import { uuid } from "@/common/js/uuid.js";

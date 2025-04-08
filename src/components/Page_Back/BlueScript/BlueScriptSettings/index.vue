@@ -20,6 +20,7 @@
 
 
     <div v-if="currentBlueScript?.config && showFlag" v-for="(item, index) in currentBlueScript.config.visualize_config.settings">
+      <div>123</div>
       <StartPointFlag  v-if="item=='StartPointFlag'"  :currentBlueScript="currentBlueScript"></StartPointFlag>
       <AddInPortAndParam v-if="item=='AddInPortAndParam'" :currentBlueScript="currentBlueScript"></AddInPortAndParam>
       <ShowInParam v-if="item=='ShowInParam'"  :currentBlueScript="currentBlueScript"></ShowInParam>
@@ -252,8 +253,6 @@ export default {
         }
       }
     },
-
-
   },
   mounted() {
     window.cbcBlueScriptSettingsInstance = getCurrentInstance();
