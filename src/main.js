@@ -91,8 +91,6 @@ import * as vue from "vue";
 window.vue = vue;
 import axios from "axios";
 window.axios = axios;
-import qs from "qs";
-window.qs = qs;
 import lodash from "lodash";
 window._ = lodash;
 import { loadModule } from "vue3-sfc-loader";

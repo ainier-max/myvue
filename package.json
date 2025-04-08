@@ -24,7 +24,6 @@
     "js-beautify": "^1.14.6",
     "lodash": "^4.17.21",
     "monaco-editor": "^0.34.1",
-    "node-sass": "^7.0.3",
     "pinia": "^2.1.7",
     "vite-plugin-cesium": "^1.2.22",
     "vue": "^3.2.39",
