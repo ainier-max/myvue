@@ -262,7 +262,8 @@ const setPageLayoutStyle = computed(() => {
 import { loadDependentOn } from "@/common/js/loadDependentOn.js";
 
 const dependentOnObj = ref({});
-provide("provideDependentOnObj", dependentOnObj);
+//不清楚为何必须得屏蔽
+//provide("provideDependentOnObj", dependentOnObj);
 const execLoadDependentFlag = ref(false);
 const loadDependentOnFun = () => {
   //首次执行需要加载依赖
@@ -289,10 +290,13 @@ const loadDependentOnFun = () => {
 
 let pageModel = "";
 const page_type = route.query.page_type;
+console.log("页面类型page_type",page_type);
 if (page_type == "edit") {
   pageModel = pageRenderTreeData.value[0].config.attr.pageModel;
+  console.log("pageModel",pageModel);//adaptation
   toEventStartRun(true);
 } else if (page_type == "browse") {
+  provide("provideDependentOnObj", dependentOnObj);
   loadDependentOnFun();
 }
 
